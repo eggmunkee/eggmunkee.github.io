@@ -7,7 +7,13 @@ const currentYear = ref(new Date().getFullYear())
 
 <template>
   <header>
-    <img alt="America Mission logo" class="logo" src="@/assets/amer_mission_icon.webp" width="180" height="180" />
+    <img
+      alt="America Mission logo"
+      class="logo"
+      src="@/assets/amer_mission_icon.webp"
+      width="180"
+      height="180"
+    />
 
     <div class="wrapper">
       <AMLogo />
@@ -21,10 +27,7 @@ const currentYear = ref(new Date().getFullYear())
 
   <RouterView />
 
-  <footer>
-    &copy; {{ currentYear }} @eggmunkee
-  </footer>
-
+  <footer>&copy; {{ currentYear }} @eggmunkee</footer>
 </template>
 
 <style scoped>

@@ -1,12 +1,9 @@
-<script setup>
-</script>
+<script setup></script>
 
 <template>
   <div class="greetings">
     <h1 class="blue">America Mission</h1>
-    <h3>
-      North Richland Hills, Texas Hub
-    </h3>
+    <h3>North Richland Hills, Texas Hub</h3>
   </div>
 </template>
 
