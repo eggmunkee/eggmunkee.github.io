@@ -1,1 +1,0 @@
-import{_ as e,o as t,c as o,a as s}from"./index-OCyiw0r6.js";const a={},c={class:"about"},r=s("h1",null,"America Mission volunteer Hub for the North Richland Hills / Northeast Tarrant County Area",-1),n=[r];function _(i,l){return t(),o("div",c,n)}const h=e(a,[["render",_]]);export{h as default};

@@ -13,7 +13,7 @@ defineProps({
 
 <template>
     <div class="highlight">
-        <h1>{{ title }}</h1>
+        <h1 class="blue">{{ title }}</h1>
         <slot>
             <p>{{ content }}</p>
         </slot>
@@ -28,6 +28,6 @@ defineProps({
     margin-bottom: 2rem;
 }
 .highlight h1 {
-    color: var(--color-text-light);
+    /* color: var(--color-text-light); */
 }
 </style>

@@ -3,9 +3,9 @@
 
 <template>
   <div class="greetings">
-    <h1 class="green">America Mission</h1>
+    <h1 class="blue">America Mission</h1>
     <h3>
-      North Richland Hills Hub
+      North Richland Hills, Texas Hub
     </h3>
   </div>
 </template>

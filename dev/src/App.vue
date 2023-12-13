@@ -10,7 +10,7 @@ const currentYear = ref(new Date().getFullYear())
     <img alt="America Mission logo" class="logo" src="@/assets/amer_mission_icon.webp" width="180" height="180" />
 
     <div class="wrapper">
-      <AMLogo msg="America First!" />
+      <AMLogo />
 
       <nav>
         <RouterLink to="/">Home</RouterLink>

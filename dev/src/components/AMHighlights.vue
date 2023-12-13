@@ -6,12 +6,17 @@
     <div class="am-highlights">
         <AMHighlight title="Join The Movement">
             <p>
-                We are a group of like-minded individuals who are tired of the
-                direction our country is headed. We are taking action to make
-                our voices heard and to make a difference in our communities.
+                We are a group of Americans who are tired of the unconstitutional, tyrannical
+                direction our country is headed. We are taking grassroots action to pressure elected
+                leaders and elect future candidates to address these issues and restore the Republic,
+                as well as exposing repeat propaganda media offenders and distributing journalism
+                outside of controlled channels to the people. 
             </p>
             <p class="ref-p">
-                Site: <a href="https://www.americamission.com" target="_blank">American Mission</a>
+                Visit: <a href="https://www.americamission.com" target="_blank">American Mission Site</a>
+            </p>
+            <p class="ref-p">
+                Subscribe to the substack.
             </p>
         </AMHighlight>
 
@@ -21,22 +26,33 @@
                 sharing, calls to action, and networking for grassroots work.
             </p>
             <p class="ref-p">
-                Site: <a href="https://twitter.com/americamission_" target="_blank">Twitter Account</a>
+                Tune In: <a href="https://twitter.com/americamission_" target="_blank">America Mission Twitter Account</a>
+            </p>
+            <p class="ref-p">
+                Tune In: <a href="https://twitter.com/DustinStockton" target="_blank">Dustin Stockton Twitter Account</a>
+            </p>
+            <p class="ref-p">
+                Watch Past Spaces: <a href="https://www.rumble.com/c/AmericaMission1776" target="_blank">America Mission Replay Rumble Channel</a>
             </p>
         </AMHighlight>
 
-        <AMHighlight title="Get Involved and Active Locally">
+        <AMHighlight title="Get A Vote In The Party">
             <p>
-                We are organizing locally to make a difference in our communities.
                 We are working to get involved in local politics and to make a
-                difference in our communities. Becoming a Precinct Committeeman or Chair
-                is the first best option if a seat is available. Second best is Precinct
-                Captain or Block Captain to assist your neighborhood information sharing
-                and voter mobilization.
+                difference in the party direction by becoming a Precinct Committeeman or Chair where you live.
+                It's the best option if a seat is available. We also need Precinct
+                Captains and Block Captains to assist your neighborhood with the best candidate information
+                and assisting voters on election day with reminders and help to the polls.
             </p>
             <p class="ref-p">
-                Site: <a href="https://www.precinctstrategy.com" target="_blank">Precinct Strategy</a>
+                Learn More: <a href="https://www.precinctstrategy.com" target="_blank">Precinct Strategy</a>
             </p>
+            <p class="ref-p">
+                See: <a href="https://twitter.com/DanSchultz2" target="_blank">Dan Schultz Twitter Account</a>
+            </p>
+            <p class="ref-p">
+                Join: <a href="https://pilled.net/group/PrecinctStrategy/1" target="_blank">Precinct Strategy Collaboration Group</a>
+            </p>           
         </AMHighlight>
 
         <hr/>
