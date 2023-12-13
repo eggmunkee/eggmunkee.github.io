@@ -1,9 +1,9 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+import AMHighlights from '../components/AMHighlights.vue'
 </script>
 
 <template>
   <main>
-    <TheWelcome />
+    <AMHighlights />
   </main>
 </template>
