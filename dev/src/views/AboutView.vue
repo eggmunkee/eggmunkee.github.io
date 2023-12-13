@@ -17,6 +17,10 @@
       RNC leaders and
       <strong class="blue">have the final say on the Presidential nomination</strong>.
     </h3>
+
+    <div style="margin: 1rem; display: flex; align-items: center; justify-content: center">
+      <img src="@/assets/my_nft_rino.jfif" alt="Rino NFT" width="200em" />
+    </div>
   </div>
 </template>
 
