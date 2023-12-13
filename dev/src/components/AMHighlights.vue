@@ -13,15 +13,16 @@ import AMHighlight from './AMHighlight.vue'
         to the people.
       </p>
       <p class="ref-p">
-        Visit: <a href="https://www.americamission.com" target="_blank">American Mission Site</a>
+        Visit: <a href="https://www.americamission.com" target="_blank">America Mission Site</a>
       </p>
       <p class="ref-p">Subscribe to the substack.</p>
     </AMHighlight>
 
     <AMHighlight title="Organize On Twitter / X">
       <p>
-        Regular wrap up and topic Twitter spaces are for information sharing, calls to action, and
-        networking for grassroots work.
+        America Mission hosts regular morning wrap-up and topical Twitter Spaces for information
+        sharing, calls to action, and networking for grassroots work. Follow these America Mission
+        accounts to get started:
       </p>
       <p class="ref-p">
         Tune In:
@@ -30,20 +31,33 @@ import AMHighlight from './AMHighlight.vue'
         >
       </p>
       <p class="ref-p">
-        Tune In:
+        Follow:
         <a href="https://twitter.com/DustinStockton" target="_blank"
-          >Dustin Stockton Twitter Account</a
+          >Dustin Stockton's Twitter Account</a
         >
       </p>
       <p class="ref-p">
-        Watch Past Spaces:
+        Watch Live & Past Spaces:
         <a href="https://www.rumble.com/c/AmericaMission1776" target="_blank"
-          >America Mission Replay Rumble Channel</a
+          >America Mission Rumble Channel</a
         >
+      </p>
+      <p style="margin-top: 2rem">
+        There are also many other groups and individuals hosting spaces that help to organize and
+        bring people into the movement to take coordinated action. Follow the accounts below to get
+        notified when they go live:
+      </p>
+      <p class="ref-p">
+        Learn, Talk With Candidates, and Discuss:
+        <a href="https://twitter.com/berryrazi" target="_blank">Phenomonology's Twitter Account</a>
+      </p>
+      <p class="ref-p">
+        Chat With Shelley, J6ers and other Patriots (M-F mornings):
+        <a href="https://twitter.com/ProudArmymom66" target="_blank">Shelley's Twitter Account</a>
       </p>
     </AMHighlight>
 
-    <AMHighlight title="Get A Vote In The Party">
+    <AMHighlight title="Claim A Vote In The Party">
       <p>
         We are working to get involved in local politics and to make a difference in the party
         direction by becoming a Precinct Committeeman or Chair where you live. It's the best option
@@ -66,6 +80,21 @@ import AMHighlight from './AMHighlight.vue'
       </p>
     </AMHighlight>
 
+    <AMHighlight title="Work With Local America First Volunteers">
+      <p>
+        Pilled.net hosts a <strong>Precinct Strategy Community</strong> with great features for
+        organization and collaboration. Each State has a group chat, including sharing documents
+        like resolutions and handbooks. You can create your own private or public groups to work in.
+        Apply to join the group through the link below and find the tens of thousands already there.
+      </p>
+      <p class="ref-p">
+        Join Group:
+        <a href="https://pilled.net/group/PrecinctStrategy/1" target="_blank"
+          >Precinct Strategy Collaboration Group</a
+        >
+      </p>
+    </AMHighlight>
+
     <hr />
 
     <AMHighlight title="Under Development"> Thanks for visiting. (December 2023) </AMHighlight>
@@ -73,8 +102,11 @@ import AMHighlight from './AMHighlight.vue'
 </template>
 
 <style scoped>
+p {
+  font-size: 1rem;
+}
 .ref-p {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   text-align: right;
 }
 </style>
