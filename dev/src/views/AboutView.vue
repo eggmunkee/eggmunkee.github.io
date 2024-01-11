@@ -10,6 +10,11 @@
       grassroots journalism and pro-freedom political action.
     </h3>
     <h3>
+      <strong class="blue">AssembleX</strong> is bringing conservatives together in our own states
+      to communicate and collaborate on local issues and elections and bridge the gap between the
+      online and community meeting participants.
+    </h3>
+    <h3>
       <strong class="blue">Precinct Strategy</strong> is the key strategy to step into the roughly
       50% vacant Precinct Chair seats in the Republican Party. Becoming a voting member of the party
       allows America First to take over the party from the bottom up, where the selection of state

@@ -4,7 +4,7 @@ import AMHighlight from './AMHighlight.vue'
 
 <template>
   <div class="am-highlights">
-    <AMHighlight title="Join The Movement">
+    <AMHighlight title="Join The America Mission Movement">
       <p>
         We are a group of Americans who are tired of the unconstitutional, tyrannical direction our
         country is headed. We are taking grassroots action to pressure elected leaders and elect
@@ -16,6 +16,28 @@ import AMHighlight from './AMHighlight.vue'
         Visit: <a href="https://www.americamission.com" target="_blank">America Mission Site</a>
       </p>
       <p class="ref-p">Subscribe to the substack.</p>
+    </AMHighlight>
+
+    <AMHighlight title="Participate In AssembleX Texas">
+      <p>
+        AssembleX is a grassroots organization that is building state by state digital town halls,
+        Twitter Spaces for conservative Texans to meet, network, learn about candidates, and
+        collaborate. Weekly meeting times will keep us in touch and ready to address local, state
+        and national issues.
+      </p>
+      <p class="ref-p">Visit: <a href="https://assemblex.com" target="_blank">AssembleX Site</a></p>
+      <p class="ref-p">
+        Follow:
+        <a href="https://twitter.com/assemblextx" target="_blank"
+          >AssembleX Texas Twitter Account</a
+        >
+      </p>
+      <p class="ref-p">
+        Follow:
+        <a href="https://twitter.com/assemblexstates" target="_blank"
+          >AssembleX National Twitter Account</a
+        >
+      </p>
     </AMHighlight>
 
     <AMHighlight title="Organize On Twitter / X">
