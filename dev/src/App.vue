@@ -54,7 +54,7 @@ nav a {
 
 nav a:last-of-type {
   border: 0;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1.5rem 0.5rem 1.25rem;
 }
 
 @media (min-width: 1024px) {
