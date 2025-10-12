@@ -7,20 +7,10 @@ const currentYear = ref(new Date().getFullYear())
 
 <template>
   <header>
-    <img
-      alt="America Mission logo"
-      class="logo"
-      src="@/assets/amer_mission_icon.webp"
-      width="180"
-      height="180"
-    />
-
     <div class="wrapper">
-      <AMLogo />
-
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/">EGGMUNKEE Root</RouterLink>
+        <RouterLink to="/music">MUSIC</RouterLink>
       </nav>
     </div>
   </header>
@@ -58,12 +48,13 @@ nav a.router-link-exact-active:hover {
 
 nav a {
   display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+  padding: 0.5rem 1.5rem;
+  border-right: 1px solid var(--color-border);
 }
 
-nav a:first-of-type {
+nav a:last-of-type {
   border: 0;
+  padding: 0.5rem 1.5rem;
 }
 
 @media (min-width: 1024px) {

@@ -6,7 +6,15 @@ import vue from '@vitejs/plugin-vue'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
+    vue({
+      template: {
+        transformAssetUrls: {
+          audio: ["src"], // allow audio source alias resolution
+          img: ["src"],
+          Song: ["url"]
+        }
+      }
+    }),
   ],
   resolve: {
     alias: {

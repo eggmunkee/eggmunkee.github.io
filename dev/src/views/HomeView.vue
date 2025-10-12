@@ -13,12 +13,12 @@ function computeTileTil2024() {
   const diffMonths = Math.floor(diffDays / 30)
   const diffYears = Math.floor(diffMonths / 12)
   return {
-    years: diffYears,
-    months: diffMonths % 12,
-    days: diffDays % 30,
-    hours: diffHours % 24,
-    minutes: diffMinutes % 60,
-    seconds: diffSeconds % 60
+    years: -diffYears,
+    months: -(diffMonths % 12),
+    days: -(diffDays % 30),
+    hours: -(diffHours % 24),
+    minutes: -(diffMinutes % 60),
+    seconds: -(diffSeconds % 60)
   }
 }
 setInterval(() => {
@@ -29,12 +29,14 @@ setInterval(() => {
 <template>
   <main>
     <div class="countdown">
-      <strong class="blue">2024</strong> is coming fast...
-      <strong class="blue">{{ timeTil2024.months }}</strong> months,
-      <strong class="blue">{{ timeTil2024.days }}</strong> days,
-      <strong class="blue">{{ timeTil2024.hours }}</strong> hrs,
-      <strong class="blue">{{ timeTil2024.minutes }}</strong> mins,
-      <strong class="blue">{{ timeTil2024.seconds }}</strong> secs
+      <strong class="blue">47 is Hapbenning!</strong>
+      <span class="countup">
+        <strong class="blue">+{{ timeTil2024.months }}</strong> months,
+        <strong class="blue">{{ timeTil2024.days }}</strong> days,
+        <strong class="blue">{{ timeTil2024.hours }}</strong> hrs,
+        <strong class="blue">{{ timeTil2024.minutes }}</strong> mins,
+        <strong class="blue">{{ timeTil2024.seconds }}</strong> secs in...
+      </span>
     </div>
     <AMHighlights />
   </main>
@@ -45,5 +47,9 @@ setInterval(() => {
   text-align: center;
   font-size: 1.2rem;
   margin: 2rem 0;
+}
+.countup {
+  font-size: 1.1rem;
+  margin: 3rem 1rem;
 }
 </style>

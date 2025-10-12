@@ -117,31 +117,6 @@ import AMHighlight from './AMHighlight.vue'
       </p>
     </AMHighlight>
 
-    <AMHighlight title="Recent Media">
-      <p>"Biden Inc | Hunter | GOP Oversight | @Heritage FOIA dump"</p>
-      <div>
-        <iframe
-          class="rumble"
-          width="640"
-          height="360"
-          src="https://rumble.com/embed/v3ygxcm/?pub=r4ql3"
-          frameborder="0"
-          allowfullscreen
-        ></iframe>
-      </div>
-      <br />
-      <p>"Rigged Elections, Lawsuits, and Support"</p>
-      <div>
-        <iframe
-          class="rumble"
-          width="640"
-          height="360"
-          src="https://rumble.com/embed/v3xxmbd/?pub=r4ql3"
-          frameborder="0"
-          allowfullscreen
-        ></iframe>
-      </div>
-    </AMHighlight>
   </div>
 </template>
 

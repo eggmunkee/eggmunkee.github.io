@@ -1,0 +1,95 @@
+<script setup>
+import { ref } from 'vue'
+import { RouterLink, RouterView } from 'vue-router'
+import AMLogo from './components/AMLogo.vue'
+const currentYear = ref(new Date().getFullYear())
+</script>
+
+<template>
+  <header>
+    <img
+      alt="America Mission logo"
+      class="logo"
+      src="@/assets/amer_mission_icon.webp"
+      width="180"
+      height="180"
+    />
+
+    <div class="wrapper">
+      <AMLogo />
+
+      <nav>
+        <RouterLink to="/tx">Home</RouterLink>
+        <RouterLink to="/tx/about">About</RouterLink>
+      </nav>
+    </div>
+  </header>
+
+  <RouterView />
+
+  <footer>&copy; {{ currentYear }} @eggmunkee</footer>
+</template>
+
+<style scoped>
+header {
+  line-height: 1.5;
+  max-height: 100vh;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto 2rem;
+}
+
+nav {
+  width: 100%;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+nav a.router-link-exact-active {
+  color: var(--color-text);
+}
+
+nav a.router-link-exact-active:hover {
+  background-color: transparent;
+}
+
+nav a {
+  display: inline-block;
+  padding: 0 1rem;
+  border-left: 1px solid var(--color-border);
+}
+
+nav a:first-of-type {
+  border: 0;
+}
+
+@media (min-width: 1024px) {
+  header {
+    display: flex;
+    place-items: center;
+    padding-right: calc(var(--section-gap) / 2);
+  }
+
+  .logo {
+    margin: 0 2rem 0 0;
+  }
+
+  header .wrapper {
+    display: flex;
+    place-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  nav {
+    text-align: left;
+    margin-left: -1rem;
+    font-size: 1rem;
+
+    padding: 1rem 0;
+    margin-top: 1rem;
+  }
+}
+</style>
