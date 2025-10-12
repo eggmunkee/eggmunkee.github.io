@@ -1,0 +1,1 @@
+.about{display:flex;flex-direction:column}.about hr{width:50%}@media (min-width: 1024px){.about{min-height:50vh;align-items:center}}
