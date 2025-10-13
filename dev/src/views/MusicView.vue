@@ -34,7 +34,7 @@ export default {
                 title: 'There we all go',
                 artist: 'eggmunkee',
                 album: 'Assorted Suno Rock',
-                src: 'dev/public/mp3/There we all go.mp3'
+                src: '/mp3/There we all go.mp3'
             },
             
             {
@@ -76,7 +76,7 @@ export default {
                 title: 'This must be a Test',
                 artist: 'eggmunkee',
                 album: 'Assorted Suno Rock',
-                src: 'dev/public/mp3/This must be a Test.mp3'
+                src: '/mp3/This must be a Test.mp3'
             },
             
             {
