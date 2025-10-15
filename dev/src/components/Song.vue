@@ -24,7 +24,7 @@ defineProps({
       </span>
     </div>
     <div class="song-player">
-        <audio controls :title="title" preload="none">
+        <audio controls :title="title" preload="metadata">
             <source :src="url" />
         </audio>
     </div>
