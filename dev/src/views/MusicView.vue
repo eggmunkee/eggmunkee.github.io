@@ -87,13 +87,6 @@ export default {
             },
 
             {
-                title: 'Oddest Of Us',
-                artist: 'eggmunkee',
-                album: 'Assorted Suno Rock',
-                src: '/mp3/Oddest Of Us.mp3'
-            },
-
-            {
                 title: 'Dust on the rug',
                 artist: 'eggmunkee',
                 album: 'Assorted Suno Rock',
@@ -101,10 +94,101 @@ export default {
             },
 
             {
+                title: 'Oddest Of Us',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/Oddest Of Us.mp3'
+            },
+
+            {
+                title: 'I Walk My Dog Buddy at Night',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/I Walk My Dog Buddy at Night.mp3'
+            },
+
+            {
+                title: 'And then I found Home (In you)',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/And then I found Home (In you).mp3'
+            },
+
+            {
+                title: 'Little More Coming Home (Acoustic)',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/Little More Coming Home (Acoustic).mp3'
+            },
+
+            {
+                title: 'Black Blizzard, Red Umbrella (The Octopus Project Cover)',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/Black Blizzard, Red Umbrella (The Octopus Project Cover).mp3'
+            },
+
+            {
                 title: 'Skasynthic Covahed',
                 artist: 'eggmunkee',
                 album: 'Assorted Suno Rock',
                 src: '/mp3/Skasynthic Covahed.mp3'
+            },
+
+            {
+                title: 'Ska Stroll 12-30',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/Ska Stroll 12-30.mp3'
+            },
+
+            {
+                title: 'Skatellite Chronos 7A',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/Skatellite Chronos 7A.mp3'
+            },
+
+            {
+                title: 'Skatellite Chronos 7i',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/Skatellite Chronos 7i.mp3'
+            },
+
+            {
+                title: 'Skatellite Chronos 7M',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/Skatellite Chronos 7M.mp3'
+            },
+
+            {
+                title: 'Dormant Chroma Delta III',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/Dormant Chroma Delta III.mp3'
+            },
+
+            {
+                title: 'old school rap beat, sampling 93',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/old school rap beat, sampling 93.mp3'
+            },
+
+            {
+                title: 'Untitled - classical guitar jam C1',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/Untitled - classical guitar jam C1.mp3'
+            },
+
+            {
+                title: 'shoegaze classical 3a',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/shoegaze classical 3a.mp3'
             },
 
             {
@@ -135,6 +219,14 @@ export default {
                 src: '/mp3/SandDollarAlgorithms_311_Muse_wip.mp3'
             },
 
+            /* Song Data Template: 
+            {
+                title: '',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/.mp3'
+            },
+            */
         ]
     }
   },
@@ -177,9 +269,9 @@ export default {
         </div>
     </div>
     
-    <h2>Songs</h2>
+    <h2>Songs ({{songList.length}})</h2>
     <div v-for="song in songList">
-        <Song :url="song.src" :title="song.title + ' - ' + song.album" />
+        <Song :url="song.src" :title="song.title" :album="song.album" />
     </div>
 </div>
 </template>

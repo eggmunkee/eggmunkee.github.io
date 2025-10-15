@@ -5,7 +5,7 @@
 <div class="root-div">
     <h1>EGGMUNKEE Root</h1>
 
-    <h2>Expore <RouterLink to="/music">MUSIC</RouterLink> section</h2>
+    <h2>Expore <RouterLink to="/">MUSIC</RouterLink> section</h2>
 </div>
 </template>
 

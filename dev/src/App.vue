@@ -9,15 +9,19 @@ const currentYear = ref(new Date().getFullYear())
   <header>
     <div class="wrapper">
       <nav>
-        <RouterLink to="/">EGGMUNKEE Root</RouterLink>
-        <RouterLink to="/music">MUSIC</RouterLink>
+        <RouterLink to="/home">EGGMUNKEE Root</RouterLink>
+        <RouterLink to="/">MUSIC</RouterLink>
       </nav>
     </div>
   </header>
 
   <RouterView />
 
-  <footer>&copy; {{ currentYear }} @eggmunkee</footer>
+  <footer>&copy; {{ currentYear }} @eggmunkee 
+    <span style="opacity: 0">
+      <RouterLink to="/tx">tx</RouterLink>
+    </span>
+  </footer>
 </template>
 
 <style scoped>

@@ -4,6 +4,10 @@ defineProps({
     type: String,
     required: true
   },
+  album: {
+    type: String,
+    required: false
+  },
   url: {
     type: String,
     required: true
@@ -13,9 +17,14 @@ defineProps({
 
 <template>
 <div class="song-cont">
-    <div class="song-title blue">{{title}}</div>
+    <div class="song-title">
+      <span class="blue">{{title}}</span>
+      <span v-if="album">
+        [{{album}}]
+      </span>
+    </div>
     <div class="song-player">
-        <audio controls :title="title">
+        <audio controls :title="title" preload="none">
             <source :src="url" />
         </audio>
     </div>
