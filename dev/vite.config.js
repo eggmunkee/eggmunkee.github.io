@@ -4,7 +4,10 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  build: {
+    outDir: '../docs'
+  },
   plugins: [
     vue({
       template: {
@@ -20,5 +23,6 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  }
-})
+  },
+  publicDir: command == 'serve' ? '../docs' : 'public'
+}))
