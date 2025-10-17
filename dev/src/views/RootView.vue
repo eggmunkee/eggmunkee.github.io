@@ -3,13 +3,16 @@
 
 <template>
 <div class="root-div">
-    <h1>EGGMUNKEE Root</h1>
+    <h1 class="under">EGGMUNKEE Root</h1>
 
     <h2>Expore <RouterLink to="/">MUSIC</RouterLink> section</h2>
 </div>
 </template>
 
 <style scoped>
+.under {
+    text-decoration: underline;
+}
 .root-div {
     margin: 20px;
     text-align: center;

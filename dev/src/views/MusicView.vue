@@ -10,12 +10,27 @@ export default {
   data() {
     return {
         // State        
-        currentSongTitle: 'Click To Play',
+        currentSongTitle: '',
         currentSongArtist: '',
         currentSongAlbum: 'Assorted Eggmunkee Songs',
         // Configuration
         songList: [
-            
+
+            {
+                title: 'There we all go',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/There we all go.mp3'
+            },
+
+            {
+                title: 'Good Afternoon, X',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/Good Afternoon X.mp3'
+            },
+
+
             {
                 title: 'Radicalized',
                 artist: 'eggmunkee',
@@ -31,10 +46,10 @@ export default {
             },
             
             {
-                title: 'There we all go',
+                title: 'Bankers Know Best (Not Equal Cover)',
                 artist: 'eggmunkee',
-                album: 'Assorted Suno Rock',
-                src: '/mp3/There we all go.mp3'
+                album: 'Assorted Suno Covers',
+                src: '/mp3/Bankers Know Best (Not Equal Cover).mp3'
             },
             
             {
@@ -44,13 +59,6 @@ export default {
                 src: '/mp3/Fractured Armies.mp3'
             },
             
-            {
-                title: 'Good Afternoon, X',
-                artist: 'eggmunkee',
-                album: 'Assorted Suno Rock',
-                src: '/mp3/Good Afternoon X.mp3'
-            },
-
             {
                 title: 'Lost Cause Caravan',
                 artist: 'eggmunkee',
@@ -63,6 +71,13 @@ export default {
                 artist: 'eggmunkee',
                 album: 'Assorted Suno Rock',
                 src: '/mp3/Hometown Streets.mp3'
+            },
+
+            {
+                title: 'Alright For Now (The Anniversary Cover)',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Covers',
+                src: '/mp3/Alright For Now (The Anniversary Cover).mp3'
             },
 
             {
@@ -101,13 +116,6 @@ export default {
             },
 
             {
-                title: 'I Walk My Dog Buddy at Night',
-                artist: 'eggmunkee',
-                album: 'Assorted Suno Rock',
-                src: '/mp3/I Walk My Dog Buddy at Night.mp3'
-            },
-
-            {
                 title: 'And then I found Home (In you)',
                 artist: 'eggmunkee',
                 album: 'Assorted Suno Rock',
@@ -124,7 +132,7 @@ export default {
             {
                 title: 'Black Blizzard, Red Umbrella (The Octopus Project Cover)',
                 artist: 'eggmunkee',
-                album: 'Assorted Suno Rock',
+                album: 'Assorted Suno Covers',
                 src: '/mp3/Black Blizzard, Red Umbrella (The Octopus Project Cover).mp3'
             },
 
@@ -161,6 +169,20 @@ export default {
                 artist: 'eggmunkee',
                 album: 'Assorted Suno Rock',
                 src: '/mp3/Skatellite Chronos 7M.mp3'
+            },
+
+            {
+                title: 'Buckaroo Live Show ’84 (Buckaroo Banzai Theme Cover)',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Covers',
+                src: '/mp3/Buckaroo Live Show ’84 (Buckaroo Banzai Theme Cover).mp3'
+            },
+
+            {
+                title: 'I Walk My Dog Buddy at Night',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Rock',
+                src: '/mp3/I Walk My Dog Buddy at Night.mp3'
             },
 
             {
@@ -219,6 +241,13 @@ export default {
                 src: '/mp3/SandDollarAlgorithms_311_Muse_wip.mp3'
             },
 
+            {
+                title: 'Hold On (Wilson Phillips Cover)',
+                artist: 'eggmunkee',
+                album: 'Assorted Suno Covers',
+                src: '/mp3/Hold On (Wilson Phillips Cover).mp3'
+            },
+
             /* Song Data Template: 
             {
                 title: '',
@@ -233,8 +262,8 @@ export default {
   methods: {
     playNext(next) {
         try {
-            var songIdx = this.$refs['audioPlayer'].currentPlayIndex;
-            var song = this.songList[songIdx];
+            let songIdx = this.$refs['audioPlayer'].currentPlayIndex;
+            let song = this.songList[songIdx];
             this.currentSongTitle = song.title || ' ';
             this.currentSongArtist = song.artist || ' ';
             this.currentSongAlbum = song.album || ' ';
@@ -245,6 +274,13 @@ export default {
         }
 
         next() // Start play
+    },
+    shuffleTracks() {
+        let songs = this.songList;
+        for (let i = songs.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [songs[i], songs[j]] = [songs[j], songs[i]];
+        }
     }
   }
 }
@@ -252,7 +288,7 @@ export default {
 
 <template>
 <div class="root-div">
-    <h1 class="blue">EGGMUNKEE MUSIC</h1>
+    <h1 class="under">EGGMUNKEE MUSIC</h1>
     <div style="border: 2px solid #e6e6e6; border-radius: 2rem; padding: 15px; margin-bottom: 2rem;" >
         <vue-audio-player ref="audioPlayer"
             :audio-list="songList"
@@ -263,13 +299,18 @@ export default {
         <div class="song-label">
             <div class="song-title">{{currentSongTitle}}</div>
             <div class="song-artist">
-                <span v-show="currentSongArtist">by {{currentSongArtist}}</span> 
-                <span v-show="currentSongAlbum">[{{currentSongAlbum}}]</span>
+                <span v-show="currentSongArtist">by {{currentSongArtist}}</span> <span v-show="currentSongAlbum">[{{currentSongAlbum}}]</span>
             </div>
         </div>
     </div>
     
-    <h2>Songs ({{songList.length}})</h2>
+    <h2>
+        Songs ({{songList.length}})
+        <label class="small-label"><a href="#" @click.prevent="shuffleTracks">Shuffle</a></label>
+    </h2>
+    <div>
+        
+    </div>
     <div v-for="song in songList">
         <Song :url="song.src" :title="song.title" :album="song.album" />
     </div>
@@ -277,6 +318,12 @@ export default {
 </template>
 
 <style scoped>
+.under {
+    text-decoration: underline;
+}
+.small-label {
+    font-size: 85%;
+}
 .root-div {
     margin: 20px;
     text-align: center;
