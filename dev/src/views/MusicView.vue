@@ -311,7 +311,7 @@ export default {
     <div>
         
     </div>
-    <div v-for="song in songList">
+    <div v-for="song in songList" :key="song.src">
         <Song :url="song.src" :title="song.title" :album="song.album" />
     </div>
 </div>
