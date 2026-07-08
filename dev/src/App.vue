@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
-import AMLogo from './components/AMLogo.vue'
+/* import AMLogo from './components/AMLogo.vue' */
 const currentYear = ref(new Date().getFullYear())
 </script>
 
@@ -10,7 +10,8 @@ const currentYear = ref(new Date().getFullYear())
     <div class="wrapper">
       <nav>
         <RouterLink to="/home">EGGMUNKEE Root</RouterLink>
-        <RouterLink to="/">MUSIC</RouterLink>
+        <RouterLink to="/">LATEST MUSIC</RouterLink>
+        <RouterLink to="/2025">LEGACY MUSIC</RouterLink>
       </nav>
     </div>
   </header>

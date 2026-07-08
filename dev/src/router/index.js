@@ -10,8 +10,13 @@ const router = createRouter({
     },
     {
       path: '/',
-      name: 'music',
-      component: () => import('../views/MusicView.vue')
+      name: 'latest_music',
+      component: () => import('../views/MusicSR2026View.vue')
+    },
+    {
+      path: '/2025',
+      name: 'legacy_music',
+      component: () => import('../views/Music2025View.vue')
     },
     {
       path: '/tx',

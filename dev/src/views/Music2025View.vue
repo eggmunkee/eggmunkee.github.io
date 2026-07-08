@@ -1,6 +1,4 @@
 <script setup>
-import { ref } from 'vue'
-import { RouterLink, RouterView } from 'vue-router'
 import Song from '../components/Song.vue'
 import VueAudioPlayer from '@liripeng/vue-audio-player'
 </script>
