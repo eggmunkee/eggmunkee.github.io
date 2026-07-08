@@ -1,6 +1,8 @@
 <script setup>
 import Song from '../components/Song.vue'
 import VueAudioPlayer from '@liripeng/vue-audio-player'
+// Import the song list JSON file
+import initialSongList from '../data/musicPlaylist.json';
 </script>
 
 <script>
@@ -12,32 +14,7 @@ export default {
         currentSongArtist: '',
         currentSongAlbum: 'Assorted Eggmunkee Songs',
         // Configuration
-        // TODO: Load these from the file /dev/src/data/musicPlaylist.json instead of hard-coding them
-        songList: [
-        
-            {
-                title: 'There we all go',
-                artist: 'eggmunkee',
-                album: 'Assorted Suno Rock',
-                src: '/mp3/There we all go.mp3'
-            },
-
-            {
-                title: 'Good Afternoon, X',
-                artist: 'eggmunkee',
-                album: 'Assorted Suno Rock',
-                src: '/mp3/Good Afternoon X.mp3'
-            },
-
-            /* Song Data Template: 
-            {
-                title: '',
-                artist: 'eggmunkee',
-                album: 'Assorted Suno Rock',
-                src: '/mp3/.mp3'
-            },
-            */
-        ]
+        songList: initialSongList // Use the imported JSON list here
     }
   },
   methods: {
@@ -89,9 +66,6 @@ export default {
         Songs ({{songList.length}})
         <label class="small-label"><a href="#" @click.prevent="shuffleTracks">Shuffle</a></label>
     </h2>
-    <div>
-        
-    </div>
     <div v-for="song in songList" :key="song.src">
         <Song :url="song.src" :title="song.title" :album="song.album" />
     </div>
