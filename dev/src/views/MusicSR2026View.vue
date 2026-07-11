@@ -193,6 +193,7 @@ export default {
     /* border: 2px solid #e6e6e6; */
     
     border-radius: 2rem; padding: 15px; margin-bottom: 2rem;
+    box-shadow: inset 0 2rem 2rem 1rem rgba(0,0,0,0.7);
 
     background-size: cover;
     background-position-y: bottom;
@@ -248,8 +249,8 @@ export default {
 
 .playlist-section {
     padding: 0.5em 0.5em 5em 0.5em;
-    border-radius: 0.5em;
-    box-shadow: inset 0px 50px 50px 20px black;
+    border-radius: 2rem; 
+    box-shadow: inset 0 2rem 2rem 1rem rgba(0,0,0,0.7);
     background-size: 100% auto;
     background-position-y: 80%;
     background-repeat: no-repeat;
