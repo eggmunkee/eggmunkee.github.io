@@ -197,7 +197,7 @@ export default {
     background-size: cover;
     background-position-y: bottom;
     background-attachment: fixed;    
-    background-image: url('mp3/stochastic recovery 20x6/cover-art-stochastic-recovery-20x6-album.jpg');
+    background-image: url('/mp3/stochastic recovery 20x6/cover-art-stochastic-recovery-20x6-album.jpg');
 }
 .small-label {
     font-size: 85%;
@@ -258,7 +258,7 @@ export default {
     background-position-x: center;
     background-position-y: bottom;
     background-attachment: fixed; 
-    background-image: url('mp3/stochastic recovery 20x6/cover-art-stochastic-recovery-20x6-album.jpg');
+    background-image: url('/mp3/stochastic recovery 20x6/cover-art-stochastic-recovery-20x6-album.jpg');
 }
 .song-selected {
     margin-top: -1.5px;
