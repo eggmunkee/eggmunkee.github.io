@@ -119,7 +119,7 @@ export default {
     },
     songStyle(index) {
         try {
-            let choice = (index - this.animFrame) % this.maxFrames;
+            let choice = (index + this.animFrame) % this.maxFrames;
             return `small-dual-label-${choice+1}`;
         }
         catch {
