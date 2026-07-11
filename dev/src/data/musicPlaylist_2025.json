@@ -6,12 +6,6 @@
         "src": "/mp3/There we all go.mp3"
     },
     {
-        "title": "Good Afternoon, X",
-        "artist": "eggmunkee",
-        "album": "Assorted Suno Rock",
-        "src": "/mp3/Good Afternoon X.mp3"
-    },
-    {
         "title": "Radicalized",
         "artist": "eggmunkee",
         "album": "Assorted Suno Rock",
@@ -191,7 +185,13 @@
         "album": "Assorted Remixes",
         "src": "/mp3/SandDollarAlgorithms_311_Muse_wip.mp3"
     },
-    {
+     {
+        "title": "Good Afternoon X",
+        "artist": "eggmunkee",
+        "album": "Assorted Suno Rock",
+        "src": "/mp3/Good Afternoon X.mp3"
+    },
+   {
         "title": "Hold On (Wilson Phillips Cover)",
         "artist": "eggmunkee",
         "album": "Assorted Suno Covers",
