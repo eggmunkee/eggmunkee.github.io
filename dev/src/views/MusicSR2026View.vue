@@ -21,21 +21,24 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
             :progress-interval="500"
         ></vue-audio-player>
         <div class="song-label">
-            <div class="song-title">{{currentSongTitle}}</div>
-            <div class="song-artist">
+            <div class="song-title medium-dual-label" :class="songStyle(1, false)">{{currentSongTitle}}</div>
+            <div class="song-artist medium-dual-label" :class="songStyle(5, false)">
                 <span v-show="currentSongArtist">by {{currentSongArtist}}</span>
             </div>
         </div>
     </div>
     
     <div class="playlist-section">
-        <h2>
+        <h2 class="medium-dual-label" :class="songStyle(0, false)">
             Songs ({{songList.length}})
-            <label class="small-dual-label"><a href="#" @click.prevent="shuffleTracks">Shuffle</a></label>
+            <label class="small-dual-label" :class="songStyle(4, false)"><a href="#" @click.prevent="shuffleTracks">Shuffle</a></label>
         </h2>
-        <div v-for="(song, songIndex) in songList" :key="song.src" :class="songContainerClass(songIndex)">
-            <Song :url="song.src" :title="song.title" :title-class="songStyle(songIndex)" />
+        <div class="song-list">
+            <div v-for="(song, songIndex) in songList" :key="song.src" :class="songContainerClass(songIndex)">
+                <Song :url="song.src" :title="song.title" :title-class="songStyle(songIndex, true)" :muted="true" />
+            </div>
         </div>
+        
     </div>
 </div>
 </template>
@@ -54,7 +57,7 @@ export default {
         animStarted: false,
         currentSongIndex: 0,
         currentSongTitle: 'STOCHASTIC RECOVERY 20x6',
-        currentSongArtist: 'Eggmunkee',
+        currentSongArtist: 'eggmunkee',
         currentSongAlbum: 'STOCHASTIC RECOVERY 20x6',
         // Configuration
         songList: initialSongList
@@ -112,18 +115,20 @@ export default {
     songContainerClass(index) {
         try {
             if (index === this.currentSongIndex)
-                return 'song-selected';
+                return 'song-entry song-selected';
+            else
+                return 'song-entry';
         }
         catch {}
-        return '';
+        return 'song-entry';
     },
-    songStyle(index) {
+    songStyle(index, addBaseClass) {
         try {
             let choice = (index + this.animFrame) % this.maxFrames;
-            return `small-dual-label-${choice+1}`;
+            return (addBaseClass ? 'small-dual-label ' : '') + `dual-label-${choice+1}`;
         }
         catch {
-            return 'small-dual-label-1';
+            return (addBaseClass ? 'small-dual-label ' : '') + 'dual-label-1';
         }
     }
   }
@@ -132,56 +137,46 @@ export default {
 
 <style>
 .root-div {
-    font-size: 12pt;
+    font-size: 14pt;
     font-family: 'Georgia' 'Comic Sans' 'Serif' serif;
 }
-.small-dual-label-1 {
-    font-size: 11pt;
+.small-dual-label {
+    font-size: 12pt;
     font-weight: bold;
+    transition-property: 'text-shadow', 'color';
+    transition-duration: 3s;
+}
+
+.medium-dual-label {
+    font-size: 14pt;
+    font-weight: bold;
+    transition-property: 'text-shadow', 'color';
+    transition-duration: 3s;
+}
+
+.dual-label-1 {
     color: hsl(209, 70%, 85%);    
     text-shadow: -0.05em -0.2em 0.01em hsl(208, 35%, 8%);
-    transition-property: 'text-shadow', 'color';
-    transition-duration: 3s;
 }
-.small-dual-label-2 {
-    font-size: 11pt;
-    font-weight: bold;
+.dual-label-2 {
     color: hsl(219, 70%, 85%);
     text-shadow: -0.1em 0.2em 0.01em hsl(208, 35%, 8%);
-    transition-property: 'text-shadow', 'color';
-    transition-duration: 3s;
 }
-.small-dual-label-3 {
-    font-size: 11pt;
-    font-weight: bold;
+.dual-label-3 {
     color: hsl(190, 75%, 90%);    
     text-shadow: 0.15em 0.2em 0.01em hsl(208, 35%, 8%);
-    transition-property: 'text-shadow', 'color';
-    transition-duration: 3s;
 }
-.small-dual-label-4 {
-    font-size: 11pt;
-    font-weight: bold;
+.dual-label-4 {
     color: hsl(120, 60%, 90%);    
     text-shadow: -0.15em 0.15em 0.01em hsl(208, 35%, 8%);
-    transition-property: 'text-shadow', 'color';
-    transition-duration: 3s;
 }
-.small-dual-label-5 {
-    font-size: 11pt;
-    font-weight: bold;
+.dual-label-5 {
     color: hsl(170, 70%, 85%);
     text-shadow: -0.1em -0.15em 0.01em hsl(208, 35%, 8%);
-    transition-property: 'text-shadow', 'color';
-    transition-duration: 3s;
 }
-.small-dual-label-6 {
-    font-size: 11pt;
-    font-weight: bold;
+.dual-label-6 {
     color: hsl(245, 40%, 90%);
     text-shadow: -0.2em -0.1em 0.01em hsl(208, 35%, 8%);
-    transition-property: 'text-shadow', 'color';
-    transition-duration: 3s;
 }
 </style>
 
@@ -193,7 +188,7 @@ export default {
     /* border: 2px solid #e6e6e6; */
     
     border-radius: 2rem; padding: 15px; margin-bottom: 2rem;
-    box-shadow: inset 0 2rem 2rem 1rem rgba(0,0,0,0.7);
+    box-shadow: inset 0 1rem 1rem 0.5rem rgba(0,0,0,0.6);
 
     background-size: cover;
     background-position-y: bottom;
@@ -207,7 +202,7 @@ export default {
     margin: 20px;
     text-align: center;
     position: relative;
-    
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     
     /* 
     background-image: url('mp3/stochastic recovery 20x6/cover-art-stochastic-recovery-20x6-album.jpg');
@@ -230,27 +225,35 @@ export default {
     opacity: 60%;
 
     font-size: 200%;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    
     color: hsl(209, 35%, 95%);
     text-shadow: 0.15em 0.58em 0.01em rgba(15, 15, 80, 0.8);
     font-weight: bolder;
 }
 .song-label {
-    color: hsl(208, 65%, 65%);
-    text-shadow: 0.2em 0.2em 0.01em hsl(208, 35%, 8%);
-    font-weight: bold;
+    font-size: 17pt;
+    /* color: hsl(208, 65%, 65%);
+    text-shadow: 0.2em 0.2em 0.01em hsl(208, 35%, 8%); */
+    font-weight: bolder;
 }
 .song-title {
-    
+    font-size: 17pt;
+    /* color: hsl(208, 65%, 65%);
+    text-shadow: 0.2em 0.2em 0.01em hsl(208, 35%, 8%); */
+    font-weight: bolder;
 }
 .song-artist {
     opacity: 75%;
+    font-size: 14pt;
+    /* color: hsl(208, 65%, 65%);
+    text-shadow: 0.2em 0.2em 0.01em hsl(208, 35%, 8%); */
+    font-weight: bolder;
 }
 
 .playlist-section {
-    padding: 0.5em 0.5em 5em 0.5em;
+    padding: 0.5em 0.5em 0.5em 0.5em;
     border-radius: 2rem; 
-    box-shadow: inset 0 2rem 2rem 1rem rgba(0,0,0,0.7);
+    box-shadow: inset 0 1rem 1rem 0.5rem rgba(0,0,0,0.6);
     background-size: 100% auto;
     background-position-y: 80%;
     background-repeat: no-repeat;
@@ -259,8 +262,48 @@ export default {
     background-position-x: center;
     background-position-y: bottom;
     background-attachment: fixed; 
-    background-image: url('/mp3/stochastic recovery 20x6/cover-art-stochastic-recovery-20x6-album.jpg');
+    background-image: url('/mp3/stochastic recovery 20x6/cover-art-stochastic-recovery-20x6-album.jpg');    
 }
+
+.playlist-section .song-list {
+    /* limit vertical height with scroll */
+    max-height: 20em;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 5px;
+    margin-bottom: 1em;
+
+    /* scrollbar-width: 0.5; /* Hides scrollbar in Firefox and modern Chrome/Edge */
+    /* scrollbar-color: rgba(255,255,255,0.5); /* Mutes colors in Firefox */
+}
+.playlist-section .song-list::-webkit-scrollbar {
+  /* width: 1em; /* Hides vertical scrollbar width */
+  /* height: 0;  Hides horizontal scrollbar height */
+}
+
+.playlist-section .song-list::-webkit-scrollbar {
+    height: 12px;
+    width: 12px;
+    background: rgba(30,30,30,.3);
+}
+
+.playlist-section .song-list::-webkit-scrollbar-thumb {
+    background: rgba(206, 228, 248, 0.664);
+    -webkit-border-radius: 1ex;
+    -webkit-box-shadow: 0px 1px 2px rgba(20, 20, 80, 0.75);
+}
+
+.playlist-section .song-list::-webkit-scrollbar-corner {
+    background: rgba(30,30,30,.5);
+}
+
+
+.song-entry {
+    border: .15em solid rgba(255,255,255,0);
+    border-collapse: collapse;
+    border-radius: 0.5em;
+}
+
 .song-selected {
     margin-top: -1.5px;
     margin-bottom: -1.5px;
