@@ -66,6 +66,11 @@ export default {
   },
   mounted() {
     this.animInterval = setTimeout(this.startAnim, 5000);
+    try {
+        document.getElementsByTagName('body')[0].classList.remove('wavy-blue-dark');
+        document.getElementsByTagName('body')[0].classList.add('wavy-blue-verydark');
+    }
+    catch (e) {}
   },
   umounted() {
     if (this.animInterval != -1) {
@@ -195,10 +200,18 @@ export default {
 </script>
 
 <style>
-.root-div {
-    font-size: 14pt;
-    font-family: 'Georgia' 'Comic Sans' 'Serif' serif;
+body.wavy-blue-verydark {
+    background-size: 100% auto;
+    background-position-y: 80%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position-x: center;
+    background-position-y: bottom;
+    background-attachment: fixed; 
+    background-image: url('/mp3/wavy-blue-verydark.jpg');
 }
+
 .small-dual-label {
     font-size: 12pt;
     font-weight: bolder;
@@ -248,12 +261,20 @@ h2.medium-dual-label {
     text-decoration: underline;
 }
 
+.root-div {
+    font-size: 14pt;
+    margin: 20px 0;
+    text-align: center;
+    position: relative;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
 .player-section-outer {
     /* border-top:  2px dashed rgba(0,0,0,0.22); */
     border-left:   .15em dashed rgba(255,255,255,0.32);
     border-right:    .15em dashed rgba(255,255,255,0.32);    
     /* border-bottom: 2px dashed rgba(0,0,0,0.22); */
-    box-shadow: .1rem 0 1.5rem -0.5rem rgba(0,0,0,.73);
+    box-shadow: 0 -0.05rem 2.5rem -0.5rem rgba(255,255,255,.18);
     border-radius: 2rem;
 }
 .player-section {
@@ -278,12 +299,6 @@ h2.medium-dual-label {
     font-size: 85%;
 }
 
-.root-div {
-    margin: 20px;
-    text-align: center;
-    position: relative;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-}
 
 .album-label {
     position: relative;
@@ -324,7 +339,7 @@ h2.medium-dual-label {
     border-left:   .15em dashed rgba(255,255,255,0.32);
     border-right:    .15em dashed rgba(255,255,255,0.32);    
     /* border-bottom: 2px dashed rgba(0,0,0,0.22); */
-    box-shadow: .1rem 0 1.5rem -0.5rem rgba(0,0,0,.73);
+    box-shadow: 0 0.05rem 2.5rem -0.5rem rgba(255,255,255,.18);
     border-radius: 2rem;
     padding: 0;
     border-collapse: collapse;

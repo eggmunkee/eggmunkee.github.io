@@ -14,7 +14,7 @@
     text-decoration: underline;
 }
 .root-div {
-    margin: 20px;
+    margin: 4em 0.5em;
     text-align: center;
     font-size: 12pt;
     font-family: 'Georgia' 'Comic Sans' 'Serif' serif;

@@ -54,6 +54,13 @@ export default {
         nextSongIndex: 0
     }
   },
+  mounted() {
+    try {
+        document.getElementsByTagName('body')[0].classList.remove('wavy-blue-verydark');
+        document.getElementsByTagName('body')[0].classList.add('wavy-blue-dark');
+    }
+    catch (e) {}
+  },
   methods: {
     playThisSong(songIndex) {
         console.log("Play song", songIndex);
@@ -148,6 +155,19 @@ export default {
 }
 </script>
 
+<style>
+body.wavy-blue-dark {
+    background-size: 100% auto;
+    background-position-y: 80%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position-x: center;
+    background-position-y: bottom;
+    background-attachment: fixed; 
+    background-image: url('/mp3/wavy-blue-dark.jpg');
+}
+</style>
 <style scoped>
 .under {
     text-decoration: underline;
