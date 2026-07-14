@@ -8,12 +8,12 @@ import initialSongList from '../data/musicPlaylist_2025.json';
 
 
 <template>
-<div class="root-div">
-    <h1 class="under">EGGMUNKEE MUSIC</h1>
+<div class="root-div">    
     <div class="player-section" style="border: 2px solid #e6e6e6; border-radius: 2rem; padding: 15px; margin-bottom: 2rem;" >
+        <h4 class="under inner-title">EGGMUNKEE MUSIC</h4>
         <vue-audio-player ref="audioPlayer"
             :audio-list="songList"
-            theme-color="hsl(208, 75%, 59%)"
+            theme-color="hsl(208, 75%, 80%)"
             :before-play="playNext"
             :progress-interval="500"
         ></vue-audio-player>
@@ -119,6 +119,7 @@ export default {
 .under {
     text-decoration: underline;
 }
+.inner-title {margin-bottom: .5em; margin-top: .5em;}
 .small-label {
     font-size: 85%;
 }
@@ -192,6 +193,6 @@ export default {
     border: .15em dashed white;
     border-collapse: collapse;
     background: rgba(72, 156, 229, 0.25);
-    border-radius: 0.5em;
+    border-radius: 0.75em;
 }
 </style>

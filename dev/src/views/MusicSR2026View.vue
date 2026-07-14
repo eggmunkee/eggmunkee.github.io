@@ -9,7 +9,6 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
 
 <template>
 <div class="root-div">
-    <h3 class="under">EGGMUNKEE MUSIC</h3>
     <div class="player-section">
         <div class="album-label">
             <span class="album-name" v-show="currentSongAlbum">{{currentSongAlbum}}</span>
@@ -162,6 +161,7 @@ export default {
 .small-dual-label {
     font-size: 12pt;
     font-weight: bold;
+    line-height: 1.3;
     transition-property: 'text-shadow', 'color';
     transition-duration: 3s;
 }
@@ -169,6 +169,7 @@ export default {
 .medium-dual-label {
     font-size: 14pt;
     font-weight: bold;
+    line-height: 1.1;
     transition-property: 'text-shadow', 'color';
     transition-duration: 3s;
 }
@@ -240,7 +241,7 @@ export default {
 }
 .album-label > span {
     position: relative;
-    top: -0.6em;
+    top: -0.35em;
     opacity: 60%;
 
     font-size: 200%;
@@ -248,6 +249,7 @@ export default {
     color: hsl(209, 35%, 95%);
     text-shadow: 0.15em 0.58em 0.01em rgba(15, 15, 80, 0.8);
     font-weight: bolder;
+    line-height: 0.85;
 }
 .song-label {
     font-size: 17pt;
@@ -260,6 +262,7 @@ export default {
     /* color: hsl(208, 65%, 65%);
     text-shadow: 0.2em 0.2em 0.01em hsl(208, 35%, 8%); */
     font-weight: bolder;
+    line-height: 1.1;
 }
 .song-artist {
     opacity: 75%;
@@ -329,7 +332,7 @@ export default {
     border: .15em dashed white;
     border-collapse: collapse;
     background: rgba(72, 156, 229, 0.25);
-    border-radius: 0.5em;
+    border-radius: 0.75em;
 }
 
 </style>
