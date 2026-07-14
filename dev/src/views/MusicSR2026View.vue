@@ -32,7 +32,7 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
         <div class="playlist-section">
             <h2 class="medium-dual-label" :class="songStyle(0, false)">
                 Songs ({{songList.length}})
-                <label class="small-dual-label" :class="songStyle(4, false)"><a href="#" @click.prevent="shuffleTracks">Shuffle</a></label>
+                <label><a href="#" class="small-dual-label" :class="songStyle(5, false)" style="color: rgb(100, 156, 200)" @click.prevent="shuffleTracks">Shuffle</a></label>
             </h2>
             <div class="song-list" ref="songContainer">
                 <div v-for="(song, songIndex) in songList" :key="song.src" :class="songContainerClass(songIndex)">
@@ -326,10 +326,13 @@ h2.medium-dual-label {
     /* border-bottom: 2px dashed rgba(0,0,0,0.22); */
     box-shadow: .1rem 0 1.5rem -0.5rem rgba(0,0,0,.73);
     border-radius: 2rem;
+    padding: 0;
+    border-collapse: collapse;
 }
 .playlist-section {
-        
-    padding: 0.5em 0 0.5em 0.5em;
+    margin: 0;
+    border-collapse: collapse;
+    padding: 0.5em 0 0.75em 0.5em;
     border-radius: 2rem; 
     
     box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.5);
@@ -355,7 +358,7 @@ h2.medium-dual-label {
 .playlist-section .song-list::-webkit-scrollbar {
     height: 12px;
     width: 12px;
-    background: rgba(30,30,30,.3);
+    background: rgba(20, 50, 80, 0.233);
 }
 
 .playlist-section .song-list::-webkit-scrollbar-thumb {
@@ -385,7 +388,7 @@ h2.medium-dual-label {
     border-bottom: .15em dashed rgba(240,240,255,0.7);
     border-collapse: collapse;
     box-shadow: inset 0 0 3em -1em rgba(59, 127, 187, 0.75);
-    background: rgba(100, 156, 200, 0.3);
+    background: rgba(100, 156, 200, 0.25);
     border-radius: 0.75em;
 }
 
