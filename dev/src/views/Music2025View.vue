@@ -142,7 +142,7 @@ export default {
 }
 .song-title {
     color: hsl(208, 75%, 80%);
-    font-weight: bold;
+    font-weight: bolder;
 }
 .song-artist {
     color: hsl(208, 75%, 80%);
@@ -161,7 +161,7 @@ export default {
     overflow-x: hidden;
     overflow-y: auto;
     padding: 5px;
-    margin-bottom: 1em;
+    margin: 0.1em 0.05em 0.5em 0.05em;
 }
 
 .playlist-section .song-list::-webkit-scrollbar {
@@ -185,11 +185,13 @@ export default {
     border: .15em solid rgba(255,255,255,0);
     border-collapse: collapse;
     border-radius: 0.5em;
+    margin-top: -.075em;
+    margin-bottom: -.075em;
 }
 
 .song-selected {
-    margin-top: -1.5px;
-    margin-bottom: -1.5px;
+    margin-top: 0;
+    margin-bottom: 0;
     border: .15em dashed white;
     border-collapse: collapse;
     background: rgba(72, 156, 229, 0.25);

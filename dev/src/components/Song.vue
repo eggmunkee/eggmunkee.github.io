@@ -57,6 +57,9 @@ defineProps({
     .song-cont > .song-player {
         opacity: 1;
     }
+    .song-title {
+        line-height: 1.2;
+    }
 
     .song-player > audio::-webkit-media-controls-panel {
       color: rgba(30, 50, 200, 0.6);
