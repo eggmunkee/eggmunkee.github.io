@@ -11,6 +11,9 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
 <div class="root-div">
     <h3 class="under">EGGMUNKEE MUSIC</h3>
     <div class="player-section">
+        <div class="album-label">
+            <span class="album-name" v-show="currentSongAlbum">{{currentSongAlbum}}</span>
+        </div>
         <vue-audio-player ref="audioPlayer"
             :audio-list="songList"
             theme-color="hsl(208, 75%, 89%)"
