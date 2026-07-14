@@ -7,36 +7,39 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
 
 <template>
 <div class="root-div">
-    <div class="player-section">
-        <div class="album-label">
-            <span class="album-name" v-show="currentSongAlbum">{{currentSongAlbum}}</span>
-        </div>
-        <vue-audio-player ref="audioPlayer"
-            :audio-list="songList"
-            theme-color="hsl(208, 75%, 89%)"
-            :before-play="playNext"
-            :progress-interval="500"
-            @pause="playEnded"
-        ></vue-audio-player>
-        <div class="song-label">
-            <div class="song-title medium-dual-label" :class="songStyle(1, false)">{{currentSongTitle}}</div>
-            <div class="song-artist medium-dual-label" :class="songStyle(5, false)">
-                <span v-show="currentSongArtist">by {{currentSongArtist}}</span>
+    <div class="player-section-outer">
+        <div class="player-section">
+            <div class="album-label">
+                <span class="album-name" v-show="currentSongAlbum">{{currentSongAlbum}}</span>
+            </div>
+            <vue-audio-player ref="audioPlayer"
+                :audio-list="songList"
+                theme-color="hsl(208, 75%, 89%)"
+                :before-play="playNext"
+                :progress-interval="500"
+                @pause="playEnded"
+            ></vue-audio-player>
+            <div class="song-label">
+                <div class="song-title medium-dual-label" :class="songStyle(1, false)">{{currentSongTitle}}</div>
+                <div class="song-artist medium-dual-label" :class="songStyle(5, false)">
+                    <span v-show="currentSongArtist">by {{currentSongArtist}}</span>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="playlist-section">
-        <h2 class="medium-dual-label" :class="songStyle(0, false)">
-            Songs ({{songList.length}})
-            <label class="small-dual-label" :class="songStyle(4, false)"><a href="#" @click.prevent="shuffleTracks">Shuffle</a></label>
-        </h2>
-        <div class="song-list" ref="songContainer">
-            <div v-for="(song, songIndex) in songList" :key="song.src" :class="songContainerClass(songIndex)">
-                <Song :url="song.src" :title="song.title" :title-class="songStyle(songIndex, true)" :muted="true" @title-dblclick="playThisSong(songIndex)" />
-            </div>
+    <div class="playlist-section-outer">
+        <div class="playlist-section">
+            <h2 class="medium-dual-label" :class="songStyle(0, false)">
+                Songs ({{songList.length}})
+                <label class="small-dual-label" :class="songStyle(4, false)"><a href="#" @click.prevent="shuffleTracks">Shuffle</a></label>
+            </h2>
+            <div class="song-list" ref="songContainer">
+                <div v-for="(song, songIndex) in songList" :key="song.src" :class="songContainerClass(songIndex)">
+                    <Song :url="song.src" :title="song.title" :title-class="songStyle(songIndex, true)" :muted="true" @title-dblclick="playThisSong(songIndex)" />
+                </div>
+            </div>            
         </div>
-        
     </div>
 </div>
 </template>
@@ -131,6 +134,8 @@ export default {
             this.currentSongArtist = song.artist || ' ';
             this.currentSongAlbum = song.album || ' ';
             this.scrollCurrentSongIntoView();
+            
+            
         } catch (e) {
             this.currentSongTitle = 'Unknown';
             this.currentSongArtist = ' ';
@@ -138,7 +143,7 @@ export default {
             this.currentSongIndex = 0;
         }
 
-        next() // Start play
+        this.$nextTick(next(true));
     },
     scrollCurrentSongIntoView() {
         try {
@@ -201,6 +206,9 @@ export default {
     transition-duration: 3s;
 }
 
+h2.medium-dual-label {
+    padding: .5em 0 .25em 0;
+}
 .medium-dual-label {
     font-size: 14pt;
     font-weight: bolder;
@@ -240,13 +248,30 @@ export default {
     text-decoration: underline;
 }
 
+.player-section-outer {
+    /* border-top:  2px dashed rgba(0,0,0,0.22); */
+    border-left:   .15em dashed rgba(255,255,255,0.32);
+    border-right:    .15em dashed rgba(255,255,255,0.32);    
+    /* border-bottom: 2px dashed rgba(0,0,0,0.22); */
+    box-shadow: .1rem 0 1.5rem -0.5rem rgba(0,0,0,.73);
+    border-radius: 2rem;
+}
 .player-section {
-    border-radius: 2rem; padding: 15px; margin-bottom: 2rem;
+    border-radius: 2rem; 
+    padding: 15px; 
+    margin-bottom: 2rem;
     box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.5);
+
     background-size: cover;
     background-position-y: bottom;
     background-attachment: fixed;    
     background-image: url('/mp3/stochastic recovery 20x6/cover-art-stochastic-recovery-20x6-album.jpg');
+
+    /*border-right:   2px dashed rgba(0,0,0,0.82);
+    border-left:  2px dashed rgba(255,255,255,0.92);
+    border-bottom:    2px dashed rgba(255,255,255,0.92);    
+    border-top: 2px dashed rgba(0,0,0,0.82);*/
+    
 }
 
 .small-label {
@@ -296,9 +321,19 @@ export default {
     font-weight: bolder;
 }
 
+.playlist-section-outer {
+    /* border-top:  2px dashed rgba(0,0,0,0.22); */
+    border-left:   .15em dashed rgba(255,255,255,0.32);
+    border-right:    .15em dashed rgba(255,255,255,0.32);    
+    /* border-bottom: 2px dashed rgba(0,0,0,0.22); */
+    box-shadow: .1rem 0 1.5rem -0.5rem rgba(0,0,0,.73);
+    border-radius: 2rem;
+}
 .playlist-section {
-    padding: 0.5em 0.5em 0.5em 0.5em;
+        
+    padding: 0.5em 0 0.5em 0.5em;
     border-radius: 2rem; 
+    
     box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.5);
     background-size: 100% auto;
     background-position-y: 80%;
@@ -316,8 +351,7 @@ export default {
     max-height: 20em;
     overflow-x: hidden;
     overflow-y: auto;
-    padding: 5px;
-    margin-bottom: 1em;
+    padding: 5px 5px 0 5px;
 }
 
 .playlist-section .song-list::-webkit-scrollbar {
@@ -347,9 +381,13 @@ export default {
 .song-selected {
     margin-top: 0;
     margin-bottom: 0;
-    border: .15em dashed white;
+    border-right-width: 0;
+    border-left-width: 0;
+    border-top:    .15em dashed rgba(240,240,255,0.7);
+    border-bottom: .15em dashed rgba(240,240,255,0.7);
     border-collapse: collapse;
-    background: rgba(72, 156, 229, 0.25);
+    box-shadow: inset 0 0 3em -1em rgba(59, 127, 187, 0.75);
+    background: rgba(100, 156, 200, 0.3);
     border-radius: 0.75em;
 }
 

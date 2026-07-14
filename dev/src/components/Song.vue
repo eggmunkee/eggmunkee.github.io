@@ -30,11 +30,16 @@ const titleDblClick = () => {
   // Emit event with payload
   emit('title-dblclick');
 };
+const antiSelectHandler = (event) => {
+  if (event.detail > 1) {
+    event.preventDefault();
+  }
+};
 </script>
 
 <template>
 <div class="song-cont">
-    <div class="song-title" @dblclick="titleDblClick">
+    <div class="song-title" @dblclick="titleDblClick" @mousedown="antiSelectHandler">
       <span :class="titleClass">{{title}}</span>
       <span v-if="album">
         [{{album}}]
