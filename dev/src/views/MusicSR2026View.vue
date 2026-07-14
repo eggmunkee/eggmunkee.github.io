@@ -291,13 +291,11 @@ h2.medium-dual-label {
     border-radius: 0.5em;
 }
 
-.album-label > span {
+.album-label > .album-name {
     position: relative;
     top: -0.35em;
     opacity: 60%;
-
-    font-size: 200%;
-    
+    font-size: 200%;  
     color: hsl(209, 35%, 95%);
     text-shadow: 0.15em 0.58em 0.01em rgba(15, 15, 80, 0.8);
     font-weight: bolder;
