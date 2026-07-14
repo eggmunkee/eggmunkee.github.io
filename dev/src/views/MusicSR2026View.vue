@@ -5,8 +5,6 @@ import VueAudioPlayer from '@liripeng/vue-audio-player'
 import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json';
 </script>
 
-
-
 <template>
 <div class="root-div">
     <div class="player-section">
@@ -18,6 +16,7 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
             theme-color="hsl(208, 75%, 89%)"
             :before-play="playNext"
             :progress-interval="500"
+            @pause="playEnded"
         ></vue-audio-player>
         <div class="song-label">
             <div class="song-title medium-dual-label" :class="songStyle(1, false)">{{currentSongTitle}}</div>
@@ -34,7 +33,7 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
         </h2>
         <div class="song-list" ref="songContainer">
             <div v-for="(song, songIndex) in songList" :key="song.src" :class="songContainerClass(songIndex)">
-                <Song :url="song.src" :title="song.title" :title-class="songStyle(songIndex, true)" :muted="true" />
+                <Song :url="song.src" :title="song.title" :title-class="songStyle(songIndex, true)" :muted="true" @title-dblclick="playThisSong(songIndex)" />
             </div>
         </div>
         
@@ -43,9 +42,6 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
 </template>
 
 <script>
-
-
-
 export default {
   data() {
     return {
@@ -59,7 +55,10 @@ export default {
         currentSongArtist: 'eggmunkee',
         currentSongAlbum: 'STOCHASTIC RECOVERY 20x6',
         // Configuration
-        songList: initialSongList
+        songList: initialSongList,
+        // play next state
+        queueSongByIndex: false,
+        nextSongIndex: 0
     }
   },
   mounted() {
@@ -85,6 +84,43 @@ export default {
         this.animFrame += 1;
         if (this.animFrame >= this.maxFrames)
             this.animFrame = 0;
+    },
+    playThisSong(songIndex) {
+        console.log("Play song", songIndex);
+        try {
+            let player = this.$refs['audioPlayer'];
+            if (player.currentPlayIndex != songIndex) {
+                this.queueSongByIndex = true;
+                this.nextSongIndex = songIndex;
+                player.pause();
+                //this.playEnded();
+            }
+            else {
+                player.play();
+            }
+        }
+        catch (e) {
+            console.error(e);
+        }
+    },
+    playStarted() {
+    },
+    playEnded() {
+        if (this.queueSongByIndex) {
+            this.$nextTick(function() {
+            try
+            {
+                let player = this.$refs['audioPlayer'];
+                if (player) {
+                    player.currentPlayIndex = this.nextSongIndex - 1;
+                    player.playNext();
+                }
+                this.queueSongByIndex = false;
+                this.nextSongIndex = 0;
+            }
+            catch (e) { console.error(e); }
+            });
+        }
     },
     playNext(next) {
         try {
@@ -203,41 +239,33 @@ export default {
 .under {
     text-decoration: underline;
 }
+
 .player-section {
-    /* border: 2px solid #e6e6e6; */
-    
     border-radius: 2rem; padding: 15px; margin-bottom: 2rem;
     box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.5);
-
     background-size: cover;
     background-position-y: bottom;
     background-attachment: fixed;    
     background-image: url('/mp3/stochastic recovery 20x6/cover-art-stochastic-recovery-20x6-album.jpg');
 }
+
 .small-label {
     font-size: 85%;
 }
+
 .root-div {
     margin: 20px;
     text-align: center;
     position: relative;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    
-    /* 
-    background-image: url('mp3/stochastic recovery 20x6/cover-art-stochastic-recovery-20x6-album.jpg');
-    */
 }
-.album-label {
-    
-    
-    
 
+.album-label {
     position: relative;
-    
     padding: 0.5em;
     border-radius: 0.5em;
-    
 }
+
 .album-label > span {
     position: relative;
     top: -0.35em;
@@ -250,24 +278,21 @@ export default {
     font-weight: bolder;
     line-height: 0.85;
 }
+
 .song-label {
     font-size: 17pt;
-    /* color: hsl(208, 65%, 65%);
-    text-shadow: 0.2em 0.2em 0.01em hsl(208, 35%, 8%); */
     font-weight: bolder;
 }
+
 .song-title {
     font-size: 17pt;
-    /* color: hsl(208, 65%, 65%);
-    text-shadow: 0.2em 0.2em 0.01em hsl(208, 35%, 8%); */
     font-weight: bolder;
     line-height: 1.1;
 }
+
 .song-artist {
     opacity: 75%;
     font-size: 14pt;
-    /* color: hsl(208, 65%, 65%);
-    text-shadow: 0.2em 0.2em 0.01em hsl(208, 35%, 8%); */
     font-weight: bolder;
 }
 
@@ -293,13 +318,6 @@ export default {
     overflow-y: auto;
     padding: 5px;
     margin-bottom: 1em;
-
-    /* scrollbar-width: 0.5; /* Hides scrollbar in Firefox and modern Chrome/Edge */
-    /* scrollbar-color: rgba(255,255,255,0.5); /* Mutes colors in Firefox */
-}
-.playlist-section .song-list::-webkit-scrollbar {
-  /* width: 1em; /* Hides vertical scrollbar width */
-  /* height: 0;  Hides horizontal scrollbar height */
 }
 
 .playlist-section .song-list::-webkit-scrollbar {
@@ -317,7 +335,6 @@ export default {
 .playlist-section .song-list::-webkit-scrollbar-corner {
     background: rgba(30,30,30,.5);
 }
-
 
 .song-entry {
     border: .15em solid rgba(255,255,255,0);

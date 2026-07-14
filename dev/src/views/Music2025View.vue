@@ -5,17 +5,16 @@ import VueAudioPlayer from '@liripeng/vue-audio-player'
 import initialSongList from '../data/musicPlaylist_2025.json';
 </script>
 
-
-
 <template>
 <div class="root-div">    
-    <div class="player-section" style="border: 2px solid #e6e6e6; border-radius: 2rem; padding: 15px; margin-bottom: 2rem;" >
+    <div class="player-section" style="" >
         <h4 class="under inner-title">EGGMUNKEE MUSIC</h4>
         <vue-audio-player ref="audioPlayer"
             :audio-list="songList"
             theme-color="hsl(208, 75%, 80%)"
             :before-play="playNext"
             :progress-interval="500"
+            @pause="playEnded"
         ></vue-audio-player>
         <div class="song-label">
             <div class="song-title">{{currentSongTitle}}</div>
@@ -32,18 +31,14 @@ import initialSongList from '../data/musicPlaylist_2025.json';
         </h2>
         <div class="song-list" ref="songContainer">
             <div v-for="(song, songIndex) in songList" :key="song.src" :class="songContainerClass(songIndex)">
-                <Song :url="song.src" :title="song.title" :album="song.album" />
+                <Song :url="song.src" :title="song.title" :album="song.album" @title-dblclick="playThisSong(songIndex)" />
             </div>
         </div>
     </div>
 </div>
 </template>
 
-
 <script>
-
-
-
 export default {
   data() {
     return {
@@ -53,10 +48,48 @@ export default {
         currentSongArtist: 'Eggmunkee',
         currentSongAlbum: '',
         // Configuration
-        songList: initialSongList
+        songList: initialSongList,
+        // play next state
+        queueSongByIndex: false,
+        nextSongIndex: 0
     }
   },
   methods: {
+    playThisSong(songIndex) {
+        console.log("Play song", songIndex);
+        try {
+            let player = this.$refs['audioPlayer'];
+            if (player.currentPlayIndex != songIndex) {
+                this.queueSongByIndex = true;
+                this.nextSongIndex = songIndex;
+                player.pause();
+                //this.playEnded();
+            }
+            else {
+                player.play();
+            }
+        }
+        catch (e) {
+            console.error(e);
+        }
+    },
+    playEnded() {
+        if (this.queueSongByIndex) {
+            this.$nextTick(function() {
+            try
+            {
+                let player = this.$refs['audioPlayer'];
+                if (player) {
+                    player.currentPlayIndex = this.nextSongIndex - 1;
+                    player.playNext();
+                }
+                this.queueSongByIndex = false;
+                this.nextSongIndex = 0;
+            }
+            catch (e) { console.error(e); }
+            });
+        }
+    },
     playNext(next) {
         try {
             let songIdx = this.$refs['audioPlayer'].currentPlayIndex;
@@ -119,42 +152,66 @@ export default {
 .under {
     text-decoration: underline;
 }
-.inner-title {margin-bottom: .5em; margin-top: .5em;}
+
+.inner-title {
+    margin-bottom: .5em; 
+    margin-top: .5em;
+}
+
 .small-label {
     font-size: 85%;
 }
+
 .root-div {
     margin: 20px;
     text-align: center;
     font-size: 12pt;
     font-family: 'Georgia' 'Comic Sans' 'Serif' serif;
 }
+
 .player-section {
+    border: 1px solid #e6e6e6; 
+    padding: 15px; 
+    margin-bottom: 2rem;
     color: hsl(208, 75%, 80%);
     border-radius: 2rem; padding: 15px; margin-bottom: 2rem;
-    background: rgba(72, 156, 229,0.7);
+    
     box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.5);
+    background-size: cover;
+    background-position-y: bottom;
+    background-attachment: fixed;    
+    background-image: url('/mp3/wavy-blue.jpg');
 }
+
 .song-label {
     color: hsl(208, 75%, 59%);
     color: hsl(208, 75%, 80%);
     font-weight: bold;
 }
+
 .song-title {
     color: hsl(208, 75%, 80%);
     font-weight: bolder;
 }
+
 .song-artist {
     color: hsl(208, 75%, 80%);
     opacity: 75%;
     font-weight: bold;
 }
+
 .playlist-section {
+    border: 1px solid #e6e6e688; 
     padding: 0.5em 0.5em 0.5em 0.5em;
     border-radius: 2rem; 
-    background: rgba(72, 156, 229,0.5);
+    
     box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.5);
+    background-size: cover;
+    background-position-y: bottom;
+    background-attachment: fixed;    
+    background-image: url('/mp3/wavy-blue.jpg');
 }
+
 .playlist-section .song-list {
     /* limit vertical height with scroll */
     max-height: 20em;
@@ -179,7 +236,6 @@ export default {
 .playlist-section .song-list::-webkit-scrollbar-corner {
     background: rgba(30,30,30,.5);
 }
-
 
 .song-entry {
     border: .15em solid rgba(255,255,255,0);

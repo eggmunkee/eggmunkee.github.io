@@ -23,11 +23,18 @@ defineProps({
     default() { return false; }
   }
 })
+
+const emit = defineEmits(['title-dblclick']);
+
+const titleDblClick = () => {
+  // Emit event with payload
+  emit('title-dblclick');
+};
 </script>
 
 <template>
 <div class="song-cont">
-    <div class="song-title">
+    <div class="song-title" @dblclick="titleDblClick">
       <span :class="titleClass">{{title}}</span>
       <span v-if="album">
         [{{album}}]
