@@ -11,9 +11,6 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
 <div class="root-div">
     <h3 class="under">EGGMUNKEE MUSIC</h3>
     <div class="player-section">
-        <div class="album-label">
-            <span class="album-name" v-show="currentSongAlbum">{{currentSongAlbum}}</span>
-        </div>
         <vue-audio-player ref="audioPlayer"
             :audio-list="songList"
             theme-color="hsl(208, 75%, 89%)"
@@ -33,7 +30,7 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
             Songs ({{songList.length}})
             <label class="small-dual-label" :class="songStyle(4, false)"><a href="#" @click.prevent="shuffleTracks">Shuffle</a></label>
         </h2>
-        <div class="song-list">
+        <div class="song-list" ref="songContainer">
             <div v-for="(song, songIndex) in songList" :key="song.src" :class="songContainerClass(songIndex)">
                 <Song :url="song.src" :title="song.title" :title-class="songStyle(songIndex, true)" :muted="true" />
             </div>
@@ -95,6 +92,7 @@ export default {
             this.currentSongTitle = song.title || ' ';
             this.currentSongArtist = song.artist || ' ';
             this.currentSongAlbum = song.album || ' ';
+            this.scrollCurrentSongIntoView();
         } catch (e) {
             this.currentSongTitle = 'Unknown';
             this.currentSongArtist = ' ';
@@ -103,6 +101,23 @@ export default {
         }
 
         next() // Start play
+    },
+    scrollCurrentSongIntoView() {
+        try {
+            const viewportHeight = window.innerHeight;
+            if (viewportHeight < 600) return;
+            let songIdx = this.currentSongIndex;
+            let sc = this.$refs["songContainer"] || null;
+            if (sc && sc.children && sc.children.length > 0) {
+                if (songIdx < 0) songIdx = 0;
+                if (songIdx >= sc.children.length) songIdx = sc.children.length - 1;
+                let scItem = sc.children[songIdx] || null;
+                if (scItem) {
+                    scItem.scrollIntoView({block: "nearest", inline: "nearest", behavior: "smooth"});
+                }
+            }
+        }
+        catch {}
     },
     shuffleTracks() {
         let songs = this.songList;
@@ -119,8 +134,9 @@ export default {
             else
                 return 'song-entry';
         }
-        catch {}
-        return 'song-entry';
+        catch {
+            return 'song-entry';
+        }
     },
     songStyle(index, addBaseClass) {
         try {
@@ -188,7 +204,7 @@ export default {
     /* border: 2px solid #e6e6e6; */
     
     border-radius: 2rem; padding: 15px; margin-bottom: 2rem;
-    box-shadow: inset 0 1rem 1rem 0.5rem rgba(0,0,0,0.6);
+    box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.5);
 
     background-size: cover;
     background-position-y: bottom;
@@ -253,7 +269,7 @@ export default {
 .playlist-section {
     padding: 0.5em 0.5em 0.5em 0.5em;
     border-radius: 2rem; 
-    box-shadow: inset 0 1rem 1rem 0.5rem rgba(0,0,0,0.6);
+    box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.5);
     background-size: 100% auto;
     background-position-y: 80%;
     background-repeat: no-repeat;
