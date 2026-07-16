@@ -218,7 +218,7 @@ body.wavy-blue-dark {
 }
 
 .root-div {
-    margin: 20px;
+    margin: 20px 0;
     text-align: center;
     font-size: 12pt;
     font-family: 'Georgia' 'Comic Sans' 'Serif' serif;
