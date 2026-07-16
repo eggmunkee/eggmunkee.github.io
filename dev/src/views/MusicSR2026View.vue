@@ -30,13 +30,21 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
     
     <div class="playlist-section-outer">
         <div class="playlist-section">
-            <h2 class="medium-dual-label" :class="songStyle(0, false)">
-                Songs ({{songList.length}})
-                <label><a href="#" class="small-dual-label" :class="songStyle(5, false)" style="color: rgb(100, 156, 200)" @click.prevent="shuffleTracks">Shuffle</a></label>
-            </h2>
+            <h3 >
+                <span class="box-shadow">
+                <span class="playlist-title medium-dual-label" :class="songStyle(3, false)" >Songs ({{songList.length}})</span>
+                </span>
+                
+                <span class="icon-cont-shadow">
+                    <a href="#" class="small-label shadow shuffle-icon" :class="songStyle(5, false)" style="color: rgb(100, 156, 200)" @click.prevent="shuffleTracks">
+                        
+                    </a>
+                </span>
+            </h3>
             <div class="song-list" ref="songContainer">
                 <div v-for="(song, songIndex) in songList" :key="song.src" :class="songContainerClass(songIndex)">
-                    <Song :url="song.src" :title="song.title" :title-class="songStyle(songIndex, true)" :muted="true" @title-dblclick="playThisSong(songIndex)" />
+                    <Song :url="song.src" :title="song.title" :title-class="songStyle(songIndex, true)" :muted="true" 
+                    :show-player="false" :show-download="true" @title-dblclick="playThisSong(songIndex)" />
                 </div>
             </div>            
         </div>
@@ -200,6 +208,10 @@ export default {
 </script>
 
 <style>
+.vue-audio-player__play-rate {
+    visibility: hidden;
+}
+
 body.wavy-blue-verydark {
     background-size: 100% auto;
     background-position-y: 80%;
@@ -405,6 +417,52 @@ h2.medium-dual-label {
     box-shadow: inset 0 0 3em -1em rgba(59, 127, 187, 0.75);
     background: rgba(100, 156, 200, 0.25);
     border-radius: 0.75em;
+}
+
+.shadow {
+    text-shadow: -0.05em 0.075em 0.5em rgba(133, 3, 3, 0.767);
+}
+
+.playlist-title {
+    font-size: 12pt;
+    padding: 0 1em 0 1em;
+    opacity: 0.8;
+}
+
+.box-shadow {
+    background: rgba(60,90,130,0.2);
+    border-radius: 0.5em;
+    box-shadow: 0 0 .3em .3em rgba(60,90,130,0.2);
+}
+
+
+.icon-cont-shadow {
+    background: rgba(60,90,130,0.3);
+    border-radius: 0.5em;
+    box-shadow: 0 0 .3em .3em rgba(60,90,130,0.3);
+}
+
+.shuffle-icon {
+  /* Set dimensions */
+  width: .8em;
+  height: .8em;
+  display: inline-block; 
+  vertical-align:-0.3vh;
+  
+  /* Set the desired color */
+  background-color: hsl(208, 75%, 80%); 
+  
+  /* Apply the image as a mask */
+  -webkit-mask-image: url('/assets/icon-shuffle.png');
+  mask-image: url('/assets/icon-shuffle.png');
+  
+  /* Ensure the mask covers the element */
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 
 </style>

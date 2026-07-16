@@ -8,7 +8,7 @@ import initialSongList from '../data/musicPlaylist_2025.json';
 <template>
 <div class="root-div">    
     <div class="player-section" style="" >
-        <h4 class="under inner-title">EGGMUNKEE MUSIC</h4>
+        <h4 class="inner-title">EGGMUNKEE MUSIC OCT 2025</h4>
         <vue-audio-player ref="audioPlayer"
             :audio-list="songList"
             theme-color="hsl(208, 75%, 80%)"
@@ -25,13 +25,20 @@ import initialSongList from '../data/musicPlaylist_2025.json';
     </div>
     
     <div class="playlist-section">
-        <h2>
-            Songs ({{songList.length}})
-            <label class="small-label"><a href="#" @click.prevent="shuffleTracks">Shuffle</a></label>
-        </h2>
+        <h3>
+            <span class="box-shadow">
+                <span class="playlist-title">Songs ({{songList.length}})</span>
+            </span>
+            <span class="icon-cont-shadow">
+                <a href="#" class="small-label shadow shuffle-icon" 
+                 style="color: rgb(100, 156, 200)" @click.prevent="shuffleTracks">                    
+                </a>
+            </span>
+        </h3>
         <div class="song-list" ref="songContainer">
             <div v-for="(song, songIndex) in songList" :key="song.src" :class="songContainerClass(songIndex)">
-                <Song :url="song.src" :title="song.title" :album="song.album" @title-dblclick="playThisSong(songIndex)" />
+                <Song :url="song.src" :title="song.title" :album="song.album" @title-dblclick="playThisSong(songIndex)"
+                    title-class="song-title-style" album-class="song-album-style" :show-player="false" :show-download="true" />
             </div>
         </div>
     </div>
@@ -44,11 +51,12 @@ export default {
     return {
         // State        
         currentSongIndex: 0,
-        currentSongTitle: '',
-        currentSongArtist: 'Eggmunkee',
-        currentSongAlbum: '',
+        currentSongTitle: 'Collection from October 2025',
+        currentSongArtist: '',
+        currentSongAlbum: 'Assorted',
         // Configuration
         songList: initialSongList,
+        initialSongs: initialSongList,
         // play next state
         queueSongByIndex: false,
         nextSongIndex: 0
@@ -103,7 +111,7 @@ export default {
             let song = this.songList[songIdx];
             this.currentSongIndex = songIdx;
             this.currentSongTitle = song.title || ' ';
-            this.currentSongArtist = song.artist || ' ';
+            // this.currentSongArtist = song.artist || ' ';
             this.currentSongAlbum = song.album || ' ';
             this.scrollCurrentSongIntoView();
         } catch (e) {
@@ -132,6 +140,19 @@ export default {
         }
         catch {}
     },
+    originalOrderTracks() {
+        console.warn("ordering...");
+        // let songs = this.initialSongs;
+        // while( this.songList.length > 1) {
+        //     this.songList.pop();
+        // };
+        // this.$nextTick(function() {
+        // for (let i = 0; i < songs.length; i++) {
+        //     this.songList.push(songs[i]);
+        // }
+        // });
+        //this.songList = this.initialSongs; //.splice(0, this.initialSongs.length, [...this.initialSongs]);
+    },
     shuffleTracks() {
         let songs = this.songList;
         for (let i = songs.length - 1; i > 0; i--) {
@@ -156,6 +177,9 @@ export default {
 </script>
 
 <style>
+.vue-audio-player__play-rate {
+    visibility: hidden;
+}
 body.wavy-blue-dark {
     background-size: 100% auto;
     background-position-y: 80%;
@@ -167,6 +191,17 @@ body.wavy-blue-dark {
     background-attachment: fixed; 
     background-image: url('/mp3/wavy-blue-dark.jpg');
 }
+.song-title-style {
+    color: hsl(208, 75%, 85%);
+    font-size: 12pt;
+    text-shadow: -0.05em 0.075em 0.5em rgba(0,0,0,.5);
+}
+.song-album-style {
+    color: hsl(208, 55%, 75%);
+    font-size: 10pt;
+    margin-left: 0.5em;
+    text-shadow: -0.05em 0.075em 0.5em rgba(0,0,0,.5);
+}
 </style>
 <style scoped>
 .under {
@@ -174,7 +209,7 @@ body.wavy-blue-dark {
 }
 
 .inner-title {
-    margin-bottom: .5em; 
+    margin-bottom: 1em; 
     margin-top: .5em;
 }
 
@@ -195,6 +230,8 @@ body.wavy-blue-dark {
     margin-bottom: 2rem;
     color: hsl(208, 75%, 80%);
     border-radius: 2rem; padding: 15px; margin-bottom: 2rem;
+
+    text-shadow: -0.05em 0.05em 0.5em rgba(0,0,0,.5);
     
     box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.5);
     background-size: cover;
@@ -222,7 +259,7 @@ body.wavy-blue-dark {
 
 .playlist-section {
     border: 1px solid #e6e6e688; 
-    padding: 0.5em 0.5em 0.5em 0.5em;
+    padding: 0.15em 0.15em 0.15em 0.15em;
     border-radius: 2rem; 
     
     box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.5);
@@ -232,13 +269,19 @@ body.wavy-blue-dark {
     background-image: url('/mp3/wavy-blue.jpg');
 }
 
+.playlist-title {
+    font-size: 12pt;
+    padding: 0 1em 0 1em;
+}
+
 .playlist-section .song-list {
     /* limit vertical height with scroll */
-    max-height: 20em;
+    max-height: 28em;
     overflow-x: hidden;
     overflow-y: auto;
     padding: 5px;
-    margin: 0.1em 0.05em 0.5em 0.05em;
+    /*margin: 0.1em 0.05em 0.5em 0.05em;*/
+    margin: 0.1em 0.5em 0.5em 0.5em;
 }
 
 .playlist-section .song-list::-webkit-scrollbar {
@@ -263,6 +306,7 @@ body.wavy-blue-dark {
     border-radius: 0.5em;
     margin-top: -.075em;
     margin-bottom: -.075em;
+    padding: 0.25em 0 0.25em 0;
 }
 
 .song-selected {
@@ -272,5 +316,75 @@ body.wavy-blue-dark {
     border-collapse: collapse;
     background: rgba(72, 156, 229, 0.25);
     border-radius: 0.75em;
+}
+
+
+.playlist-title {
+    font-size: 12pt;
+    padding: 0 1em 0 1em;
+    opacity: 0.8;
+}
+
+.shadow {
+    text-shadow: -0.05em 0.05em 0.5em rgba(0,0,0,.5);
+}
+
+
+.box-shadow {
+    background: rgba(60,90,130,0.2);
+    border-radius: 0.5em;
+    box-shadow: 0 0 .3em .3em rgba(60,90,130,0.2);
+}
+
+
+.icon-cont-shadow {
+    background: rgba(60,90,130,0.3);
+    border-radius: 0.5em;
+    box-shadow: 0 0 .2em .3em rgba(60,90,130,0.3);
+}
+
+.shuffle-icon {
+  /* Set dimensions */
+  width: 0.8em;
+  height: 0.8em;
+  display: inline-block;
+  vertical-align: baseline;
+  
+  /* Set the desired color */
+  background-color: hsl(208, 75%, 80%); 
+  
+  /* Apply the image as a mask */
+  -webkit-mask-image: url('/assets/icon-shuffle.png');
+  mask-image: url('/assets/icon-shuffle.png');
+  
+  /* Ensure the mask covers the element */
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+.order-icon {
+  /* Set dimensions */
+  width: 0.8em;
+  height: 0.8em;
+  display: inline-block;
+  vertical-align: baseline;
+  
+  /* Set the desired color */
+  background-color: hsl(208, 75%, 80%); 
+  
+  /* Apply the image as a mask */
+  -webkit-mask-image: url('/assets/icon-order.png');
+  mask-image: url('/assets/icon-order.png');
+  
+  /* Ensure the mask covers the element */
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 </style>
