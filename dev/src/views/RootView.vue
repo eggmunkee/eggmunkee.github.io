@@ -74,7 +74,7 @@ export default {
     margin: 4em 0.5em;
     text-align: center;
     font-size: 12pt;
-    font-family: 'Georgia' 'Comic Sans' 'Serif' serif;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     min-height: calc(min(50vh,400px));
 }
 
@@ -88,7 +88,7 @@ h1, h2 {
   padding: .25em;
   border-radius: 0.5em;
   font-weight: bolder;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   text-shadow: 0 0 0.25em rgb(40 20 10);
 }
 

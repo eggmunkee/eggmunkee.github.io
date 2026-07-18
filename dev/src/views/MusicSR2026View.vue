@@ -73,9 +73,30 @@ export default {
         // bg ui state
         currentBgIndex: 0,
         bgAnimFrame: 0,
-        bgAnimIncrCount: 4,
-        bgCount: 7,
-        bgLayerToggle: 1 // 1 is layer 1, 2 is layer 2 last updated
+        bgAnimIncrCount: 9,
+        bgCount: 16,
+        bgLayerToggle: 1, // 1 is layer 1, 2 is layer 2 last updated
+        bgColorIdx: 0,
+        bgColors: [
+            'rgba(0,0,0,0.35)', 
+            'rgba(255,0,0,.35)', 
+            'rgba(90,120,180,.35)', 
+            'rgba(50,30,220,.3)', 
+            'rgba(0,255,60,0.35)', 
+            'rgba(0,0,0,0.75)', 
+            'rgba(0,60,120,0.2)', 
+            'rgba(50,30,220,.5)', 
+            'rgba(190,170,240,0.3)',
+            'rgba(255,255,255,0.0)',
+            'rgba(255,255,80,0.3)', 
+            'rgba(255,255,0,0.5)', 
+            'rgba(0,120,255,0.4)', 
+            'rgba(0,255,0,0.3)', 
+            'rgba(255,60,0,.15)', 
+            'rgba(220,255,0,0.2)', 
+            'rgba(190,255,255,0.3)',
+            'rgba(125,255,255,0.0)'
+        ]
     }
   },
   mounted() {
@@ -112,7 +133,7 @@ export default {
         //cl.add('bg-dark-07');
         
         setTimeout(function() { 
-            overlay3.classList.add('overlay-z3-12');
+            overlay3.classList.add('overlay-z3-25');
         }, 3000);
         //document.getElementsByTagName('body')[0].classList.add('bg-wavy-blue-verydark');
     }
@@ -211,6 +232,17 @@ export default {
         }
         
     },
+    updateColorTint() {
+        let color = this.bgColors[this.bgColorIdx];
+        this.bgColorIdx += 1;
+        if (this.bgColorIdx >= this.bgColors.length)
+            this.bgColorIdx = 0;
+        try {
+            let overlay3 = document.getElementsByClassName('overlay-z3')[0];
+            overlay3.style.backgroundColor = color;
+        }
+        catch (e) {}
+    },
     incrementAnim() {
         this.animFrame += 1;
         if (this.animFrame >= this.maxFrames) {
@@ -221,6 +253,7 @@ export default {
             this.bgAnimFrame = 0;
             this.incrementBgAnim();
         }
+        this.updateColorTint();
     },
     playThisSong(songIndex) {
         console.log("Play song", songIndex);
@@ -343,7 +376,7 @@ export default {
     background-attachment: fixed; 
     opacity: 1;
     transition-property: opacity;
-    transition-duration: 12s;
+    transition-duration: 30s;
 }
 
 .bg-wavy-blue-verydark {
@@ -361,32 +394,53 @@ export default {
     background-image: url('/assets/art/wavy-haze-verydark.jpg');
 }
 .bg-dark-02 {
-    background-image: url('/assets/art/stochast/image-vAE8r.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+    background-image: url('/assets/art/stochast/image-vAE8r.jpg');
 }
 .bg-dark-03 {
-    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-02.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-02.jpg');
 }
 .bg-dark-04 {
-    background-image: url('/assets/art/stochast/image-bCMMJ.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-03.jpg');
 }
 .bg-dark-05 {
-    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-03.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-07.jpg');
 }
 .bg-dark-06 {
-    background-image: url('/assets/art/stochast/image-r2aljv4yp0lrvqhcihs8ui3vv.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-01.jpg');
 }
 .bg-dark-07 {
-    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-01.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-05.jpg');
 }
 .bg-dark-08 {
-    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-01.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-08.jpg');
 }
 .bg-dark-09 {
-    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-01.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-04.jpg');
 }
 .bg-dark-10 {
-    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-01.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+    background-image: url('/assets/art/stochast/image-trwi89muff1j4k0fso08tg4sp.jpg');
 }
+.bg-dark-11 {
+    background-image: url('/assets/art/stochast/image-r2aljv4yp0lrvqhcihs8ui3vv.jpg');
+}
+.bg-dark-12 {
+    background-image: url('/assets/art/stochast/image-t6v4he54c90cu8uonjccs8a8f.jpg');
+}
+.bg-dark-13 {
+    background-image: url('/assets/art/stochast/image-jP1Z1.jpg');
+}
+.bg-dark-14 {
+    background-image: url('/assets/art/stochast/image-x40gN.jpg');
+}
+.bg-dark-15 {
+    background-image: url('/assets/art/stochast/image-txqlyrhb7u6skn1bjp1707s2v.jpg');
+}
+.bg-dark-16 {
+    background-image: url('/assets/art/stochast/cover-art-stochastic-recovery-20x6-album.jpg');
+}
+
+
+
 
 
 .small-dual-label {

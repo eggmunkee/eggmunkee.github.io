@@ -48,10 +48,15 @@ header .wrapper {
 
 nav a.router-link-exact-active {
   color: var(--color-text);
+  background-color: rgba(0,0,0,0.05);
+  box-shadow: 0 0 1em 0.5em rgba(0,0,0,0.05);
+  border: 0 solid transparent;
 }
 
 nav a.router-link-exact-active:hover {
-  background-color: transparent;
+  background-color: rgba(255,255,255,0.0);
+  box-shadow: 0 0 1em 0.5em rgba(255,255,255,0.0);
+  border: 0 solid transparent;
 }
 
 nav a {
@@ -59,8 +64,17 @@ nav a {
   padding: .5em 1em;
   border-radius: 0.5em;
   font-weight: bolder;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  text-shadow: 0 0 0.25em rgb(40 20 10);
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  text-shadow: -0.01em 0.01em 0.45em rgb(0 0 0);
+  background-color: rgba(0,0,0,0.15);
+  box-shadow: 0 0 1em 0.5em rgba(0,0,0,0.15);
+  border: 0 solid transparent;
+}
+
+nav a:hover {
+  background-color: rgba(230,230,230,0.15);
+  box-shadow: 0 0 1em 0.5em rgba(230,230,230,0.15);
+  border: 0.15em dashed white;
 }
 
 nav a:last-of-type {

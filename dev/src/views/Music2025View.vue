@@ -245,7 +245,7 @@ body.bg-wavy-blue-dark {
     margin: 20px 0;
     text-align: center;
     font-size: 12pt;
-    font-family: 'Georgia' 'Comic Sans' 'Serif' serif;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 .player-section {
