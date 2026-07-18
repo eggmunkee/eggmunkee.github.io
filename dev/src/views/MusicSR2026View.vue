@@ -22,7 +22,7 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
             <div class="song-label">
                 <div class="song-title medium-dual-label" :class="songStyle(1, false)">{{currentSongTitle}}</div>
                 <div class="song-artist medium-dual-label" :class="songStyle(5, false)">
-                    <span v-show="currentSongArtist">by {{currentSongArtist}}</span>
+                    <span v-if="false && currentSongArtist">by {{currentSongArtist}}</span>
                 </div>
             </div>
         </div>
@@ -69,18 +69,56 @@ export default {
         songList: initialSongList,
         // play next state
         queueSongByIndex: false,
-        nextSongIndex: 0
+        nextSongIndex: 0,
+        // bg ui state
+        currentBgIndex: 0,
+        bgAnimFrame: 0,
+        bgAnimIncrCount: 4,
+        bgCount: 7,
+        bgLayerToggle: 1 // 1 is layer 1, 2 is layer 2 last updated
     }
   },
   mounted() {
-    this.animInterval = setTimeout(this.startAnim, 5000);
+    this.animInterval = setTimeout(this.startAnim, 3000);
     try {
-        document.getElementsByTagName('body')[0].classList.remove('wavy-blue-dark');
-        document.getElementsByTagName('body')[0].classList.add('wavy-blue-verydark');
+        const overlay1 = document.getElementsByClassName('overlay-z1')[0];
+        const overlay2 = document.getElementsByClassName('overlay-z2')[0];
+        const overlay3 = document.getElementsByClassName('overlay-z3')[0];
+
+        // read overlay 1 and 2 bg frame state to pick up if present
+        const overlay1Frm = this.getFrameFromElem(overlay1);
+        const overlay2Frm = this.getFrameFromElem(overlay2);
+        const overlay2Transp = overlay2.classList.contains('bg-transp');
+
+        let existingFrameIndex = 0; // default to first frame - 0
+        if (overlay2Frm != -1 && !overlay2Transp) {
+            existingFrameIndex = overlay2Frm;
+        }
+        else if (overlay1Frm != -1) {
+            existingFrameIndex = overlay1Frm;
+        }
+        // set model bg index
+        this.currentBgIndex = existingFrameIndex;
+        let initialLayer1Bg = this.getBgCls(this.currentBgIndex);
+        this.removeBgClasses(overlay1);
+        let cl = overlay1.classList;
+        cl.add('bg-base');
+        cl.add(initialLayer1Bg);
+        //c1.add('bg-dark-fade');
+        cl = overlay2.classList;
+        this.removeBgClasses(overlay2);
+        cl.add('bg-base');
+        cl.add('bg-transp');
+        //cl.add('bg-dark-07');
+        
+        setTimeout(function() { 
+            overlay3.classList.add('overlay-z3-12');
+        }, 3000);
+        //document.getElementsByTagName('body')[0].classList.add('bg-wavy-blue-verydark');
     }
     catch (e) {}
   },
-  umounted() {
+  unmounted() {
     if (this.animInterval != -1) {
         if (this.animStarted) {
             clearInterval(this.animInterval);
@@ -96,10 +134,93 @@ export default {
         this.animInterval = setInterval(this.incrementAnim, 4000);
         this.animStarted = true;
     },
+    getBgCls(idx) {
+        return 'bg-dark-' + (idx+1).toString().padStart(2,"0");
+    },
+    getFrameFromElem(elem) {
+        let cl = elem.classList;
+        for (let i=0; i < cl.length; i++) {
+            let frameIndex = this.getFrameFromBgClass(cl[i]);
+            if (frameIndex != -1)
+                return frameIndex;
+        }
+        return -1;
+    },
+    getFrameFromBgClass(clsName) {
+        if (!clsName.startsWith('bg-dark-')) return -1;
+        let framePart = clsName.substring(8);
+        let frameNum = Number.parseInt(framePart);
+        if (!frameNum || isNaN(frameNum)) return -1;
+        return frameNum - 1; // Turn bg-dark-01 into Frame 0
+    },
+    incrBgIndex() {
+        this.currentBgIndex += 1;
+        if (this.currentBgIndex >= this.bgCount)
+            this.currentBgIndex = 0;
+    },
+    removeBgClasses(elem) {
+        let cl = elem.classList;
+        for (let c = 0; c < cl.length; c++) {
+            let className = cl[c];
+            if (className.startsWith('bg-')) {
+                cl.remove(className);
+                c--;
+            }
+        }
+    },
+    setupBgClasses(elem, idx) {
+        let nextClsName = this.getBgCls(idx);
+        this.removeBgClasses(elem);
+        elem.classList.add('bg-base');
+        elem.classList.add(nextClsName);
+    },
+    incrementBgAnim() {
+        // get two overlay layers
+        const overlay1 = document.getElementsByClassName('overlay-z1')[0];
+        const overlay2 = document.getElementsByClassName('overlay-z2')[0];
+        
+        this.incrBgIndex();
+
+        // go from fading to changing images
+        if (this.bgLayerToggle == 2) {
+            this.bgLayerToggle = 1;
+            
+            // Set Fade out class anim on 2nd level Overlay
+            overlay2.classList.add('bg-transp');
+            // clear and rebuild bg styles
+            this.setupBgClasses(overlay1, this.currentBgIndex);
+            // Set new bg image class on 1st level Overlay
+            // let nextClsName = this.getBgCls();
+            // // Clear bg styles and rebuild for new bg
+            // this.removeBgClasses(overlay1);
+            // overlay1.classList.add('bg-base');
+            // overlay1.classList.add(nextClsName);
+        }
+        // step into fading
+        else {
+            this.bgLayerToggle = 2;
+
+            
+            // clear and rebuild bg styles - clears transparant anim class also
+            this.setupBgClasses(overlay2, this.currentBgIndex); // (this.currentBgIndex + 5) % this.bgCount);
+            //overlay2.classList.add('bg-transp');
+            // let nextClsName = this.getBgCls();
+            // this.removeBgClasses(overlay2);
+            // overlay2.classList.add('bg-base');
+            // overlay2.classList.add(nextClsName);
+        }
+        
+    },
     incrementAnim() {
         this.animFrame += 1;
-        if (this.animFrame >= this.maxFrames)
+        if (this.animFrame >= this.maxFrames) {
             this.animFrame = 0;
+        }
+        this.bgAnimFrame += 1;
+        if (this.bgAnimFrame >= this.bgAnimIncrCount) {
+            this.bgAnimFrame = 0;
+            this.incrementBgAnim();
+        }
     },
     playThisSong(songIndex) {
         console.log("Play song", songIndex);
@@ -212,22 +333,66 @@ export default {
     visibility: hidden;
 }
 
-body.wavy-blue-verydark {
-    background-size: 100% auto;
-    background-position-y: 80%;
+
+.bg-base {
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
     background-position-x: center;
     background-position-y: bottom;
     background-attachment: fixed; 
-    background-image: url('/mp3/wavy-blue-verydark.jpg');
+    opacity: 1;
+    transition-property: opacity;
+    transition-duration: 12s;
 }
 
+.bg-wavy-blue-verydark {
+    background-image: url('/assets/art/wavy-haze-verydark.jpg'); 
+}
+
+.bg-transp {
+    opacity: 0.01;
+}
+.bg-dark-fade {
+    background: rgba(0,0,0, 0.75);
+}
+
+.bg-dark-01 {
+    background-image: url('/assets/art/wavy-haze-verydark.jpg');
+}
+.bg-dark-02 {
+    background-image: url('/assets/art/stochast/image-vAE8r.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+}
+.bg-dark-03 {
+    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-02.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+}
+.bg-dark-04 {
+    background-image: url('/assets/art/stochast/image-bCMMJ.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+}
+.bg-dark-05 {
+    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-03.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+}
+.bg-dark-06 {
+    background-image: url('/assets/art/stochast/image-r2aljv4yp0lrvqhcihs8ui3vv.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+}
+.bg-dark-07 {
+    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-01.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+}
+.bg-dark-08 {
+    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-01.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+}
+.bg-dark-09 {
+    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-01.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+}
+.bg-dark-10 {
+    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-01.jpg'); /* /assets/art/wavy-haze-verydark.jpg'); */
+}
+
+
 .small-dual-label {
-    font-size: 12pt;
+    font-size: 13pt;
     font-weight: bolder;
-    transition-property: 'text-shadow', 'color';
+    transition-property: text-shadow, color;
     transition-duration: 3s;
 }
 
@@ -238,25 +403,25 @@ h2.medium-dual-label {
     font-size: 14pt;
     font-weight: bolder;
     line-height: 1.1;
-    transition-property: 'text-shadow', 'color';
+    transition-property: text-shadow, color;
     transition-duration: 3s;
 }
 
 .dual-label-1 {
     color: hsl(209, 70%, 85%);    
-    text-shadow: -0.05em -0.2em 0.01em hsl(208, 35%, 8%);
+    text-shadow: -0.05em -0.17em 0.01em hsl(208, 35%, 8%);
 }
 .dual-label-2 {
     color: hsl(219, 70%, 85%);
-    text-shadow: -0.1em 0.2em 0.01em hsl(208, 35%, 8%);
+    text-shadow: -0.1em 0.16em 0.01em hsl(208, 35%, 8%);
 }
 .dual-label-3 {
     color: hsl(190, 75%, 90%);    
-    text-shadow: 0.15em 0.2em 0.01em hsl(208, 35%, 8%);
+    text-shadow: 0.15em 0.16em 0.01em hsl(208, 35%, 8%);
 }
 .dual-label-4 {
     color: hsl(120, 60%, 90%);    
-    text-shadow: -0.15em 0.15em 0.01em hsl(208, 35%, 8%);
+    text-shadow: -0.15em 0.13em 0.01em hsl(208, 35%, 8%);
 }
 .dual-label-5 {
     color: hsl(170, 70%, 85%);
@@ -286,7 +451,7 @@ h2.medium-dual-label {
     border-left:   .15em dashed rgba(255,255,255,0.32);
     border-right:    .15em dashed rgba(255,255,255,0.32);    
     /* border-bottom: 2px dashed rgba(0,0,0,0.22); */
-    box-shadow: 0 -0.05rem 2.5rem -0.5rem rgba(255,255,255,.18);
+    box-shadow: 0 -0.05rem 2.5rem -0.5rem rgba(0,0,0,.22);
     border-radius: 2rem;
 }
 .player-section {
@@ -296,9 +461,10 @@ h2.medium-dual-label {
     box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.5);
 
     background-size: cover;
-    background-position-y: bottom;
+    background-position-x: center;
+    background-position-y: 80%;
     background-attachment: fixed;    
-    background-image: url('/mp3/stochastic recovery 20x6/cover-art-stochastic-recovery-20x6-album.jpg');
+    background-image: url('/assets/art/stochast/cover-art-stochastic-recovery-20x6-album.jpg');
 
     /*border-right:   2px dashed rgba(0,0,0,0.82);
     border-left:  2px dashed rgba(255,255,255,0.92);
@@ -351,7 +517,7 @@ h2.medium-dual-label {
     border-left:   .15em dashed rgba(255,255,255,0.32);
     border-right:    .15em dashed rgba(255,255,255,0.32);    
     /* border-bottom: 2px dashed rgba(0,0,0,0.22); */
-    box-shadow: 0 0.05rem 2.5rem -0.5rem rgba(255,255,255,.18);
+    box-shadow: 0 0.05rem 2.5rem -0.5rem rgba(0,0,0,.22);
     border-radius: 2rem;
     padding: 0;
     border-collapse: collapse;
@@ -364,14 +530,13 @@ h2.medium-dual-label {
     
     box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.5);
     background-size: 100% auto;
-    background-position-y: 80%;
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
     background-position-x: center;
-    background-position-y: bottom;
+    background-position-y: 80%;
     background-attachment: fixed; 
-    background-image: url('/mp3/stochastic recovery 20x6/cover-art-stochastic-recovery-20x6-album.jpg');    
+    background-image: url('/assets/art/stochast/cover-art-stochastic-recovery-20x6-album.jpg');    
 }
 
 .playlist-section .song-list {

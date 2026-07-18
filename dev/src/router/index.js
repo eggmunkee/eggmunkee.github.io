@@ -19,11 +19,6 @@ const router = createRouter({
       component: () => import('../views/Music2025View.vue')
     },
     {
-      path: '/tx',
-      name: 'home',
-      component: () => import('../views/HomeView.vue')
-    },
-    {
       path: '/tx/about',
       name: 'about',
       // route level code-splitting

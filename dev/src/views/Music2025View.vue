@@ -64,12 +64,36 @@ export default {
   },
   mounted() {
     try {
-        document.getElementsByTagName('body')[0].classList.remove('wavy-blue-verydark');
-        document.getElementsByTagName('body')[0].classList.add('wavy-blue-dark');
+        document.getElementsByTagName('body')[0].classList.remove('bg-wavy-blue-verydark');
+        document.getElementsByTagName('body')[0].classList.add('bg-wavy-blue-dark');
+
+        const overlay1 = document.getElementsByClassName('overlay-z1')[0];
+        const overlay2 = document.getElementsByClassName('overlay-z2')[0];
+        const overlay3 = document.getElementsByClassName('overlay-z3')[0];
+        this.removeBgClasses(overlay3);
+        this.removeBgClasses(overlay2);
+        this.removeBgClasses(overlay1);
+        let cl = overlay1.classList;
+        cl.add('bg-base');
+        cl.add('bg-wavy-blue-dark');
+
+        setTimeout(function() { 
+            overlay3.classList.add('overlay-z3-12');
+        }, 100);
     }
     catch (e) {}
   },
   methods: {
+    removeBgClasses(elem) {
+        let cl = elem.classList;
+        for (let c = 0; c < cl.length; c++) {
+            let className = cl[c];
+            if (className.startsWith('bg-')) {
+                cl.remove(className);
+                c--;
+            }
+        }
+    },
     playThisSong(songIndex) {
         console.log("Play song", songIndex);
         try {
@@ -180,7 +204,7 @@ export default {
 .vue-audio-player__play-rate {
     visibility: hidden;
 }
-body.wavy-blue-dark {
+body.bg-wavy-blue-dark {
     background-size: 100% auto;
     background-position-y: 80%;
     background-repeat: no-repeat;
@@ -189,7 +213,7 @@ body.wavy-blue-dark {
     background-position-x: center;
     background-position-y: bottom;
     background-attachment: fixed; 
-    background-image: url('/mp3/wavy-blue-dark.jpg');
+    background-image: url('/assets/art/wavy-blue-dark.jpg');
 }
 .song-title-style {
     color: hsl(208, 75%, 85%);
@@ -237,7 +261,7 @@ body.wavy-blue-dark {
     background-size: cover;
     background-position-y: bottom;
     background-attachment: fixed;    
-    background-image: url('/mp3/wavy-blue.jpg');
+    background-image: url('/assets/art/wavy-blue.jpg');
 }
 
 .song-label {
@@ -266,7 +290,7 @@ body.wavy-blue-dark {
     background-size: cover;
     background-position-y: bottom;
     background-attachment: fixed;    
-    background-image: url('/mp3/wavy-blue.jpg');
+    background-image: url('/assets/art/wavy-blue.jpg');
 }
 
 .playlist-title {
@@ -300,6 +324,8 @@ body.wavy-blue-dark {
     background: rgba(30,30,30,.5);
 }
 
+/* Song Container Classes */
+
 .song-entry {
     border: .15em solid rgba(255,255,255,0);
     border-collapse: collapse;
@@ -318,12 +344,15 @@ body.wavy-blue-dark {
     border-radius: 0.75em;
 }
 
+/* Playlist outer UI */
 
 .playlist-title {
     font-size: 12pt;
     padding: 0 1em 0 1em;
     opacity: 0.8;
 }
+
+/* Shadowing styles */
 
 .shadow {
     text-shadow: -0.05em 0.05em 0.5em rgba(0,0,0,.5);
