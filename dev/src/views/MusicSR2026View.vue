@@ -75,7 +75,7 @@ export default {
         // bg ui state
         currentBgIndex: 0,
         bgAnimFrame: 0,
-        bgAnimIncrCount: 10, //15,
+        bgAnimIncrCount: 13, //15,
         bgCount: 54, //29,
         bgLayerToggle: 1, // 1 is layer 1, 2 is layer 2 last updated
         bgColorIdx: 0,
@@ -378,7 +378,7 @@ export default {
     background-attachment: fixed; 
     opacity: 1;
     transition-property: opacity;
-    transition-duration: 27s ; /* 30s; */
+    transition-duration: 25s ; /* 30s; */
 }
 
 .bg-wavy-blue-verydark {
