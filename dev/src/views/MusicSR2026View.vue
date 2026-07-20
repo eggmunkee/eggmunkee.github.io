@@ -118,7 +118,7 @@ export default {
         // bg ui state
         currentBgIndex: 0,
         bgAnimFrame: 0,
-        bgAnimIncrCount: 7, //13,
+        bgAnimIncrCount: 11,
         bgCount: 54,
         bgLayerToggle: 1, // 1 is layer 1, 2 is layer 2 last updated
         bgColorIdx: 0,
@@ -230,7 +230,7 @@ export default {
         this.minusClicked = true;
         if (this.timeLeftClicked != -1)
             clearTimeout(this.timeLeftClicked);
-        this.timeRightClicked = setTimeout(this.clearBgNext, BUTTON_TIMEOUT);
+        this.timeLeftClicked = setTimeout(this.clearBgPrev, BUTTON_TIMEOUT);
     },
     clearBgNext() {
         this.plusClicked = false;
@@ -531,7 +531,7 @@ export default {
     background-attachment: fixed; 
     opacity: 1;
     transition-property: opacity;
-    transition-duration: 20s ; /* 25  30s; */
+    transition-duration: 28s ; /* 25  30s; */
 }
 
 .bg-base.bg-fast-transition {
