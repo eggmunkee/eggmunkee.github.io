@@ -18,7 +18,7 @@ const currentYear = ref(new Date().getFullYear())
 
   <RouterView />
 
-  <footer>&copy; {{ currentYear }} @eggmunkee</footer>
+  <footer class="blue-dimmed over-bg-shadow">&copy; {{ currentYear }} @eggmunkee</footer>
 </template>
 
 <style scoped>
@@ -81,13 +81,6 @@ nav a:last-of-type {
   
 }
 
-.major-slash {
-  font-weight: bolder;
-  font-size: 250%;
-  line-height: 0.1;
-  position: relative;
-  top: 0.2em;
-}
 
 footer {
   display: flex;
@@ -126,7 +119,6 @@ footer {
 
   footer {
     display: block;
-    text-shadow: 0 0.05em 0.5em #000000;
   }
 
 }
