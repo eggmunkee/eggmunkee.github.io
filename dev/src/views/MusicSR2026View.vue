@@ -51,7 +51,12 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
         </div>
     </div>
 
-    <player-instructions />
+    <div class="centered-div">
+        <div class="instructions blue over-bg-shadow over-bg-area-shadow">
+            double click to play a song <span class="minor-slash">/</span> click <span class="download-icon blue-dimmed-bg">&nbsp;</span> icon to download
+        </div>
+    </div>
+
 </div>
 </template>
 

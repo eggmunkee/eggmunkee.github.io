@@ -50,7 +50,7 @@ export default {
         </span>
     </h1>
 
-    <h2><span class="big-heading">Explore <RouterLink to="/">MUSIC</RouterLink> section</span></h2>
+    <h2><span class="big-heading">Explore <RouterLink to="/" class="active-border">MUSIC</RouterLink> section</span></h2>
 </div>
 </template>
 
@@ -92,19 +92,5 @@ h1, h2 {
   text-shadow: 0 0 0.25em rgb(40 20 10);
 }
 
-.major-slash {
-  font-weight: bolder;
-  font-size: 150%;
-  line-height: 0.1;
-  position: relative;
-  top: 0.08em;
-}
-
-.big-heading {
-    background: rgba(0,0,0,0.25);
-    box-shadow: 0 0 1em .6em rgba(0,0,0,0.25);
-    border-radius: 0.7em;
-    padding: 0.25em;
-}
 
 </style>
