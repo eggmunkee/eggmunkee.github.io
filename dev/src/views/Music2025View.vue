@@ -30,7 +30,7 @@ import initialSongList from '../data/musicPlaylist_2025.json';
                 <span class="playlist-title">Songs ({{songList.length}})</span>
             </span>
             <span class="icon-cont-shadow">
-                <a href="#" class="small-label shadow shuffle-icon" 
+                <a href="#" class="small-label shadow shuffle-icon" title="shuffle song order" 
                  style="color: rgb(100, 156, 200)" @click.prevent="shuffleTracks">                    
                 </a>
             </span>

@@ -54,15 +54,15 @@ const antiSelectHandler = (event) => {
 
 <template>
 <div class="song-cont">
-    <div class="song-title" @dblclick="titleDblClick" @mousedown="antiSelectHandler">
-      <span class="song-text">
-        <span :class="titleClass">{{title}}</span>
-        <span v-if="album" :class="albumClass">
+    <div class="song-title">
+      <span class="song-text" @dblclick="titleDblClick" @mousedown="antiSelectHandler">
+        <span class="over-bg-area-shadow-light" :class="titleClass">{{title}}</span>
+        <span v-if="album" class="over-bg-area-shadow-light" :class="albumClass">
           [{{album}}]
         </span>
       </span>
       <span v-if="showDownload" class="song-download-cont">
-        <a :href="url" rel="noopener noreferrer" download>
+        <a :href="url" rel="noopener noreferrer" download title="download song">
             <span class="small-dual-label dual-label-1 download-icon">&nbsp;</span>
         </a>
       </span>
@@ -92,6 +92,7 @@ const antiSelectHandler = (event) => {
         opacity: 1;
     }
     .song-title {
+        
         line-height: 1.2;
         /* no player styling */
         display: flex;
@@ -103,7 +104,7 @@ const antiSelectHandler = (event) => {
         margin-right: 0.5em;
     }
     .song-text {
-      
+      cursor: pointer;
       padding: 0;
     }
 
@@ -128,26 +129,5 @@ const antiSelectHandler = (event) => {
       height: 20px;
       
     }
-    .download-icon {
-      /* Set dimensions */
-      width: 1em;
-      height: 1em;
-      display: inline-block;
-      vertical-align: baseline;
-      
-      /* Set the desired color */
-      background-color: hsl(208, 75%, 80%); 
-      
-      /* Apply the image as a mask */
-      -webkit-mask-image: url('/assets/icon-download.png');
-      mask-image: url('/assets/icon-download.png');
-      
-      /* Ensure the mask covers the element */
-      -webkit-mask-size: contain;
-      mask-size: contain;
-      -webkit-mask-repeat: no-repeat;
-      mask-repeat: no-repeat;
-      -webkit-mask-position: center;
-      mask-position: center;
-    }
+    
 </style>
