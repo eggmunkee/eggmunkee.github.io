@@ -143,7 +143,7 @@ span.blue-dimmed-bg {
 .centered-div {
     display: flex;
     justify-content: center;
-    gap: 0.5em;
+    gap: 0.15em;
 }
 .big-heading {
     background: rgba(0,0,0,0.25);
