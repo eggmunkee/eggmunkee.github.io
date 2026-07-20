@@ -1,7 +1,8 @@
 <script setup>
-import Song from '../components/Song.vue'
 import VueAudioPlayer from '@liripeng/vue-audio-player'
-import PlayerInstructions from '../components/player-instructions.vue'
+
+import Song from '../components/Song.vue'
+import PlayerInstructions from '../components/PlayerInstructions.vue'
 // Import the song list JSON file
 import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json';
 </script>

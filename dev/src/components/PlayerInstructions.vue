@@ -1,3 +1,8 @@
+<script setup>
+// Basic instructions component
+defineProps({});
+</script>
+
 <template>
 
 <div class="centered-div">

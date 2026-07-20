@@ -1,6 +1,8 @@
 <script setup>
-import Song from '../components/Song.vue'
 import VueAudioPlayer from '@liripeng/vue-audio-player'
+
+import Song from '../components/Song.vue'
+import PlayerInstructions from '../components/PlayerInstructions.vue'
 // Import the song list JSON file
 import initialSongList from '../data/musicPlaylist_2025.json';
 </script>
@@ -42,6 +44,8 @@ import initialSongList from '../data/musicPlaylist_2025.json';
             </div>
         </div>
     </div>
+
+    <player-instructions />
 </div>
 </template>
 
