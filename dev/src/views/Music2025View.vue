@@ -2,7 +2,6 @@
 import VueAudioPlayer from '@liripeng/vue-audio-player'
 
 import Song from '../components/Song.vue'
-import PlayerInstructions from '../components/PlayerInstructions.vue'
 // Import the song list JSON file
 import initialSongList from '../data/musicPlaylist_2025.json';
 </script>
@@ -23,7 +22,7 @@ import initialSongList from '../data/musicPlaylist_2025.json';
             <div class="song-artist">
                 <span v-show="currentSongArtist">by {{currentSongArtist}}</span> <span v-show="currentSongAlbum">[{{currentSongAlbum}}]</span>
             </div>
-        </div> <!-- :before-play="playNext" -->
+        </div>
     </div>
     
     <div class="playlist-section">
@@ -73,17 +72,16 @@ export default {
   },
   mounted() {
     try {
-        document.getElementsByTagName('body')[0].classList.remove('bg-wavy-blue-verydark');
-        document.getElementsByTagName('body')[0].classList.add('bg-wavy-blue-dark');
-
         const overlay1 = document.getElementsByClassName('overlay-z1')[0];
         const overlay2 = document.getElementsByClassName('overlay-z2')[0];
         const overlay3 = document.getElementsByClassName('overlay-z3')[0];
+        overlay1.style.display = '';
+        overlay2.style.display = '';
+        overlay3.style.display = '';
         this.removeBgClasses(overlay3);
         this.removeBgClasses(overlay2);
         this.removeBgClasses(overlay1);
         let cl = overlay1.classList;
-        cl.add('bg-base');
         cl.add('bg-wavy-blue-dark');
 
         setTimeout(function() { 
@@ -213,7 +211,7 @@ export default {
 .vue-audio-player__play-rate {
     visibility: hidden;
 }
-body.bg-wavy-blue-dark {
+.bg-wavy-blue-dark {
     background-size: 100% auto;
     background-position-y: 80%;
     background-repeat: no-repeat;

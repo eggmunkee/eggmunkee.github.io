@@ -33,8 +33,16 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
     <div class="playlist-section-outer">
         <div class="playlist-section">
             <h3 >
+                <span class="stick-top-right">
+                    <span class="playlist-controls over-bg-area-shadow-dark">
+                        <span class="twist-cont force-block set-d centered-div" @click="togglePlaylist" :class="playlistVisible ? 'on' : ''" @dblclick.stop.prevent="" title="toggle playlist">
+                            <span class="dark-text twist-slash">_</span>
+                        </span>
+                    </span>
+                </span>
+
                 <span class="box-shadow">
-                <span class="playlist-title medium-dual-label" :class="songStyle(3, false)" >Songs ({{songList.length}})</span>
+                    <span class="playlist-title medium-dual-label" :class="songStyle(3, false)" >Songs ({{songList.length}})</span>
                 </span>
                 
                 <span class="icon-cont-shadow">
@@ -42,7 +50,7 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                     </a>
                 </span>
             </h3>
-            <div class="song-list" ref="songContainer">
+            <div class="song-list" ref="songContainer" :class="playlistVisible ? '' : 'collapsed'">
                 <div v-for="(song, songIndex) in songList" :key="song.src" :class="songContainerClass(songIndex)">
                     <Song :url="song.src" :title="song.title" :title-class="songStyle(songIndex, true)" :muted="true" 
                     :show-player="false" :show-download="true" @title-dblclick="playThisSong(songIndex)" />
@@ -53,7 +61,31 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
 
     <div class="centered-div">
         <div class="instructions blue over-bg-shadow over-bg-area-shadow">
-            double click to play a song <span class="minor-slash">/</span> click <span class="download-icon blue-dimmed-bg">&nbsp;</span> icon to download
+            double click song to play <span class="minor-slash">/</span> click <span class="download-icon blue-dimmed-bg">&nbsp;</span> to download
+        </div>
+    </div>
+
+    <div class="bg-controls centered-div">
+        <span class="blue-dimmed over-bg-shadow over-bg-area-shadow text-faint">backdrop &amp; tint</span>
+    </div>
+    <div class="bg-controls centered-div">
+        <div class="over-bg-area-shadow-dark centered-div">
+            <span class="twist-cont set-b" @click="toggleBg" :class="bgOn ? 'on' : ''" @dblclick.stop.prevent="" title="toggle backdrop">
+                <span class="blue-dimmed twist-slash">_</span>
+            </span>
+            <span class="twist-cont" :class="minusClicked ? 'clicked' : ''" @click="prevBg" @dblclick.stop.prevent="" title="previous">
+                <span class="blue-dimmed twist-slash">(</span>
+            </span>
+            <span class="twist-cont set-c" :class="(bgOn && bgAnimEnabled) ? (bgAnimEnFr ? 'on on-extra' : 'on') : ''" 
+                @click="toggleBgAnim" @dblclick.stop.prevent="" title="toggle advance">
+                <span class="blue-dimmed twist-slash">/</span>
+            </span>
+            <span class="twist-cont" :class="plusClicked ? 'clicked' : ''" @click="nextBg" @dblclick.stop.prevent="" title="next">
+                <span class="blue-dimmed twist-slash">)</span>
+            </span>
+            <span class="twist-cont set-a" @click="toggleTint" :class="tintOn ? 'on' : ''" @dblclick.stop.prevent="" title="toggle tint">
+                <span class="blue-dimmed twist-slash">_</span>
+            </span>
         </div>
     </div>
 
@@ -61,6 +93,10 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
 </template>
 
 <script>
+const FORWARD = false;
+const REVERSE = true;
+const FORCE_TRANSITION = true;
+const BUTTON_TIMEOUT = 1500;
 export default {
   data() {
     return {
@@ -78,11 +114,12 @@ export default {
         // play next state
         queueSongByIndex: false,
         nextSongIndex: 0,
+        playlistVisible: true,
         // bg ui state
         currentBgIndex: 0,
         bgAnimFrame: 0,
-        bgAnimIncrCount: 13, //15,
-        bgCount: 54, //29,
+        bgAnimIncrCount: 7, //13,
+        bgCount: 54,
         bgLayerToggle: 1, // 1 is layer 1, 2 is layer 2 last updated
         bgColorIdx: 0,
         bgColors: [
@@ -104,7 +141,15 @@ export default {
             'rgba(220,255,0,0.21', 
             'rgba(190,255,255,0.17)',
             'rgba(125,255,255,0.19)'
-        ]
+        ],
+        bgAnimEnabled: false,
+        bgAnimEnFr: false,
+        bgOn: true,
+        tintOn: false,
+        minusClicked: true,
+        plusClicked: true,
+        timeLeftClicked: -1,
+        timeRightClicked: -1
     }
   },
   mounted() {
@@ -113,6 +158,9 @@ export default {
         const overlay1 = document.getElementsByClassName('overlay-z1')[0];
         const overlay2 = document.getElementsByClassName('overlay-z2')[0];
         const overlay3 = document.getElementsByClassName('overlay-z3')[0];
+        overlay1.style.display = '';
+        overlay2.style.display = '';
+        overlay3.style.display = '';
 
         // read overlay 1 and 2 bg frame state to pick up if present
         const overlay1Frm = this.getFrameFromElem(overlay1);
@@ -157,11 +205,42 @@ export default {
         }
         this.animInterval = -1;
     }
+    if (this.timeLeftClicked != -1)
+        clearTimeout(this.timeLeftClicked);
+    if (this.timeRightClicked != -1)
+        clearTimeout(this.timeRightClicked);
+    this.timeLeftClicked = this.timeRightClicked = -1;
   },
   methods: {
     startAnim() {
         this.animInterval = setInterval(this.incrementAnim, 4000);
         this.animStarted = true;
+        this.bgAnimEnabled = true;
+        this.tintOn = true;
+        this.clearBgClicked();
+    },
+    clearBgClicked() {
+        this.minusClicked = this.plusClicked = false;
+    },
+    clearBgPrev() {
+        this.minusClicked = false;
+        this.timeLeftClicked = -1;
+    },
+    setBgPrevClicked() {
+        this.minusClicked = true;
+        if (this.timeLeftClicked != -1)
+            clearTimeout(this.timeLeftClicked);
+        this.timeRightClicked = setTimeout(this.clearBgNext, BUTTON_TIMEOUT);
+    },
+    clearBgNext() {
+        this.plusClicked = false;
+        this.timeRightClicked = -1;
+    },
+    setBgNextClicked() {
+        this.plusClicked = true;
+        if (this.timeRightClicked != -1)
+            clearTimeout(this.timeRightClicked);
+        this.timeRightClicked = setTimeout(this.clearBgNext, BUTTON_TIMEOUT);
     },
     getBgCls(idx) {
         return 'bg-dark-' + (idx+1).toString().padStart(2,"0");
@@ -182,10 +261,12 @@ export default {
         if (!frameNum || isNaN(frameNum)) return -1;
         return frameNum - 1; // Turn bg-dark-01 into Frame 0
     },
-    incrBgIndex() {
-        this.currentBgIndex += 1;
+    incrBgIndex(reverse) {
+        this.currentBgIndex += reverse ? -1 : 1;
         if (this.currentBgIndex >= this.bgCount)
             this.currentBgIndex = 0;
+        else if (reverse && this.currentBgIndex < 0)
+            this.currentBgIndex = this.bgCount - 1;
     },
     removeBgClasses(elem) {
         let cl = elem.classList;
@@ -203,42 +284,47 @@ export default {
         elem.classList.add('bg-base');
         elem.classList.add(nextClsName);
     },
-    incrementBgAnim() {
+    removeBgSlowFade() {
+        const overlay2 = document.getElementsByClassName('overlay-z2')[0];
+        let o2cl = overlay2.classList;
+        if (o2cl.contains('bg-transp')) {
+            o2cl.remove('bg-transp');
+            o2cl.add('bg-fast-transition');
+        }
+    },
+    incrementBgAnim(reverse, forceTransition) {
         // get two overlay layers
         const overlay1 = document.getElementsByClassName('overlay-z1')[0];
         const overlay2 = document.getElementsByClassName('overlay-z2')[0];
         
-        this.incrBgIndex();
+        this.incrBgIndex(reverse || false);
+
+        this.bgAnimEnFr = !this.bgAnimEnFr;
+
+        if (forceTransition) {
+            this.bgLayerToggle = 1;
+            this.removeBgClasses(overlay1);
+            this.removeBgClasses(overlay2);
+        }
 
         // go from fading to changing images
         if (this.bgLayerToggle == 2) {
             this.bgLayerToggle = 1;
-            
             // Set Fade out class anim on 2nd level Overlay
             overlay2.classList.add('bg-transp');
             // clear and rebuild bg styles
             this.setupBgClasses(overlay1, this.currentBgIndex);
-            // Set new bg image class on 1st level Overlay
-            // let nextClsName = this.getBgCls();
-            // // Clear bg styles and rebuild for new bg
-            // this.removeBgClasses(overlay1);
-            // overlay1.classList.add('bg-base');
-            // overlay1.classList.add(nextClsName);
         }
         // step into fading
         else {
             this.bgLayerToggle = 2;
-
-            
             // clear and rebuild bg styles - clears transparant anim class also
             this.setupBgClasses(overlay2, this.currentBgIndex); // (this.currentBgIndex + 5) % this.bgCount);
-            //overlay2.classList.add('bg-transp');
-            // let nextClsName = this.getBgCls();
-            // this.removeBgClasses(overlay2);
-            // overlay2.classList.add('bg-base');
-            // overlay2.classList.add(nextClsName);
         }
         
+        if (forceTransition) {
+            this.removeBgSlowFade();
+        }
     },
     updateColorTint() {
         let color = this.bgColors[this.bgColorIdx];
@@ -256,12 +342,15 @@ export default {
         if (this.animFrame >= this.maxFrames) {
             this.animFrame = 0;
         }
-        this.bgAnimFrame += 1;
-        if (this.bgAnimFrame >= this.bgAnimIncrCount) {
-            this.bgAnimFrame = 0;
-            this.incrementBgAnim();
+        if (this.bgAnimEnabled) {
+            this.bgAnimFrame += 1;
+            if (this.bgAnimFrame >= this.bgAnimIncrCount) {
+                this.bgAnimFrame = 0;
+                this.incrementBgAnim();
+            }
         }
-        this.updateColorTint();
+        if (this.tintOn)
+            this.updateColorTint();
     },
     playThisSong(songIndex) {
         console.log("Play song", songIndex);
@@ -364,6 +453,64 @@ export default {
         catch {
             return (addBaseClass ? 'small-dual-label ' : '') + 'dual-label-1';
         }
+    },
+    togglePlaylist() {
+        this.playlistVisible = !this.playlistVisible;
+    },
+    toggleBgAnim() {
+        this.bgAnimEnabled = !this.bgAnimEnabled
+        if (!this.bgAnimEnabled)
+            this.bgAnimEnFr = false;
+    },
+    prevBg(event) {
+        if (event.detail > 1) {
+            event.preventDefault();
+        }
+        else {
+            this.incrementBgAnim(REVERSE, FORCE_TRANSITION);
+        }
+        this.setBgPrevClicked();
+    },
+    nextBg(event) {
+        if (event.detail > 1) {
+            event.preventDefault();
+        }
+        else {
+            //this.incrBgIndex();
+            this.incrementBgAnim(FORWARD, FORCE_TRANSITION);
+        }
+        this.setBgNextClicked();
+    },
+    toggleTint() {
+        try {
+            let overlay3 = document.getElementsByClassName('overlay-z3')[0];
+            let o3st = overlay3.style;
+            if (o3st.display != 'none') { 
+                o3st.display = 'none';
+                this.tintOn = false;
+            }
+            else {
+                o3st.display = '';
+                this.tintOn = true;
+            }
+        }
+        catch (e) {}
+    },
+    toggleBg() {
+        try {
+            const overlay1 = document.getElementsByClassName('overlay-z1')[0];
+            const overlay2 = document.getElementsByClassName('overlay-z2')[0];
+            this.bgOn = !this.bgOn;
+            if (this.bgOn) {
+                overlay1.style.display = '';
+                overlay2.style.display = '';
+            }
+            else {
+                overlay1.style.display = 'none';
+                overlay2.style.display = 'none';
+            }
+        }
+        catch (e) {}
     }
   }
 }
@@ -384,15 +531,21 @@ export default {
     background-attachment: fixed; 
     opacity: 1;
     transition-property: opacity;
-    transition-duration: 25s ; /* 30s; */
+    transition-duration: 20s ; /* 25  30s; */
+}
+
+.bg-base.bg-fast-transition {
+    transition-property: opacity;
+    transition-duration: 2s ; /* 25  30s; */
 }
 
 .bg-wavy-blue-verydark {
     background-image: url('/assets/art/wavy-haze-verydark.jpg'); 
 }
 
+
 .bg-transp {
-    opacity: 0.01;
+    opacity: 0.0;
 }
 .bg-dark-fade {
     background: rgba(0,0,0, 0.75);
@@ -733,8 +886,9 @@ h2.medium-dual-label {
 .playlist-section {
     margin: 0;
     border-collapse: collapse;
-    padding: 0.5em 0 0.75em 0.5em;
+    padding: 0.5em 0 0.5em 0.5em;
     border-radius: 2rem; 
+    position: relative;
     
     box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.5);
     background-size: 100% auto;
@@ -746,13 +900,38 @@ h2.medium-dual-label {
     background-attachment: fixed; 
     background-image: url('/assets/art/stochast/cover-art-stochastic-recovery-20x6-album.jpg');    
 }
+.playlist-section .stick-top-right {
+    position: absolute;
+    top: 1.3em;
+    right: 1.3em;
+    padding: 0;
+    font-size: 12pt;
+    display: inline-block;
+}
+.playlist-controls {
+    font-weight: 12pt;
+}
+
+.playlist-section .song-list.collapsed {
+    height: 0;
+    max-height: 0;
+    overflow-y: hidden;
+    
+}
 
 .playlist-section .song-list {
     /* limit vertical height with scroll */
-    max-height: 20em;
+    height: 19.3em;
+    max-height: 19.3em;
     overflow-x: hidden;
     overflow-y: auto;
     padding: 5px 5px 0 5px;
+
+
+    transition-property: height, max-height;
+    transition-duration: 1s;
+    transition-timing-function: ease;
+
 }
 
 .playlist-section .song-list::-webkit-scrollbar {
@@ -836,6 +1015,18 @@ h2.medium-dual-label {
   mask-repeat: no-repeat;
   -webkit-mask-position: center;
   mask-position: center;
+}
+
+.playlist-controls {
+    font-size: 12pt;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.bg-controls {
+    font-size: 9pt;
 }
 
 </style>

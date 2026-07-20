@@ -8,6 +8,9 @@ export default {
             const overlay1 = document.getElementsByClassName('overlay-z1')[0];
             const overlay2 = document.getElementsByClassName('overlay-z2')[0];
             const overlay3 = document.getElementsByClassName('overlay-z3')[0];
+            overlay1.style.display = '';
+            overlay2.style.display = '';
+            overlay3.style.display = '';
             this.removeBgClasses(overlay3);
             this.removeBgClasses(overlay2);
             this.removeBgClasses(overlay1);

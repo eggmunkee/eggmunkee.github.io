@@ -29,6 +29,10 @@
   background-color: rgba(23, 65, 112, 0.35);
   opacity: 1;
 }
+.overlay-z1.hide, .overlay-z2.hide, .overlay-z3.hide
+{
+  display: none;
+}
 
 .overlay-z3.overlay-z3-12 {
   transition-property: background-color, opacity;
@@ -72,12 +76,22 @@ a,
 .blue-dimmed {
   color: hsla(208, 75%, 59%,70%);
 }
+.dark-text {
+  color: #555555;
+}
+.text-faint {
+  opacity: 85%;
+}
 /* span specified bg color class overrides basic class background-color */
 span.blue-dimmed-bg {
   background-color: hsla(208, 75%, 59%,80%);
 }
 .over-bg-shadow {
   text-shadow: 0 0.05em 0.5em #000000;
+}
+.over-bg-area-shadow-dark {
+  background-color: rgba(0,0,0,0.35);
+  box-shadow: 0 0 1em 0.5em rgba(0,0,0,0.35);
 }
 .over-bg-area-shadow {
   background-color: rgba(0,0,0,0.15);
@@ -129,6 +143,7 @@ span.blue-dimmed-bg {
 .centered-div {
     display: flex;
     justify-content: center;
+    gap: 0.5em;
 }
 .big-heading {
     background: rgba(0,0,0,0.25);
@@ -136,10 +151,163 @@ span.blue-dimmed-bg {
     border-radius: 0.7em;
     padding: 0.25em;
 }
+.twist-cont {
+  font-size: 9pt;
+  position: relative;
+  width: 1.5em;
+  border-radius: 0.75em;
+  font-weight: bolder;
+  transition-property: transform, background-color, box-shadow;
+  transition-duration: 1.25s;
+  transition-timing-function: ease;
+  background-color: rgba(200,210,255,0.1);
+  box-shadow: 0 0 1em 0.5em rgba(200,210,255,0.1);
+}
+.twist-cont:hover {
+  background-color: rgba(200,210,255,0.25);
+  box-shadow: 0 0 1em 0.5em rgba(200,210,255,0.25);
+}
+
+.twist-cont.set-a {
+  transform: rotate(0deg);
+
+  background-color: rgba(255, 247, 175, 0.1);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 247, 175,0.1);
+}
+.twist-cont.set-a:hover {
+  background-color: rgba(255, 247, 175,0.3);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 247, 175,0.3);
+}
+.twist-cont.set-a.on {
+  transform: rotate(90deg);
+
+  background-color: rgba(255, 247, 175,0.25);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 247, 175,0.25);
+}
+.twist-cont.set-a.on:hover {
+  background-color: rgba(175,190,255,0.2);
+  box-shadow: 0 0 .75em 0.25em rgba(175,190,255,0.2);
+}
+
+
+.twist-cont.set-b {
+  transform: rotate(0deg);
+
+  background-color: rgba(255, 175, 192, 0.1);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 175, 192,0.1);
+}
+.twist-cont.set-b:hover {
+  background-color: rgba(255, 175, 192,0.3);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 175, 192,0.3);
+}
+.twist-cont.set-b.on {
+  transform: rotate(-90deg);
+
+  background-color: rgba(255, 175, 192, 0.25);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 175, 192,0.25);
+}
+.twist-cont.set-b.on:hover {
+  background-color: rgba(255, 175, 192,0.2);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 175, 192,0.25);
+}
+
+.twist-cont.set-c {
+  transform: rotate(-115deg);
+
+  background-color: rgba(146, 255, 146, 0.1);
+  box-shadow: 0 0 .75em 0.25em rgba(146, 255, 146,0.1);
+}
+.twist-cont.set-c:hover {
+  background-color: rgba(146, 255, 146,0.35);
+  box-shadow: 0 0 .75em 0.25em rgba(146, 255, 146,0.35);
+}
+.twist-cont.set-c.on {
+  transform: rotate(-25deg);
+
+  background-color: rgba(146, 255, 146, 0.3);
+  box-shadow: 0 0 .75em 0.25em rgba(146, 255, 146,0.3);
+}
+.twist-cont.set-c.on:hover {
+  background-color: rgba(146, 255, 146,0.25);
+  box-shadow: 0 0 .75em 0.25em rgba(146, 255, 146,0.3);
+}
+.twist-cont.set-c.on.on-extra {
+  transform: rotate(-205deg);
+
+  background-color: rgba(118, 252, 230, 0.35);
+  box-shadow: 0 0 .75em 0.25em rgba(118, 232, 252,0.35);
+}
+.twist-cont.set-c.on.on-extra:hover {
+  background-color: rgba(118, 232, 252,0.3);
+  box-shadow: 0 0 .75em 0.25em rgba(118, 232, 252,0.3);
+}
+.twist-cont.clicked {
+  background-color: rgba(200,210,255,0.35);
+  box-shadow: 0 0 1em 0.5em rgba(200,210,255,0.35);
+  
+  transition-duration: 1s;
+}
+.twist-cont.clicked:hover {
+  background-color: rgba(200,210,255,0.3);
+  box-shadow: 0 0 1em 0.5em rgba(200,210,255,0.35);
+}
+
+.twist-cont.force-block {
+  display: flex;
+  flex-direction: row;
+  width: 1em;
+  height: 1em;
+  justify-content: center;
+  align-items: center;
+  font-size: 12pt;
+  line-height: .1;
+  position: relative;
+  border: 0.1em solid rgba(210, 186, 255,0.1);
+}
+
+.twist-cont.set-d .twist-slash {
+  line-height: .1;
+  font-size: 12pt;
+  top: -0.06em;
+}
+
+.twist-cont.set-d {
+  transform: rotate(90deg);
+
+  background-color: rgba(210, 186, 255, 0.6);
+  box-shadow: 0 0 1em 0.5em rgba(210, 186, 255,0.6);
+}
+.twist-cont.set-d > .twist-slash {
+  
+}
+.twist-cont.set-d:hover {
+  background-color: rgba(210, 186, 255, 0.7);
+  box-shadow: 0 0 1em 0.5em rgba(210, 186, 255,0.7);
+}
+.twist-cont.set-d.on {
+  transform: rotate(0deg);
+
+  background-color: rgba(210, 186, 255,0.7);
+  box-shadow: 0 0 1em 0.5em rgba(210, 186, 255,0.7);
+}
+.twist-cont.set-d.on:hover {
+  background-color: rgba(210, 186, 255,0.8);
+  box-shadow: 0 0 1em 0.5em rgba(210, 186, 255,0.8);
+}
+
+
+.twist-slash {
+  font-weight: bolder;
+  font-size: 150%;
+  line-height: 0.1;
+  position: relative;
+  top: 0.17em;
+  cursor: pointer;
+}
 .instructions {
     text-align: center;
     margin: 0.5em 0;
-    font-size: 12pt;
+    font-size: 10pt;
     position: relative;
 }
 
