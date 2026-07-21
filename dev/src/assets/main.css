@@ -252,6 +252,9 @@ span.blue-dimmed-bg {
   box-shadow: 0 0 1em 0.5em rgba(200,210,255,0.35);
 }
 
+
+/* twist buttons on section corners */
+
 .twist-cont.force-block {
   display: flex;
   flex-direction: row;
@@ -262,7 +265,7 @@ span.blue-dimmed-bg {
   font-size: 12pt;
   line-height: .1;
   position: relative;
-  border: 0.1em solid rgba(210, 186, 255,0.1);
+  
 }
 
 .twist-cont.set-d .twist-slash {
@@ -271,28 +274,49 @@ span.blue-dimmed-bg {
   top: -0.06em;
 }
 
+ 
 .twist-cont.set-d {
+  border: 0.1em solid rgba(210, 186, 255,0.1);
   transform: rotate(90deg);
 
-  background-color: rgba(210, 186, 255, 0.6);
-  box-shadow: 0 0 1em 0.5em rgba(210, 186, 255,0.6);
+  background-color: rgba(255, 247, 175, 0.438);
+  box-shadow: 0 0 1em 0.15em rgba(255, 247, 175, 0.438);
+  /* background-color: rgba(210, 186, 255, 0.6);
+  box-shadow: 0 0 1em 0.5em rgba(210, 186, 255,0.6); */
+}
+.twist-cont.set-d.reverse-motion {
+  transform: rotate(0deg);
+}
+.twist-cont.set-d.set-d-left {
+  transform: rotate(-90deg);
+  background-color: rgba(255, 175, 192, 0.438);
+  box-shadow: 0 0 1em 0.15em rgba(255, 175, 192, 0.438);
+}
+.twist-cont.set-d.reverse-motion.set-d-left {
+  transform: rotate(0deg);
 }
 .twist-cont.set-d > .twist-slash {
   
 }
 .twist-cont.set-d:hover {
-  background-color: rgba(210, 186, 255, 0.7);
-  box-shadow: 0 0 1em 0.5em rgba(210, 186, 255,0.7);
+  background-color: rgba(72, 156, 229, 0.7);
+  box-shadow: 0 0 1em 0.25em rgba(72, 156, 229,0.7);
 }
 .twist-cont.set-d.on {
   transform: rotate(0deg);
 
-  background-color: rgba(210, 186, 255,0.7);
-  box-shadow: 0 0 1em 0.5em rgba(210, 186, 255,0.7);
+  background-color: rgba(72, 156, 229,0.7);
+  box-shadow: 0 0 1em 0.15em rgba(72, 156, 229,0.7);
+}
+.twist-cont.set-d.reverse-motion.on {
+  transform: rotate(90deg);
+}
+.twist-cont.set-d.reverse-motion.on.set-d-left {
+  transform: rotate(-90deg);
 }
 .twist-cont.set-d.on:hover {
-  background-color: rgba(210, 186, 255,0.8);
-  box-shadow: 0 0 1em 0.5em rgba(210, 186, 255,0.8);
+  background-color: rgba(72, 156, 229,0.8);
+  box-shadow: 0 0 1em 0.25em rgba(72, 156, 229,0.8);
 }
 
 
@@ -309,6 +333,15 @@ span.blue-dimmed-bg {
     margin: 0.5em 0;
     font-size: 10pt;
     position: relative;
+}
+.controls-row {
+  text-align: center;
+  margin: 0.5em 0;
+  font-size: 10pt;
+  position: relative;
+}
+.controls-row.alone {
+  margin: 1.5em 0 0.5em 0;
 }
 
 nav {

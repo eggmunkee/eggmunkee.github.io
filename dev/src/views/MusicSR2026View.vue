@@ -2,7 +2,6 @@
 import VueAudioPlayer from '@liripeng/vue-audio-player'
 
 import Song from '../components/Song.vue'
-import PlayerInstructions from '../components/PlayerInstructions.vue'
 // Import the song list JSON file
 import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json';
 </script>
@@ -10,9 +9,29 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
 <template>
 <div class="root-div">
     <div class="player-section-outer">
-        <div class="player-section">
-            <div class="album-label">
-                <span class="album-name" v-show="currentSongAlbum">{{currentSongAlbum}}</span>
+        <div class="player-section" :class="playerBgVisible ? '' : 'no-bg'">
+            <div class="player-heading">
+                <span class="stick-top-left from-padded">
+                    <span class="playlist-controls over-bg-area-shadow-dark">
+                        <span class="twist-cont force-block set-d set-d-left reverse-motion centered-div" @click="togglePlayerBg" :class="playerBgVisible ? 'on' : ''" @dblclick.stop.prevent="" title="toggle player backdrop">
+                            <span class="dark-text twist-slash">_</span>
+                        </span>
+                    </span>
+                </span>
+                <span class="stick-top-right from-padded">
+                    <span class="playlist-controls over-bg-area-shadow-dark">
+                        <span class="twist-cont force-block set-d reverse-motion centered-div" @click="togglePlayerBg" :class="playerBgVisible ? 'on' : ''" @dblclick.stop.prevent="" title="toggle player backdrop">
+                            <span class="dark-text twist-slash">_</span>
+                        </span>
+                    </span>
+                </span>
+                <div class="album-label">
+                    <span class="album-name" v-show="currentSongAlbum">
+                        <template v-for="(letter,index) in albumNameChopped(currentSongAlbum)" :key="index">
+                            <span :class="albumLetterStyled(letter,index)">{{ letter }}</span>
+                        </template>
+                    </span>
+                </div>
             </div>
             <vue-audio-player ref="audioPlayer"
                 :audio-list="songList"
@@ -22,7 +41,9 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                 @pause="playEnded"
             ></vue-audio-player>
             <div class="song-label">
-                <div class="song-title medium-dual-label" :class="songStyle(1, false)">{{currentSongTitle}}</div>
+                <div class="song-title medium-dual-label" :class="songStyle(1, false)">
+                    {{ currentSongTitle }}
+                </div>
                 <div class="song-artist medium-dual-label" :class="songStyle(5, false)">
                     <span v-if="false && currentSongArtist">by {{currentSongArtist}}</span>
                 </div>
@@ -32,15 +53,23 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
     
     <div class="playlist-section-outer">
         <div class="playlist-section">
-            <h3 >
-                <span class="stick-top-right">
-                    <span class="playlist-controls over-bg-area-shadow-dark">
-                        <span class="twist-cont force-block set-d centered-div" @click="togglePlaylist" :class="playlistVisible ? 'on' : ''" @dblclick.stop.prevent="" title="toggle playlist">
-                            <span class="dark-text twist-slash">_</span>
-                        </span>
+            <!-- corner ui -->
+            <span class="stick-top-left">
+                <span class="playlist-controls over-bg-area-shadow-dark">
+                    <span class="twist-cont force-block set-d set-d-left centered-div" @click="togglePlaylist" :class="playlistVisible ? 'on' : ''" @dblclick.stop.prevent="" title="toggle playlist">
+                        <span class="dark-text twist-slash">_</span>
                     </span>
                 </span>
+            </span>
+            <span class="stick-top-right">
+                <span class="playlist-controls over-bg-area-shadow-dark">
+                    <span class="twist-cont force-block set-d centered-div" @click="togglePlaylist" :class="playlistVisible ? 'on' : ''" @dblclick.stop.prevent="" title="toggle playlist">
+                        <span class="dark-text twist-slash">_</span>
+                    </span>
+                </span>
+            </span>
 
+            <h3 >
                 <span class="box-shadow">
                     <span class="playlist-title medium-dual-label" :class="songStyle(3, false)" >Songs ({{songList.length}})</span>
                 </span>
@@ -59,33 +88,35 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
         </div>
     </div>
 
-    <div class="centered-div">
+    <div class="centered-div" v-show="playlistVisible">
         <div class="instructions blue over-bg-shadow over-bg-area-shadow">
             double click song to play <span class="minor-slash">/</span> click <span class="download-icon blue-dimmed-bg">&nbsp;</span> to download
         </div>
     </div>
 
-    <div class="bg-controls centered-div">
-        <span class="blue-dimmed over-bg-shadow over-bg-area-shadow text-faint">backdrop &amp; tint</span>
-    </div>
-    <div class="bg-controls centered-div">
-        <div class="over-bg-area-shadow-dark centered-div">
-            <span class="twist-cont set-b" @click="toggleBg" :class="bgOn ? 'on' : ''" @dblclick.stop.prevent="" title="toggle backdrop">
-                <span class="blue-dimmed twist-slash">_</span>
-            </span>
-            <span class="twist-cont" :class="minusClicked ? 'clicked' : ''" @click="prevBg" @dblclick.stop.prevent="" title="previous">
-                <span class="blue-dimmed twist-slash">(</span>
-            </span>
-            <span class="twist-cont set-c" :class="(bgOn && bgAnimEnabled) ? (bgAnimEnFr ? 'on on-extra' : 'on') : ''" 
-                @click="toggleBgAnim" @dblclick.stop.prevent="" title="toggle advance">
-                <span class="blue-dimmed twist-slash">/</span>
-            </span>
-            <span class="twist-cont" :class="plusClicked ? 'clicked' : ''" @click="nextBg" @dblclick.stop.prevent="" title="next">
-                <span class="blue-dimmed twist-slash">)</span>
-            </span>
-            <span class="twist-cont set-a" @click="toggleTint" :class="tintOn ? 'on' : ''" @dblclick.stop.prevent="" title="toggle tint">
-                <span class="blue-dimmed twist-slash">_</span>
-            </span>
+    <div class="controls-row" :class="{'alone':!playlistVisible}">
+        <div class="bg-controls centered-div">
+            <span class="blue-dimmed over-bg-shadow over-bg-area-shadow text-faint">backdrop &amp; tint</span>
+        </div>
+        <div class="bg-controls centered-div">
+            <div class="over-bg-area-shadow-dark centered-div">
+                <span class="twist-cont set-b" @click="toggleBg" :class="bgOn ? 'on' : ''" @dblclick.stop.prevent="" title="toggle backdrop">
+                    <span class="blue-dimmed twist-slash">_</span>
+                </span>
+                <span class="twist-cont" :class="minusClicked ? 'clicked' : ''" @click="prevBg" @dblclick.stop.prevent="" title="previous">
+                    <span class="blue-dimmed twist-slash">(</span>
+                </span>
+                <span class="twist-cont set-c" :class="(bgOn && bgAnimEnabled) ? (bgAnimEnFr ? 'on on-extra' : 'on') : ''" 
+                    @click="toggleBgAnim" @dblclick.stop.prevent="" title="toggle advance">
+                    <span class="blue-dimmed twist-slash">/</span>
+                </span>
+                <span class="twist-cont" :class="plusClicked ? 'clicked' : ''" @click="nextBg" @dblclick.stop.prevent="" title="next">
+                    <span class="blue-dimmed twist-slash">)</span>
+                </span>
+                <span class="twist-cont set-a" @click="toggleTint" :class="tintOn ? 'on' : ''" @dblclick.stop.prevent="" title="toggle tint">
+                    <span class="blue-dimmed twist-slash">_</span>
+                </span>
+            </div>
         </div>
     </div>
 
@@ -114,6 +145,8 @@ export default {
         // play next state
         queueSongByIndex: false,
         nextSongIndex: 0,
+        // visible toggles
+        playerBgVisible: true,
         playlistVisible: true,
         // bg ui state
         currentBgIndex: 0,
@@ -219,6 +252,31 @@ export default {
         this.tintOn = true;
         this.clearBgClicked();
     },
+    albumNameChopped(albumName) {
+        let letters = [];
+        for (let i=0; i< albumName.length; i++) {
+            letters.push(albumName[i]);
+        }
+        return letters;
+    },
+    albumLetterStyled(albumLetter, index, isTitle) {
+        if (albumLetter == ' ') return '';
+        let choice = (index + this.animFrame) % this.maxFrames;
+        let initialClasses = !isTitle ? 'album-letter ' : 'medium-dual-label ';
+        let albumClasses = initialClasses + `dual-label-${choice}`;
+        if (albumLetter == 'x') return albumClasses + ' muted-letter';
+        return albumClasses;
+    },
+    /*albumNameChopped(albumName) {
+        let albumChunk = '';
+        let labNum = 1;
+        for (let i=0; i< albumName.length; i++) {
+            albumChunk += `<span class="album-letter dual-label-${labNum}">${albumName[i]}</span>`;
+            labNum += 1;
+            if (labNum > 10) labNum = 1;
+        }
+        return albumChunk;
+    },*/
     clearBgClicked() {
         this.minusClicked = this.plusClicked = false;
     },
@@ -453,6 +511,10 @@ export default {
         catch {
             return (addBaseClass ? 'small-dual-label ' : '') + 'dual-label-1';
         }
+    },
+    togglePlayerBg() {
+        this.playerBgVisible = !this.playerBgVisible;
+        console.warn("New Player BG Visible = ", this.playerBgVisible);
     },
     togglePlaylist() {
         this.playlistVisible = !this.playlistVisible;
@@ -748,8 +810,6 @@ export default {
     background-image: url('/assets/art/stochast/image-i4u5hxybtk7g0vob36fsviqnn.jpg');
 }
 
-
-
 .small-dual-label {
     font-size: 13pt;
     font-weight: bolder;
@@ -792,6 +852,7 @@ h2.medium-dual-label {
     color: hsl(245, 40%, 90%);
     text-shadow: -0.2em -0.1em 0.01em hsl(208, 35%, 8%);
 }
+
 </style>
 
 <style scoped>
@@ -801,7 +862,7 @@ h2.medium-dual-label {
 
 .root-div {
     font-size: 14pt;
-    margin: 20px 0;
+    margin: 1.5rem 0;
     text-align: center;
     position: relative;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -817,10 +878,11 @@ h2.medium-dual-label {
 }
 .player-section {
     border-radius: 2rem; 
-    padding: 15px; 
+    padding: 1rem; 
     margin-bottom: 2rem;
     box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.5);
 
+    background-color: rgba(190,200,255,0.35);
     background-size: cover;
     background-position-x: center;
     background-position-y: 80%;
@@ -831,16 +893,27 @@ h2.medium-dual-label {
     border-left:  2px dashed rgba(255,255,255,0.92);
     border-bottom:    2px dashed rgba(255,255,255,0.92);    
     border-top: 2px dashed rgba(0,0,0,0.82);*/
-    
+}
+
+.player-section.no-bg {
+    background: rgba(0,0,0,0.05);
+    background-color: rgba(0,0,0,0.05);
+    background-image: none;
+    transition-property: background-color, background-image, box-shadow;
+    transition-duration: 2.5s;
+    transition-timing-function: ease;
+    box-shadow: inset 0 .1rem 1.5rem 0.3rem rgba(0,0,0,0.15);
 }
 
 .small-label {
     font-size: 85%;
 }
 
+.player-heading {
+    position: relative;
+}
 
 .album-label {
-    position: relative;
     padding: 0.5em;
     border-radius: 0.5em;
 }
@@ -848,13 +921,45 @@ h2.medium-dual-label {
 .album-label > .album-name {
     position: relative;
     top: -0.35em;
-    opacity: 60%;
+    opacity: 85%;
     font-size: 200%;  
     color: hsl(209, 35%, 95%);
-    text-shadow: 0.15em 0.58em 0.01em rgba(15, 15, 80, 0.8);
+    text-shadow: 0.15em 0.58em 0.01em rgba(31, 41, 116, 0.8);
     font-weight: bolder;
     line-height: 0.85;
 }
+
+.album-name .album-letter {
+    transition-property: text-shadow, color;
+    transition-duration: 3s;
+}
+.album-name .album-letter.muted-letter {
+    opacity: 0.4;
+}
+
+.medium-dual-label.muted-letter {
+    opacity: 0.35;
+}
+
+.album-letter.dual-label-1 {
+    text-shadow: 0.13em 0.63em 0.01em rgba(31, 41, 116, 0.8);
+}
+.album-letter.dual-label-2 {
+    text-shadow: 0.14em 0.60em 0.01em rgba(28, 35, 100, 0.8);
+}
+.album-letter.dual-label-3 {
+    text-shadow: 0.16em 0.54em 0.01em rgba(22, 30, 92, 0.8);
+}
+.album-letter.dual-label-4 {
+    text-shadow: 0.17em 0.51em 0.01em rgba(19, 25, 86, 0.8);
+}
+.album-letter.dual-label-5 {
+    text-shadow: 0.16em 0.54em 0.01em rgba(15, 15, 80, 0.8);
+}
+.album-letter.dual-label-6 {
+    text-shadow: 0.14em 0.60em 0.01em rgba(20, 25, 86, 0.8);
+}
+
 
 .song-label {
     font-size: 17pt;
@@ -900,13 +1005,27 @@ h2.medium-dual-label {
     background-attachment: fixed; 
     background-image: url('/assets/art/stochast/cover-art-stochastic-recovery-20x6-album.jpg');    
 }
-.playlist-section .stick-top-right {
+.stick-top-right, .stick-top-left {
     position: absolute;
-    top: 1.3em;
-    right: 1.3em;
     padding: 0;
     font-size: 12pt;
     display: inline-block;
+}
+.stick-top-right {
+    top: 1.3em;
+    right: 1.3em;
+}
+.stick-top-right.from-padded {
+    top: 0.3em;
+    right: 0.3em;
+}
+.stick-top-left {
+    top: 1.3em;
+    left: 1.3em;
+}
+.stick-top-left.from-padded {
+    top: 0.3em;
+    left: 0.3em;
 }
 .playlist-controls {
     font-weight: 12pt;
