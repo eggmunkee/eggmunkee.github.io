@@ -103,15 +103,15 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                 <span class="twist-cont set-b" @click="toggleBg" :class="bgOn ? 'on' : ''" @dblclick.stop.prevent="" title="toggle backdrop">
                     <span class="blue-dimmed twist-slash">_</span>
                 </span>
-                <span class="twist-cont" :class="minusClicked ? 'clicked' : ''" @click="prevBg" @dblclick.stop.prevent="" title="previous">
-                    <span class="blue-dimmed twist-slash">(</span>
+                <span class="twist-cont" :class="minusClicked ? 'clicked clicked-left' : ''" @click="prevBg" @dblclick.stop.prevent="" title="previous">
+                    <span class="blue-dimmed twist-slash">((</span>
                 </span>
                 <span class="twist-cont set-c" :class="(bgOn && bgAnimEnabled) ? (bgAnimEnFr ? 'on on-extra' : 'on') : ''" 
                     @click="toggleBgAnim" @dblclick.stop.prevent="" title="toggle advance">
                     <span class="blue-dimmed twist-slash">/</span>
                 </span>
                 <span class="twist-cont" :class="plusClicked ? 'clicked' : ''" @click="nextBg" @dblclick.stop.prevent="" title="next">
-                    <span class="blue-dimmed twist-slash">)</span>
+                    <span class="blue-dimmed twist-slash">))</span>
                 </span>
                 <span class="twist-cont set-a" @click="toggleTint" :class="tintOn ? 'on' : ''" @dblclick.stop.prevent="" title="toggle tint">
                     <span class="blue-dimmed twist-slash">_</span>

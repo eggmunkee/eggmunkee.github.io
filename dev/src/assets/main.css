@@ -242,10 +242,15 @@ span.blue-dimmed-bg {
   box-shadow: 0 0 .75em 0.25em rgba(118, 232, 252,0.3);
 }
 .twist-cont.clicked {
+  transform: rotate(-90deg);
+
   background-color: rgba(200,210,255,0.35);
   box-shadow: 0 0 1em 0.5em rgba(200,210,255,0.35);
   
   transition-duration: 1s;
+}
+.twist-cont.clicked.clicked-left {
+  transform: rotate(90deg);
 }
 .twist-cont.clicked:hover {
   background-color: rgba(200,210,255,0.3);
