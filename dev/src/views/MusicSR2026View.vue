@@ -133,6 +133,8 @@ export default {
     return {
         // State
         animFrame: 0,
+        titleAnimFrame: 0,
+        titleAnimRateMult: 2,
         maxFrames: 6,
         animInterval: -1,
         animStarted: false,
@@ -261,9 +263,11 @@ export default {
     },
     albumLetterStyled(albumLetter, index, isTitle) {
         if (albumLetter == ' ') return '';
-        let choice = (index + this.animFrame) % this.maxFrames;
+        let mutlTitleAnimFrame = Math.round(1.0 * this.titleAnimFrame / this.titleAnimRateMult);
+        let revIndex = this.maxFrames - (index % this.maxFrames);
+        let choice = (revIndex + mutlTitleAnimFrame) % this.maxFrames;
         let initialClasses = !isTitle ? 'album-letter ' : 'medium-dual-label ';
-        let albumClasses = initialClasses + `dual-label-${choice}`;
+        let albumClasses = initialClasses + `dual-label-${choice+1}`;
         if (albumLetter == 'x') return albumClasses + ' muted-letter';
         return albumClasses;
     },
@@ -399,6 +403,10 @@ export default {
         this.animFrame += 1;
         if (this.animFrame >= this.maxFrames) {
             this.animFrame = 0;
+        }
+        this.titleAnimFrame += 1;
+        if (this.titleAnimFrame >= this.maxFrames * this.titleAnimRateMult) {
+            this.titleAnimFrame = 0;
         }
         if (this.bgAnimEnabled) {
             this.bgAnimFrame += 1;
@@ -814,7 +822,8 @@ export default {
     font-size: 13pt;
     font-weight: bolder;
     transition-property: text-shadow, color;
-    transition-duration: 3s;
+    transition-duration: 3.5s;
+    transition-timing-function: ease;
 }
 
 h2.medium-dual-label {
@@ -826,6 +835,8 @@ h2.medium-dual-label {
     line-height: 1.1;
     transition-property: text-shadow, color;
     transition-duration: 3s;
+    transition-timing-function: ease;
+    transition-delay: 0.5s;
 }
 
 .dual-label-1 {
@@ -834,7 +845,7 @@ h2.medium-dual-label {
 }
 .dual-label-2 {
     color: hsl(219, 70%, 85%);
-    text-shadow: -0.1em 0.16em 0.01em hsl(208, 35%, 8%);
+    text-shadow: -0.1em 0.16em 0.01em hsl(208, 35%, 9%);
 }
 .dual-label-3 {
     color: hsl(190, 75%, 90%);    
@@ -846,7 +857,7 @@ h2.medium-dual-label {
 }
 .dual-label-5 {
     color: hsl(170, 70%, 85%);
-    text-shadow: -0.1em -0.15em 0.01em hsl(208, 35%, 8%);
+    text-shadow: -0.1em -0.15em 0.01em hsl(208, 35%, 7%);
 }
 .dual-label-6 {
     color: hsl(245, 40%, 90%);
@@ -924,17 +935,17 @@ h2.medium-dual-label {
     opacity: 85%;
     font-size: 200%;  
     color: hsl(209, 35%, 95%);
-    text-shadow: 0.15em 0.58em 0.01em rgba(31, 41, 116, 0.8);
+    /* text-shadow: 0.15em 0.58em 0.01em rgba(31, 41, 116, 0.8); */
     font-weight: bolder;
     line-height: 0.85;
 }
 
 .album-name .album-letter {
     transition-property: text-shadow, color;
-    transition-duration: 3s;
+    transition-duration: 6s;
 }
 .album-name .album-letter.muted-letter {
-    opacity: 0.4;
+    opacity: 0.5;
 }
 
 .medium-dual-label.muted-letter {
@@ -942,22 +953,23 @@ h2.medium-dual-label {
 }
 
 .album-letter.dual-label-1 {
-    text-shadow: 0.13em 0.63em 0.01em rgba(31, 41, 116, 0.8);
+    text-shadow: 0.14em 0.58em 0.01em rgba(35, 45, 120, 0.85);
 }
 .album-letter.dual-label-2 {
-    text-shadow: 0.14em 0.60em 0.01em rgba(28, 35, 100, 0.8);
+    text-shadow: 0.16em 0.56em 0.012em rgba(28, 35, 100, 0.84);
 }
 .album-letter.dual-label-3 {
-    text-shadow: 0.16em 0.54em 0.01em rgba(22, 30, 92, 0.8);
+    text-shadow: 0.17em 0.53em 0.018em rgba(22, 30, 92, 0.75);
 }
 .album-letter.dual-label-4 {
-    text-shadow: 0.17em 0.51em 0.01em rgba(19, 25, 86, 0.8);
+    text-shadow: 0.16em 0.51em 0.04em rgba(13, 18, 80, 0.5); 
 }
 .album-letter.dual-label-5 {
-    text-shadow: 0.16em 0.54em 0.01em rgba(15, 15, 80, 0.8);
+    text-shadow: 0.14em 0.53em 0.018em rgba(17, 20, 82, 0.75);
 }
 .album-letter.dual-label-6 {
-    text-shadow: 0.14em 0.60em 0.01em rgba(20, 25, 86, 0.8);
+    /*text-shadow: 0.13em 0.63em 0.01em rgba(31, 41, 116, 0.8);*/
+    text-shadow: 0.13em 0.56em 0.012em rgba(25, 30, 92, 0.84);
 }
 
 
