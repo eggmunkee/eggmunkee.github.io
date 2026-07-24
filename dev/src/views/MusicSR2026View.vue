@@ -259,7 +259,7 @@ export default {
     },
     incrementAnim() {
         // General text style anim
-        this.animFrame += 1;
+        this.animFrame += 0.25;
         if (this.animFrame >= this.maxFrames) {
             this.animFrame = 0;
         }
@@ -270,30 +270,27 @@ export default {
         }
         // Roving title char anim
         const currTitleLength = this.currentSongAlbum.length;
+        function capPos(p) {
+            if (p < 0) {
+                // wrap delta around to end
+                p += currTitleLength;
+            }
+            else if (p >= currTitleLength) {
+                // wrap dealt around to beginning
+                p -= currTitleLength;
+            }
+            return p;
+        }
         for (let ts = 0; ts < this.titleAnimSetFr.length; ts++) {
             this.titleAnimSetFr[ts] += 1;
             let currPos = this.titleAnimSetPos[ts];
-            if (currPos < 0) {
-                // wrap delta around to end
-                currPos += currTitleLength;
-            }
-            else if (currPos >= currTitleLength) {
-                // wrap dealt around to beginning
-                currPos -= currTitleLength;
-            }
+            currPos = capPos(currPos);
             let posDelta = (1 + Math.floor(ts / 2.0)) * ((ts % 2 == 0) ? 1 : -1);
             if (this.titleAnimSetFr[ts] >= this.titleAnimRateMult) {
                 this.titleAnimSetFr[ts] = 0;
                 currPos += posDelta;
             }
-            if (currPos < 0) {
-                // wrap delta around to end
-                currPos += currTitleLength;
-            }
-            else if (currPos >= currTitleLength) {
-                // wrap dealt around to beginning
-                currPos -= currTitleLength;
-            }
+            currPos = capPos(currPos);
             if (currPos < 0 || currPos >= currTitleLength) {
                 currPos = -1;
             }
@@ -561,7 +558,8 @@ export default {
     },
     songStyle(index, addBaseClass) {
         try {
-            let choice = (index + this.animFrame) % this.maxFrames;
+            let animFrInt = Math.floor(this.animFrame);
+            let choice = (index + this.animFrInt) % this.maxFrames;
             return (addBaseClass ? 'small-dual-label ' : '') + `dual-label-${choice+1}`;
         }
         catch {
@@ -997,56 +995,56 @@ h2.medium-dual-label {
 }
 
 .album-letter.dual-label-1 {
-    text-shadow: 0.17em 0.60em 0.01em rgba(72, 156, 229, 0.8);
+    text-shadow: 0.17em 0.60em 0.01em rgba(40, 101, 155, 0.8);
 }
 .album-letter.dual-label-1.alt {
-    text-shadow: 0.17em 0.60em 0.01em hsla(209, 75%, 80%, 65%); 
+    text-shadow: 0.17em 0.60em 0.01em hsla(209, 75%, 70%, 60%); 
 }
 .album-letter.dual-label-2 {
-    text-shadow: 0.19em 0.58em 0.012em rgba(43, 100, 150, 0.75);
+    text-shadow: 0.19em 0.58em 0.012em rgba(32, 80, 122, 0.75);
     transform:scaleX(-1);
 }
 .album-letter.dual-label-2.alt {
-    text-shadow: 0.19em 0.58em 0.012em hsla(219, 91%, 94%, 65%);
+    text-shadow: 0.19em 0.58em 0.012em hsla(219, 91%, 84%, 60%);
 }
 .album-letter.dual-label-3 {
-    text-shadow: 0.20em 0.55em 0.018em rgba(18, 54, 85, 0.7);
+    text-shadow: 0.20em 0.55em 0.018em rgba(18, 54, 85, 0.75);
 }
 .album-letter.dual-label-3.alt {
-    text-shadow: 0.20em 0.55em 0.018em hsla(33, 54%, 91%, 65%);
+    text-shadow: 0.20em 0.55em 0.018em hsla(33, 54%, 81%, 55%);
 }
 .album-letter.dual-label-4 {
-    text-shadow: 0.19em 0.53em 0.04em rgba(5, 22, 37, 0.55);
+    text-shadow: 0.19em 0.53em 0.04em rgba(10, 42, 70, 0.65);
     
 }
 .album-letter.dual-label-4.alt {
-    text-shadow: 0.19em 0.53em 0.04em hsla(120, 63%, 89%, 65%);
+    text-shadow: 0.19em 0.53em 0.04em hsla(120, 63%, 79%, 55%);
 }
 .album-letter.dual-label-5 {
-    text-shadow: 0.17em 0.55em 0.018em rgba(18, 54, 85, 0.7);
+    text-shadow: 0.17em 0.55em 0.018em rgba(18, 54, 85, 0.75);
 }
 .album-letter.dual-label-5.alt {
-    text-shadow: 0.17em 0.55em 0.018em hsla(296, 89%, 95%, 65%);
+    text-shadow: 0.17em 0.55em 0.018em hsla(296, 89%, 85%, 55%);
 }
 .album-letter.dual-label-6 {
     /*text-shadow: 0.13em 0.63em 0.01em rgba(31, 41, 116, 0.8);*/
-    text-shadow: 0.16em 0.58em 0.012em rgba(43, 100, 150, 0.75);
+    text-shadow: 0.16em 0.58em 0.012em rgba(32, 80, 122, 0.75);
 }
 .album-letter.dual-label-6.alt {
-    text-shadow: 0.16em 0.58em 0.012em hsla(170, 70%, 85%, 65%);
+    text-shadow: 0.16em 0.58em 0.012em hsla(170, 70%, 75%, 60%);
 }
 
 .album-letter.dual-label-1.alt,
 .album-letter.dual-label-6.alt {
-    color: rgba(72, 156, 229, 0.9);
+    color: rgba(91, 177, 252, 0.9);
 }
 .album-letter.dual-label-2.alt,
 .album-letter.dual-label-5.alt {
-    color: rgba(60, 127, 185, 0.9);
+    color: rgba(79, 153, 218, 0.9);
 }
 .album-letter.dual-label-3.alt,
 .album-letter.dual-label-4.alt {
-    color: rgba(44, 101, 151, 0.9);
+    color: rgba(65, 132, 190, 0.9);
 }
 
 
