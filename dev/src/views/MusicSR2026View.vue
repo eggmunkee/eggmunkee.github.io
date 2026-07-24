@@ -128,20 +128,25 @@ const FORWARD = false;
 const REVERSE = true;
 const FORCE_TRANSITION = true;
 const BUTTON_TIMEOUT = 1500;
+const ALBUM_NAME = 'STOCHASTIC RECOVERY 20x6';
+const ALBUM_ARTIST = 'eggmunkee';
 export default {
   data() {
     return {
         // State
         animFrame: 0,
         titleAnimFrame: 0,
-        titleAnimRateMult: 2,
+        titleAnimRateMult: 3,
+        titleAnimSetPos: [14, 22, 24, 14],
+        titleAnimSetFr: [0, 3, 1, 5],
+        tintFrame: 0,
         maxFrames: 6,
         animInterval: -1,
         animStarted: false,
         currentSongIndex: 0,
-        currentSongTitle: 'STOCHASTIC RECOVERY 20x6',
-        currentSongArtist: 'eggmunkee',
-        currentSongAlbum: 'STOCHASTIC RECOVERY 20x6',
+        currentSongTitle: ALBUM_NAME,
+        currentSongArtist: ALBUM_ARTIST,
+        currentSongAlbum: ALBUM_NAME,
         // Configuration
         songList: initialSongList,
         // play next state
@@ -216,17 +221,15 @@ export default {
         let cl = overlay1.classList;
         cl.add('bg-base');
         cl.add(initialLayer1Bg);
-        //c1.add('bg-dark-fade');
+        
         cl = overlay2.classList;
         this.removeBgClasses(overlay2);
         cl.add('bg-base');
         cl.add('bg-transp');
-        //cl.add('bg-dark-07');
         
         setTimeout(function() { 
-            overlay3.classList.add('overlay-z3-25');
+            overlay3.classList.add('overlay-z3-35');
         }, 3000);
-        //document.getElementsByTagName('body')[0].classList.add('bg-wavy-blue-verydark');
     }
     catch (e) {}
   },
@@ -254,6 +257,65 @@ export default {
         this.tintOn = true;
         this.clearBgClicked();
     },
+    incrementAnim() {
+        // General text style anim
+        this.animFrame += 1;
+        if (this.animFrame >= this.maxFrames) {
+            this.animFrame = 0;
+        }
+        // Title anim
+        this.titleAnimFrame += 1;
+        if (this.titleAnimFrame >= this.maxFrames * this.titleAnimRateMult) {
+            this.titleAnimFrame = 0;
+        }
+        // Roving title char anim
+        const currTitleLength = this.currentSongAlbum.length;
+        for (let ts = 0; ts < this.titleAnimSetFr.length; ts++) {
+            this.titleAnimSetFr[ts] += 1;
+            let currPos = this.titleAnimSetPos[ts];
+            if (currPos < 0) {
+                // wrap delta around to end
+                currPos += currTitleLength;
+            }
+            else if (currPos >= currTitleLength) {
+                // wrap dealt around to beginning
+                currPos -= currTitleLength;
+            }
+            let posDelta = (1 + Math.floor(ts / 2.0)) * ((ts % 2 == 0) ? 1 : -1);
+            if (this.titleAnimSetFr[ts] >= this.titleAnimRateMult) {
+                this.titleAnimSetFr[ts] = 0;
+                currPos += posDelta;
+            }
+            if (currPos < 0) {
+                // wrap delta around to end
+                currPos += currTitleLength;
+            }
+            else if (currPos >= currTitleLength) {
+                // wrap dealt around to beginning
+                currPos -= currTitleLength;
+            }
+            if (currPos < 0 || currPos >= currTitleLength) {
+                currPos = -1;
+            }
+            this.titleAnimSetPos[ts] = currPos;
+        }
+        // Backdrop anim
+        if (this.bgAnimEnabled) {
+            this.bgAnimFrame += 1;
+            if (this.bgAnimFrame >= this.bgAnimIncrCount) {
+                this.bgAnimFrame = 0;
+                this.incrementBgAnim();
+            }
+        }
+        // Tint Anim
+        if (this.tintOn) {
+            this.tintFrame += 1;
+            if (this.tintFrame >= 3) {
+                this.tintFrame = 0;
+                this.updateColorTint();
+            }
+        }
+    },
     albumNameChopped(albumName) {
         let letters = [];
         for (let i=0; i< albumName.length; i++) {
@@ -265,9 +327,15 @@ export default {
         if (albumLetter == ' ') return '';
         let mutlTitleAnimFrame = Math.round(1.0 * this.titleAnimFrame / this.titleAnimRateMult);
         let revIndex = this.maxFrames - (index % this.maxFrames);
+        let animMatchCt = 0;
+        for (let p=0; p < this.titleAnimSetPos.length; p++) {
+            if (index == this.titleAnimSetPos[p])
+                animMatchCt += 1;
+        }
+        let animSetMatch = animMatchCt % 2 == 1;
         let choice = (revIndex + mutlTitleAnimFrame) % this.maxFrames;
         let initialClasses = !isTitle ? 'album-letter ' : 'medium-dual-label ';
-        let albumClasses = initialClasses + `dual-label-${choice+1}`;
+        let albumClasses = initialClasses + `dual-label-${choice+1}` + (animSetMatch ? ' alt' : '');
         if (albumLetter == 'x') return albumClasses + ' muted-letter';
         return albumClasses;
     },
@@ -399,25 +467,6 @@ export default {
         }
         catch (e) {}
     },
-    incrementAnim() {
-        this.animFrame += 1;
-        if (this.animFrame >= this.maxFrames) {
-            this.animFrame = 0;
-        }
-        this.titleAnimFrame += 1;
-        if (this.titleAnimFrame >= this.maxFrames * this.titleAnimRateMult) {
-            this.titleAnimFrame = 0;
-        }
-        if (this.bgAnimEnabled) {
-            this.bgAnimFrame += 1;
-            if (this.bgAnimFrame >= this.bgAnimIncrCount) {
-                this.bgAnimFrame = 0;
-                this.incrementBgAnim();
-            }
-        }
-        if (this.tintOn)
-            this.updateColorTint();
-    },
     playThisSong(songIndex) {
         console.log("Play song", songIndex);
         try {
@@ -460,16 +509,15 @@ export default {
             let songIdx = this.$refs['audioPlayer'].currentPlayIndex;
             let song = this.songList[songIdx];
             this.currentSongIndex = songIdx;
-            this.currentSongTitle = song.title || ' ';
-            this.currentSongArtist = song.artist || ' ';
-            this.currentSongAlbum = song.album || ' ';
-            this.scrollCurrentSongIntoView();
-            
-            
+            this.currentSongTitle = song.title || ALBUM_NAME;
+            this.currentSongArtist = song.artist || ALBUM_ARTIST;
+            this.currentSongAlbum = song.album || ALBUM_NAME;
+            if (this.playlistVisible)
+                this.scrollCurrentSongIntoView();
         } catch (e) {
-            this.currentSongTitle = 'Unknown';
-            this.currentSongArtist = ' ';
-            this.currentSongAlbum = ' ';
+            this.currentSongTitle = ALBUM_NAME;
+            this.currentSongArtist = ALBUM_ARTIST;
+            this.currentSongAlbum = ALBUM_NAME;
             this.currentSongIndex = 0;
         }
 
@@ -840,27 +888,27 @@ h2.medium-dual-label {
 }
 
 .dual-label-1 {
-    color: hsl(209, 70%, 85%);    
+    color: hsl(209, 75%, 84%);    
     text-shadow: -0.05em -0.17em 0.01em hsl(208, 35%, 8%);
 }
 .dual-label-2 {
-    color: hsl(219, 70%, 85%);
+    color: hsl(0, 71%, 94%);
     text-shadow: -0.1em 0.16em 0.01em hsl(208, 35%, 9%);
 }
 .dual-label-3 {
-    color: hsl(190, 75%, 90%);    
+    color: hsl(47, 91%, 91%);    
     text-shadow: 0.15em 0.16em 0.01em hsl(208, 35%, 8%);
 }
 .dual-label-4 {
-    color: hsl(120, 60%, 90%);    
+    color: hsl(120, 82%, 89%);    
     text-shadow: -0.15em 0.13em 0.01em hsl(208, 35%, 8%);
 }
 .dual-label-5 {
-    color: hsl(170, 70%, 85%);
+    color: hsl(296, 89%, 95%);
     text-shadow: -0.1em -0.15em 0.01em hsl(208, 35%, 7%);
 }
 .dual-label-6 {
-    color: hsl(245, 40%, 90%);
+    color: hsl(170, 70%, 86%);
     text-shadow: -0.2em -0.1em 0.01em hsl(208, 35%, 8%);
 }
 
@@ -937,39 +985,68 @@ h2.medium-dual-label {
     color: hsl(209, 35%, 95%);
     /* text-shadow: 0.15em 0.58em 0.01em rgba(31, 41, 116, 0.8); */
     font-weight: bolder;
-    line-height: 0.85;
+    line-height: 1.1;
 }
 
 .album-name .album-letter {
     transition-property: text-shadow, color;
-    transition-duration: 6s;
+    transition-duration: 5s;
 }
 .album-name .album-letter.muted-letter {
-    opacity: 0.5;
-}
-
-.medium-dual-label.muted-letter {
-    opacity: 0.35;
+    opacity: 0.4;
 }
 
 .album-letter.dual-label-1 {
-    text-shadow: 0.14em 0.58em 0.01em rgba(35, 45, 120, 0.85);
+    text-shadow: 0.17em 0.60em 0.01em rgba(72, 156, 229, 0.8);
+}
+.album-letter.dual-label-1.alt {
+    text-shadow: 0.17em 0.60em 0.01em hsla(209, 75%, 80%, 65%); 
 }
 .album-letter.dual-label-2 {
-    text-shadow: 0.16em 0.56em 0.012em rgba(28, 35, 100, 0.84);
+    text-shadow: 0.19em 0.58em 0.012em rgba(43, 100, 150, 0.75);
+    transform:scaleX(-1);
+}
+.album-letter.dual-label-2.alt {
+    text-shadow: 0.19em 0.58em 0.012em hsla(219, 91%, 94%, 65%);
 }
 .album-letter.dual-label-3 {
-    text-shadow: 0.17em 0.53em 0.018em rgba(22, 30, 92, 0.75);
+    text-shadow: 0.20em 0.55em 0.018em rgba(18, 54, 85, 0.7);
+}
+.album-letter.dual-label-3.alt {
+    text-shadow: 0.20em 0.55em 0.018em hsla(33, 54%, 91%, 65%);
 }
 .album-letter.dual-label-4 {
-    text-shadow: 0.16em 0.51em 0.04em rgba(13, 18, 80, 0.5); 
+    text-shadow: 0.19em 0.53em 0.04em rgba(5, 22, 37, 0.55);
+    
+}
+.album-letter.dual-label-4.alt {
+    text-shadow: 0.19em 0.53em 0.04em hsla(120, 63%, 89%, 65%);
 }
 .album-letter.dual-label-5 {
-    text-shadow: 0.14em 0.53em 0.018em rgba(17, 20, 82, 0.75);
+    text-shadow: 0.17em 0.55em 0.018em rgba(18, 54, 85, 0.7);
+}
+.album-letter.dual-label-5.alt {
+    text-shadow: 0.17em 0.55em 0.018em hsla(296, 89%, 95%, 65%);
 }
 .album-letter.dual-label-6 {
     /*text-shadow: 0.13em 0.63em 0.01em rgba(31, 41, 116, 0.8);*/
-    text-shadow: 0.13em 0.56em 0.012em rgba(25, 30, 92, 0.84);
+    text-shadow: 0.16em 0.58em 0.012em rgba(43, 100, 150, 0.75);
+}
+.album-letter.dual-label-6.alt {
+    text-shadow: 0.16em 0.58em 0.012em hsla(170, 70%, 85%, 65%);
+}
+
+.album-letter.dual-label-1.alt,
+.album-letter.dual-label-6.alt {
+    color: rgba(72, 156, 229, 0.9);
+}
+.album-letter.dual-label-2.alt,
+.album-letter.dual-label-5.alt {
+    color: rgba(60, 127, 185, 0.9);
+}
+.album-letter.dual-label-3.alt,
+.album-letter.dual-label-4.alt {
+    color: rgba(44, 101, 151, 0.9);
 }
 
 
