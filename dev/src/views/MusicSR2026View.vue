@@ -134,6 +134,7 @@ export default {
   data() {
     return {
         // State
+        animFr0: 0,
         animFrame: 0,
         titleAnimFrame: 0,
         titleAnimRateMult: 3,
@@ -259,7 +260,11 @@ export default {
     },
     incrementAnim() {
         // General text style anim
-        this.animFrame += 0.25;
+        this.animFr0 += 1;
+        if (this.animFr0 >= 3) {
+            this.animFrame += 1;
+            this.animFr0 = 0;
+        }
         if (this.animFrame >= this.maxFrames) {
             this.animFrame = 0;
         }
@@ -558,8 +563,7 @@ export default {
     },
     songStyle(index, addBaseClass) {
         try {
-            let animFrInt = Math.floor(this.animFrame);
-            let choice = (index + this.animFrInt) % this.maxFrames;
+            let choice = (index + this.animFrame) % this.maxFrames;
             return (addBaseClass ? 'small-dual-label ' : '') + `dual-label-${choice+1}`;
         }
         catch {
