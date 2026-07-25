@@ -56,7 +56,15 @@
 .overlay-z3.overlay-z3-50 {
   opacity: .4;
   transition-duration: 3s;
-  background: radial-gradient(ellipse, rgba(133, 133, 133, 0), 40%, rgba(72, 156, 229, 25%) 70%, rgba(72, 156, 229, 15%), 85%, rgb(27, 8, 0));
+  background: radial-gradient(ellipse,
+    rgba(133, 133, 133, 0), 
+    40%, 
+    rgba(72, 156, 229, 25%), 
+    70%, 
+    rgba(72, 156, 229, 20%), 
+    rgba(7, 37, 63, 0.2), 
+    /* 90%, */
+    rgb(27, 8, 0));
   background-blend-mode:screen;
 } 
 
