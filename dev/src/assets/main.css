@@ -7,6 +7,7 @@
   width: 100%;
   height: 100%;
   z-index: 1; 
+  background-blend-mode:screen;
 }
 
 .overlay-z2 { 
@@ -17,6 +18,7 @@
   height: 100%;
   z-index: 2; 
   opacity: 0.5;
+  background-blend-mode:screen;
 }
 
 .overlay-z3 { 
@@ -28,14 +30,16 @@
   z-index: 3; 
   background-color: rgba(23, 65, 112, 0.35);
   opacity: 1;
-  transition-property: background-color, opacity;
+  transition-property: background, background-color, opacity;
   transition-duration: 10s;
 }
-.overlay-z1.hide, .overlay-z2.hide, .overlay-z3.hide
-{
-  display: none;
-}
 
+.overlay-z3.overlay-hidden {
+  display: none;
+  opacity: 0;
+  transition-property: background-color; /* drop opacity as transitioned for hidden */
+  transition-duration: 2s
+}
 .overlay-z3.overlay-z3-12 {
   opacity: .12;
 }
@@ -46,7 +50,15 @@
 
 .overlay-z3.overlay-z3-35 {
   opacity: .35;
+  transition-duration: 4s
 }
+
+.overlay-z3.overlay-z3-50 {
+  opacity: .4;
+  transition-duration: 3s;
+  background: radial-gradient(ellipse, rgba(133, 133, 133, 0), 40%, rgba(72, 156, 229, 25%) 70%, rgba(72, 156, 229, 15%), 85%, rgb(27, 8, 0));
+  background-blend-mode:screen;
+} 
 
 .overlay-50 {
   background: rgba(0, 0, 0, 0.5);
@@ -170,9 +182,10 @@ span.blue-dimmed-bg {
   box-shadow: 0 0 1em 0.5em rgba(200,210,255,0.25);
 }
 
+/* set a - tint toggle currently */
 .twist-cont.set-a {
   transform: rotate(0deg);
-
+  transition-property: background-color, box-shadow;
   background-color: rgba(255, 247, 175, 0.1);
   box-shadow: 0 0 .75em 0.25em rgba(255, 247, 175,0.1);
 }
@@ -182,7 +195,7 @@ span.blue-dimmed-bg {
 }
 .twist-cont.set-a.on {
   transform: rotate(90deg);
-
+  transition-property: transform, background-color, box-shadow;
   background-color: rgba(255, 247, 175,0.25);
   box-shadow: 0 0 .75em 0.25em rgba(255, 247, 175,0.25);
 }
@@ -190,7 +203,27 @@ span.blue-dimmed-bg {
   background-color: rgba(175,190,255,0.2);
   box-shadow: 0 0 .75em 0.25em rgba(175,190,255,0.2);
 }
-
+.twist-cont.set-a.on.tint-max {
+  transform: rotate(180deg);
+  transition-property: transform, background-color, box-shadow;
+  background-color: rgba(255, 207, 175, 0.25);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 207, 175,0.25);
+}
+.twist-cont.set-a.on.tint-max:hover {
+  
+  background-color: rgba(255, 207, 175,0.2);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 207, 175,0.2);
+}
+.twist-cont.set-a.on.tint-light {
+  transform: rotate(270deg);
+  transition-property: transform, background-color, box-shadow;
+  background-color: rgba(175, 255, 215, 0.25);
+  box-shadow: 0 0 .75em 0.25em rgba(175, 255, 215,0.25);
+}
+.twist-cont.set-a.on.tint-light:hover {
+  background-color: rgba(175, 255, 215,0.2);
+  box-shadow: 0 0 .75em 0.25em rgba(175, 255, 215,0.2);
+}
 
 .twist-cont.set-b {
   transform: rotate(0deg);

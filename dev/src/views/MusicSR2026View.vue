@@ -113,7 +113,7 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                 <span class="twist-cont" :class="plusClicked ? 'clicked' : ''" @click="nextBg" @dblclick.stop.prevent="" title="next">
                     <span class="blue-dimmed twist-slash">))</span>
                 </span>
-                <span class="twist-cont set-a" @click="toggleTint" :class="tintOn ? 'on' : ''" @dblclick.stop.prevent="" title="toggle tint">
+                <span class="twist-cont set-a" @click="upgradeTint" :class="tintToggleStateStyle()" title="toggle tint">
                     <span class="blue-dimmed twist-slash">_</span>
                 </span>
             </div>
@@ -130,6 +130,11 @@ const FORCE_TRANSITION = true;
 const BUTTON_TIMEOUT = 1500;
 const ALBUM_NAME = 'STOCHASTIC RECOVERY 20x6';
 const ALBUM_ARTIST = 'eggmunkee';
+const TINT_OFF = 0;
+const TINT_ON = 1;
+const TINT_MAX = 2;
+const TINT_LIGHT = 3;
+
 export default {
   data() {
     return {
@@ -138,6 +143,7 @@ export default {
         animFrame: 0,
         titleAnimFrame: 0,
         titleAnimRateMult: 3,
+        titleLetterAnimRateMult: 7,
         titleAnimSetPos: [14, 22, 24, 14],
         titleAnimSetFr: [0, 3, 1, 5],
         tintFrame: 0,
@@ -164,29 +170,29 @@ export default {
         bgLayerToggle: 1, // 1 is layer 1, 2 is layer 2 last updated
         bgColorIdx: 0,
         bgColors: [
-            'rgba(0,0,0,0.22)', 
-            'rgba(255,30,10,.26)', 
-            'rgba(90,120,180,.31)', 
-            'rgba(50,30,220,.37', 
-            'rgba(0,170,60,0.45)', 
-            'rgba(0,0,0,0.46)', 
-            'rgba(0,60,120,0.47)', 
-            'rgba(50,30,220,.50)', 
-            'rgba(190,170,240,0.49)',
-            'rgba(255,255,255,0.46)',
-            'rgba(255,255,80,0.40)', 
-            'rgba(255,255,0,0.35)', 
-            'rgba(0,120,255,0.31)', 
-            'rgba(0,255,0,0.27)', 
-            'rgba(255,60,0,.24)', 
-            'rgba(220,255,0,0.21', 
-            'rgba(190,255,255,0.17)',
-            'rgba(125,255,255,0.19)'
+            'rgba(0,0,0,0.32)', 
+            'rgba(255,30,10,.36)', 
+            'rgba(90,120,180,.41)', 
+            'rgba(50,30,220,.47', 
+            'rgba(0,170,60,0.55)', 
+            'rgba(0,0,0,0.56)', 
+            'rgba(0,60,120,0.57)', 
+            'rgba(50,30,220,.60)', 
+            'rgba(190,170,240,0.59)',
+            'rgba(255,255,255,0.56)',
+            'rgba(255,255,80,0.50)', 
+            'rgba(255,255,0,0.45)', 
+            'rgba(0,120,255,0.41)', 
+            'rgba(0,255,0,0.37)', 
+            'rgba(255,60,0,.34)', 
+            'rgba(220,255,0,0.31', 
+            'rgba(190,255,255,0.27)',
+            'rgba(125,255,255,0.29)'
         ],
         bgAnimEnabled: false,
         bgAnimEnFr: false,
         bgOn: true,
-        tintOn: false,
+        tintMode: TINT_ON,
         minusClicked: true,
         plusClicked: true,
         timeLeftClicked: -1,
@@ -228,8 +234,9 @@ export default {
         cl.add('bg-base');
         cl.add('bg-transp');
         
+        let self = this;
         setTimeout(function() { 
-            overlay3.classList.add('overlay-z3-35');
+            self.renderTintMode();
         }, 3000);
     }
     catch (e) {}
@@ -255,7 +262,7 @@ export default {
         this.animInterval = setInterval(this.incrementAnim, 4000);
         this.animStarted = true;
         this.bgAnimEnabled = true;
-        this.tintOn = true;
+        this.tintMode = TINT_ON;
         this.clearBgClicked();
     },
     incrementAnim() {
@@ -291,15 +298,16 @@ export default {
             let currPos = this.titleAnimSetPos[ts];
             currPos = capPos(currPos);
             let posDelta = (1 + Math.floor(ts / 2.0)) * ((ts % 2 == 0) ? 1 : -1);
-            if (this.titleAnimSetFr[ts] >= this.titleAnimRateMult) {
+            if (this.titleAnimSetFr[ts] >= this.titleLetterAnimRateMult) {
                 this.titleAnimSetFr[ts] = 0;
                 currPos += posDelta;
+            
+                currPos = capPos(currPos);
+                if (currPos < 0 || currPos >= currTitleLength) {
+                    currPos = -1;
+                }
+                this.titleAnimSetPos[ts] = currPos;
             }
-            currPos = capPos(currPos);
-            if (currPos < 0 || currPos >= currTitleLength) {
-                currPos = -1;
-            }
-            this.titleAnimSetPos[ts] = currPos;
         }
         // Backdrop anim
         if (this.bgAnimEnabled) {
@@ -310,9 +318,11 @@ export default {
             }
         }
         // Tint Anim
-        if (this.tintOn) {
+        if (this.tintMode != TINT_OFF) {
             this.tintFrame += 1;
-            if (this.tintFrame >= 3) {
+            if ((this.tintMode == TINT_MAX && this.tintFrame >= 2)
+                || (this.tintMode == TINT_LIGHT && this.tintFrame >= 7)
+                || (this.tintMode == TINT_ON && this.tintFrame >= 4)) {
                 this.tintFrame = 0;
                 this.updateColorTint();
             }
@@ -602,19 +612,64 @@ export default {
         this.setBgNextClicked();
     },
     toggleTint() {
+        if (this.tintMode == TINT_ON) {
+            this.tintMode = TINT_OFF;
+            this.renderTintMode();
+        }
+        else {
+            this.tintMode = TINT_ON;
+            this.renderTintMode();
+        }
+    },
+    renderTintMode() {
         try {
             let overlay3 = document.getElementsByClassName('overlay-z3')[0];
             let o3st = overlay3.style;
-            if (o3st.display != 'none') { 
-                o3st.display = 'none';
-                this.tintOn = false;
+            let o3cl = overlay3.classList;
+            o3cl.remove('overlay-hidden');
+            o3cl.remove('overlay-z3-12');
+            o3cl.remove('overlay-z3-25');
+            o3cl.remove('overlay-z3-35');
+            o3cl.remove('overlay-z3-50');
+            if (this.tintMode == TINT_OFF) {
+                o3cl.add('overlay-hidden');
             }
-            else {
+            else if (this.tintMode == TINT_MAX) {
                 o3st.display = '';
-                this.tintOn = true;
+                o3cl.add('overlay-z3-50');
+            }
+            else if (this.tintMode == TINT_LIGHT) {
+                o3st.display = '';
+                o3cl.add('overlay-z3-12');
+            }
+            else { // ON
+                o3st.display = '';
+                o3cl.add('overlay-z3-25');
             }
         }
         catch (e) {}
+    },
+    upgradeTint() {
+        const currTintMode = this.tintMode;
+        if (currTintMode == TINT_OFF) {
+            this.tintMode = TINT_ON;
+        }
+        else if (currTintMode == TINT_ON) {
+            this.tintMode = TINT_MAX;
+        }
+        else if (currTintMode == TINT_MAX) {
+            this.tintMode = TINT_LIGHT;
+        }
+        else {
+            this.tintMode = TINT_OFF;
+        }
+        this.renderTintMode();
+    },
+    tintToggleStateStyle() {
+        if (this.tintMode == TINT_OFF) return '';
+        if (this.tintMode == TINT_MAX) return 'on tint-max';
+        if (this.tintMode == TINT_LIGHT) return 'on tint-light';
+        return 'on';
     },
     toggleBg() {
         try {
@@ -991,12 +1046,17 @@ h2.medium-dual-label {
 }
 
 .album-name .album-letter {
-    transition-property: text-shadow, color;
-    transition-duration: 5s;
+    position: relative;
+    top: 0;
+    transition: top 15s ease, text-shadow 5s, color 5s;
+    /* transition-property: text-shadow, color, position;
+    transition-duration: 5s; */
 }
 .album-name .album-letter.muted-letter {
     opacity: 0.4;
+    top: 0.15em;
 }
+
 
 .album-letter.dual-label-1 {
     text-shadow: 0.17em 0.60em 0.01em rgba(40, 101, 155, 0.8);
@@ -1040,15 +1100,18 @@ h2.medium-dual-label {
 
 .album-letter.dual-label-1.alt,
 .album-letter.dual-label-6.alt {
-    color: rgba(91, 177, 252, 0.9);
+    color: rgba(60, 163, 253, 0.9);
+    top: -0.12em;
 }
 .album-letter.dual-label-2.alt,
 .album-letter.dual-label-5.alt {
-    color: rgba(79, 153, 218, 0.9);
+    color: rgba(50, 140, 219, 0.9);
+    top: -0.08em;
 }
 .album-letter.dual-label-3.alt,
 .album-letter.dual-label-4.alt {
-    color: rgba(65, 132, 190, 0.9);
+    color: rgba(41, 121, 192, 0.9);
+    top: 0.06em;
 }
 
 
