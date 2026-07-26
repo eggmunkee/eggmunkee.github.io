@@ -30,15 +30,27 @@
   background-color: rgba(3, 31, 63, 100%);
   opacity: 1;
   transition: background 10s, background-color 10s, opacity 10s;
-  background: radial-gradient(ellipse,
+  background: 
+  radial-gradient(ellipse 120% 100% at 50% 25%,
+    rgba(0, 0, 0, 0), 
+    50%,
+    rgba(110, 144, 183, 10%),  
+    rgba(72, 156, 229, 15%), 
+    80%, 
+    rgba(72, 156, 229, 25%), 
+    rgba(7, 37, 63, 28%), 
+    90%,
+    rgb(27, 8, 0));
+  
+  /* radial-gradient(ellipse 110% 110% at 50% 35%,
     rgba(133, 133, 133, 0), 
     rgba(110, 144, 183, 15%),  
     rgba(72, 156, 229, 25%), 
     70%, 
     rgba(72, 156, 229, 20%), 
     rgba(7, 37, 63, 0.2), 
-    /* 90%, */
-    rgb(27, 8, 0));
+    
+    rgb(27, 8, 0)); */
 }
 
 .overlay-z3.overlay-hidden {
@@ -63,14 +75,15 @@
 
 .overlay-z3.overlay-z3-tint-max {
   opacity: .55;
-  background: radial-gradient(ellipse,
-    rgba(133, 133, 133, 0), 
-    rgba(110, 144, 183, 15%),  
+  background: radial-gradient(ellipse 120% 100% at 50% 25%,
+    rgba(0, 0, 0, 0), 
+    50%,
+    rgba(110, 144, 183, 10%),  
+    rgba(72, 156, 229, 15%), 
+    80%, 
     rgba(72, 156, 229, 25%), 
-    70%, 
-    rgba(72, 156, 229, 20%), 
-    rgba(7, 37, 63, 0.2), 
-    /* 90%, */
+    rgba(7, 37, 63, 28%), 
+    90%,
     rgb(27, 8, 0));
   background-blend-mode:screen;
 } 
@@ -79,15 +92,16 @@
 .overlay-z3.overlay-night-mode {
   opacity: 1;
   transition: background 4s, background-color 4s, opacity 4s;
-  background: radial-gradient(ellipse,
+  background: radial-gradient(ellipse 120% 100% at 50% 25%,
     rgba(95, 73, 0, 0.055), 
+    25%,
     rgba(116, 82, 9, 0.25),  
     50%,
     rgba(2, 109, 82, 0.2),  
-    65%,
+    70%,
     rgba(56, 43, 0, 0.35), 
     rgba(31, 2, 2, 0.65), 
-    98%,
+    100%,
     rgb(15, 4, 0));
 }
 
