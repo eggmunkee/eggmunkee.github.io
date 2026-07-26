@@ -8,7 +8,7 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
 
 <template>
 <div class="root-div">
-    <div class="player-section-outer">
+    <div class="player-section-outer" :class="tintMode == TINT_NIGHT ? 'night-mode' : tintMode == TINT_MAX ? 'tint-max' : ''">
         <div class="player-section" :class="playerBgVisible ? '' : 'no-bg'">
             <div class="player-heading">
                 <span class="stick-top-left from-padded">
@@ -51,7 +51,7 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
         </div>
     </div>
     
-    <div class="playlist-section-outer">
+    <div class="playlist-section-outer" :class="tintMode == TINT_NIGHT ? 'night-mode' : tintMode == TINT_MAX ? 'tint-max' : ''">
         <div class="playlist-section">
             <!-- corner ui -->
             <span class="stick-top-left">
@@ -100,8 +100,21 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
         </div>
         <div class="bg-controls centered-div">
             <div class="over-bg-area-shadow-dark centered-div">
+                <span style="display: inline-block; width: 0; position: relative; font-size: 8pt; text-shadow: 0 0.05em 0.5em rgba(255,255,255,70%)">
+                    <template v-if="!bgOn">
+                        <span style="position: absolute; right: .35em; top: 0.15em; color:#181818;">
+                            off
+                        </span>
+                    </template>
+                    <template v-else>
+                        <span style="position: absolute; right: .35em; top: 0.15em; color: hsla(208, 64%, 79%, 0.5);">
+                            &bullet;
+                        </span>
+                    </template>
+                </span>
                 <span class="twist-cont set-b" @click="toggleBg" :class="bgOn ? 'on' : ''" @dblclick.stop.prevent="" title="toggle backdrop">
                     <span class="blue-dimmed twist-slash">_</span>
+                    <span class="white-dimmed" style="cursor: pointer; position:absolute; left: 0.5em; "><em>b</em></span>
                 </span>
                 <span class="twist-cont" :class="minusClicked ? 'clicked clicked-left' : ''" @click="prevBg" @dblclick.stop.prevent="" title="previous">
                     <span class="blue-dimmed twist-slash">((</span>
@@ -115,6 +128,34 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                 </span>
                 <span class="twist-cont set-a" @click="upgradeTint" :class="tintToggleStateStyle()" title="toggle tint">
                     <span class="blue-dimmed twist-slash">_</span>
+                    <span class="white-dimmed" style="cursor: pointer; position:absolute; left: 0.5em;"><em>t</em></span>
+                </span>
+                <span style="display: inline-block; width: 0; position: relative; font-size: 8pt; text-shadow: 0 0.05em 0.5em rgba(255,255,255,70%)">
+                    <template v-if="tintMode == TINT_MAX">
+                        <span style="position: absolute; left: .35em; top: 0.15em; color: #886000;">
+                            MAX
+                        </span>
+                    </template>
+                    <template v-else-if="tintMode == TINT_LIGHT">
+                        <span style="position: absolute; left: .5em; top: 0.15em; color: #557799;">
+                            light
+                        </span>
+                    </template>
+                    <template v-else-if="tintMode == TINT_NIGHT">
+                        <span style="position: absolute; left: .5em; top: 0.15em; color: #903000;">
+                            night
+                        </span>
+                    </template>
+                    <template v-else-if="tintMode == TINT_OFF">
+                        <span style="position: absolute; left: .5em; top: 0.15em; color: #181818;">
+                            off
+                        </span>
+                    </template>
+                    <template v-else>
+                        <span style="position: absolute; left: .35em; top: 0.15em; color: hsla(208, 64%, 79%, 0.5);">
+                            &bullet;
+                        </span>
+                    </template>
                 </span>
             </div>
         </div>
@@ -134,6 +175,8 @@ const TINT_OFF = 0;
 const TINT_ON = 1;
 const TINT_MAX = 2;
 const TINT_LIGHT = 3;
+const TINT_NIGHT = 4;
+
 
 export default {
   data() {
@@ -192,6 +235,16 @@ export default {
             'rgba(190,255,255,.27)',
             'rgba(125,255,255,.29)'
         ],
+        bgColorsNight: [
+            'rgba(0,0,0,.70)', 
+            'rgba(30,15,5,.64)', 
+            'rgba(15,30,15,.66)',
+            'rgba(30,15,5,.64)',  
+            'rgba(0,0,0,.62)', 
+            'rgba(70,60,40,.65)', 
+            'rgba(4,40,35,.68)',
+            'rgba(5,20,30,.71)',
+        ],
         bgAnimEnabled: false,
         bgAnimEnFr: false,
         bgOn: true,
@@ -199,23 +252,27 @@ export default {
         minusClicked: true,
         plusClicked: true,
         timeLeftClicked: -1,
-        timeRightClicked: -1
+        timeRightClicked: -1,
+        bodyRefs: {
+            appDiv:null, overlay1: null, overlay2: null, overlay3: null
+        }
     }
   },
   mounted() {
     this.animInterval = setTimeout(this.startAnim, 3000);
     try {
-        const overlay1 = document.getElementsByClassName('overlay-z1')[0];
-        const overlay2 = document.getElementsByClassName('overlay-z2')[0];
-        const overlay3 = document.getElementsByClassName('overlay-z3')[0];
-        overlay1.style.display = '';
-        overlay2.style.display = '';
-        overlay3.style.display = '';
+        this.bodyRefs.appDiv = document.getElementById('app');
+        this.bodyRefs.overlay1 = document.getElementsByClassName('overlay-z1')[0];
+        this.bodyRefs.overlay2 = document.getElementsByClassName('overlay-z2')[0];
+        this.bodyRefs.overlay3 = document.getElementsByClassName('overlay-z3')[0];
+        this.bodyRefs.overlay1.style.display = '';
+        this.bodyRefs.overlay2.style.display = '';
+        this.bodyRefs.overlay3.style.display = '';
 
         // read overlay 1 and 2 bg frame state to pick up if present
-        const overlay1Frm = this.getFrameFromElem(overlay1);
-        const overlay2Frm = this.getFrameFromElem(overlay2);
-        const overlay2Transp = overlay2.classList.contains('bg-transp');
+        const overlay1Frm = this.getFrameFromElem(this.bodyRefs.overlay1);
+        const overlay2Frm = this.getFrameFromElem(this.bodyRefs.overlay2);
+        const overlay2Transp = this.bodyRefs.overlay2.classList.contains('bg-transp');
 
         let existingFrameIndex = 0; // default to first frame - 0
         if (overlay2Frm != -1 && !overlay2Transp) {
@@ -227,13 +284,13 @@ export default {
         // set model bg index
         this.currentBgIndex = existingFrameIndex;
         let initialLayer1Bg = this.getBgCls(this.currentBgIndex);
-        this.removeBgClasses(overlay1);
-        let cl = overlay1.classList;
+        this.removeBgClasses(this.bodyRefs.overlay1);
+        let cl = this.bodyRefs.overlay1.classList;
         cl.add('bg-base');
         cl.add(initialLayer1Bg);
         
-        cl = overlay2.classList;
-        this.removeBgClasses(overlay2);
+        cl = this.bodyRefs.overlay2.classList;
+        this.removeBgClasses(this.bodyRefs.overlay2);
         cl.add('bg-base');
         cl.add('bg-transp');
         
@@ -259,13 +316,19 @@ export default {
     if (this.timeRightClicked != -1)
         clearTimeout(this.timeRightClicked);
     this.timeLeftClicked = this.timeRightClicked = -1;
+    this.bodyRefs.overlay1 = null;
+    this.bodyRefs.overlay2 = null;
+    this.bodyRefs.overlay3 = null;
+
   },
   methods: {
     startAnim() {
         this.animInterval = setInterval(this.incrementAnim, 4000);
         this.animStarted = true;
         this.bgAnimEnabled = true;
-        this.tintMode = TINT_ON;
+        if (this.tintMode == TINT_OFF) {
+            this.tintMode = TINT_ON;
+        }
         this.clearBgClicked();
     },
     incrementAnim() {
@@ -324,7 +387,7 @@ export default {
         if (this.tintMode != TINT_OFF) {
             this.tintFrame += 1;
             if ((this.tintMode == TINT_MAX && this.tintFrame >= 2)
-                || (this.tintMode == TINT_LIGHT && this.tintFrame >= 7)
+                || ((this.tintMode == TINT_LIGHT || this.tintMode == TINT_NIGHT) && this.tintFrame >= 7)
                 || (this.tintMode == TINT_ON && this.tintFrame >= 4)) {
                 this.tintFrame = 0;
                 this.updateColorTint();
@@ -430,8 +493,8 @@ export default {
         elem.classList.add(nextClsName);
     },
     removeBgSlowFade() {
-        const overlay2 = document.getElementsByClassName('overlay-z2')[0];
-        let o2cl = overlay2.classList;
+        // const overlay2 = document.getElementsByClassName('overlay-z2')[0];
+        let o2cl = this.bodyRefs.overlay2.classList;
         if (o2cl.contains('bg-transp')) {
             o2cl.remove('bg-transp');
             o2cl.add('bg-fast-transition');
@@ -439,8 +502,8 @@ export default {
     },
     incrementBgAnim(reverse, forceTransition) {
         // get two overlay layers
-        const overlay1 = document.getElementsByClassName('overlay-z1')[0];
-        const overlay2 = document.getElementsByClassName('overlay-z2')[0];
+        // const overlay1 = document.getElementsByClassName('overlay-z1')[0];
+        // const overlay2 = document.getElementsByClassName('overlay-z2')[0];
         
         this.incrBgIndex(reverse || false);
 
@@ -448,23 +511,23 @@ export default {
 
         if (forceTransition) {
             this.bgLayerToggle = 1;
-            this.removeBgClasses(overlay1);
-            this.removeBgClasses(overlay2);
+            this.removeBgClasses(this.bodyRefs.overlay1);
+            this.removeBgClasses(this.bodyRefs.overlay2);
         }
 
         // go from fading to changing images
         if (this.bgLayerToggle == 2) {
             this.bgLayerToggle = 1;
             // Set Fade out class anim on 2nd level Overlay
-            overlay2.classList.add('bg-transp');
+            this.bodyRefs.overlay2.classList.add('bg-transp');
             // clear and rebuild bg styles
-            this.setupBgClasses(overlay1, this.currentBgIndex);
+            this.setupBgClasses(this.bodyRefs.overlay1, this.currentBgIndex);
         }
         // step into fading
         else {
             this.bgLayerToggle = 2;
             // clear and rebuild bg styles - clears transparant anim class also
-            this.setupBgClasses(overlay2, this.currentBgIndex); // (this.currentBgIndex + 5) % this.bgCount);
+            this.setupBgClasses(this.bodyRefs.overlay2, this.currentBgIndex); // (this.currentBgIndex + 5) % this.bgCount);
         }
         
         if (forceTransition) {
@@ -472,13 +535,17 @@ export default {
         }
     },
     updateColorTint() {
-        let color = this.bgColors[this.bgColorIdx];
+        let colorSet = this.tintMode != TINT_NIGHT ? this.bgColors : this.bgColorsNight;
+        if (!colorSet) return;
+        if (this.bgColorIdx >= colorSet.length)
+            this.bgColorIdx = this.bgColorIdx % colorSet.length;
+        let color = colorSet[this.bgColorIdx];
         this.bgColorIdx += 1;
-        if (this.bgColorIdx >= this.bgColors.length)
+        if (this.bgColorIdx >= colorSet.length)
             this.bgColorIdx = 0;
         try {
-            let overlay3 = document.getElementsByClassName('overlay-z3')[0];
-            overlay3.style.backgroundColor = color;
+            // let overlay3 = document.getElementsByClassName('overlay-z3')[0];
+            this.bodyRefs.overlay3.style.backgroundColor = color;
         }
         catch (e) {}
     },
@@ -626,27 +693,27 @@ export default {
     },
     renderTintMode() {
         try {
-            let overlay3 = document.getElementsByClassName('overlay-z3')[0];
-            let o3st = overlay3.style;
-            let o3cl = overlay3.classList;
+            let o3cl = this.bodyRefs.overlay3.classList;
             o3cl.remove('overlay-hidden');
             o3cl.remove('overlay-z3-12');
             o3cl.remove('overlay-z3-25');
             o3cl.remove('overlay-z3-35');
-            o3cl.remove('overlay-z3-50');
+            o3cl.remove('overlay-z3-tint-max');
+            o3cl.remove('overlay-night-mode');
             if (this.tintMode == TINT_OFF) {
                 o3cl.add('overlay-hidden');
             }
             else if (this.tintMode == TINT_MAX) {
-                o3st.display = '';
-                o3cl.add('overlay-z3-50');
+                o3cl.add('overlay-z3-tint-max');
             }
             else if (this.tintMode == TINT_LIGHT) {
-                o3st.display = '';
                 o3cl.add('overlay-z3-12');
             }
+            else if (this.tintMode == TINT_NIGHT) {
+                o3cl.add('overlay-z3-35')
+                o3cl.add('overlay-night-mode');
+            }
             else { // ON
-                o3st.display = '';
                 o3cl.add('overlay-z3-25');
             }
         }
@@ -658,10 +725,13 @@ export default {
             this.tintMode = TINT_ON;
         }
         else if (currTintMode == TINT_ON) {
-            this.tintMode = TINT_MAX;
-        }
-        else if (currTintMode == TINT_MAX) {
             this.tintMode = TINT_LIGHT;
+        }
+        else if (currTintMode == TINT_LIGHT) {
+            this.tintMode = TINT_NIGHT;
+        }
+        else if (currTintMode == TINT_NIGHT) {
+            this.tintMode = TINT_MAX;
         }
         else {
             this.tintMode = TINT_OFF;
@@ -672,20 +742,19 @@ export default {
         if (this.tintMode == TINT_OFF) return '';
         if (this.tintMode == TINT_MAX) return 'on tint-max';
         if (this.tintMode == TINT_LIGHT) return 'on tint-light';
+        if (this.tintMode == TINT_NIGHT) return 'on tint-night';
         return 'on';
     },
     toggleBg() {
         try {
-            const overlay1 = document.getElementsByClassName('overlay-z1')[0];
-            const overlay2 = document.getElementsByClassName('overlay-z2')[0];
             this.bgOn = !this.bgOn;
             if (this.bgOn) {
-                overlay1.style.display = '';
-                overlay2.style.display = '';
+                this.bodyRefs.overlay1.style.display = '';
+                this.bodyRefs.overlay2.style.display = '';
             }
             else {
-                overlay1.style.display = 'none';
-                overlay2.style.display = 'none';
+                this.bodyRefs.overlay1.style.display = 'none';
+                this.bodyRefs.overlay2.style.display = 'none';
             }
         }
         catch (e) {}
@@ -995,6 +1064,12 @@ h2.medium-dual-label {
     box-shadow: 0 -0.05rem 2.5rem -0.5rem rgba(0,0,0,.22);
     border-radius: 2rem;
 }
+.player-section-outer.tint-max {
+    opacity: 0.75;
+}
+.player-section-outer.night-mode {
+    opacity: 0.45;
+}
 .player-section {
     border-radius: 2rem; 
     padding: 1rem; 
@@ -1144,6 +1219,12 @@ h2.medium-dual-label {
     border-radius: 2rem;
     padding: 0;
     border-collapse: collapse;
+}
+.playlist-section-outer.tint-max {
+    opacity: 0.75;
+}
+.playlist-section-outer.night-mode {
+    opacity: 0.45;
 }
 .playlist-section {
     margin: 0;

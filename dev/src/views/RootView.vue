@@ -3,8 +3,19 @@
 
 <script>
 export default {
+    data() {
+        return {
+            bodyRefs: {
+                appDiv:null, overlay1: null, overlay2: null, overlay3: null
+            }
+        };
+    },
     mounted() {
         try {
+            this.bodyRefs.appDiv = document.getElementById('app');
+            this.bodyRefs.overlay1 = document.getElementsByClassName('overlay-z1')[0];
+            this.bodyRefs.overlay2 = document.getElementsByClassName('overlay-z2')[0];
+            this.bodyRefs.overlay3 = document.getElementsByClassName('overlay-z3')[0];
             const overlay1 = document.getElementsByClassName('overlay-z1')[0];
             const overlay2 = document.getElementsByClassName('overlay-z2')[0];
             const overlay3 = document.getElementsByClassName('overlay-z3')[0];
@@ -33,6 +44,12 @@ export default {
     methods: {
         removeBgClasses(elem) {
             let cl = elem.classList;
+            cl.remove('overlay-hidden');
+            cl.remove('overlay-z3-12');
+            cl.remove('overlay-z3-25');
+            cl.remove('overlay-z3-35');
+            cl.remove('overlay-z3-tint-max');
+            cl.remove('overlay-night-mode');
             for (let c = 0; c < cl.length; c++) {
                 let className = cl[c];
                 if (className.startsWith('bg-')) {
