@@ -27,8 +27,8 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                 </span>
                 <div class="album-label">
                     <span class="album-name" v-show="currentSongAlbum">
-                        <template v-for="(letter,index) in albumNameChopped(currentSongAlbum)" :key="index">
-                            <span :class="albumLetterStyled(letter,index)">{{ letter }}</span>
+                        <template v-for="(info,index) in titleLetterStyles" :key="index">
+                            <span :class="info.style">{{ info.letter }}</span>
                         </template>
                     </span>
                 </div>
@@ -111,10 +111,18 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                             &bullet;
                         </span>
                     </template>
+                    <span v-if="bgOn" style="position:absolute; left: .65em; top: 2.2em; width: .75em; background: rgba(0,0,0,0.1); border-radius: .15em">
+                        &nbsp;
+                    </span>
+                    <span v-if="bgOn" class="white-dimmed" style="position:absolute; left: .65em; top: 2.2em; width: .75em; background: rgba(255,255,255,0.2); border-radius: .15em" 
+                        :style="{'height': `${bgIndexProgress * 1.7}em` }">
+                        &nbsp;
+                    </span>
                 </span>
                 <span class="twist-cont set-b" @click="toggleBg" :class="bgOn ? 'on' : ''" @dblclick.stop.prevent="" title="toggle backdrop">
                     <span class="blue-dimmed twist-slash">_</span>
                     <span class="white-dimmed" style="cursor: pointer; position:absolute; left: 0.5em; "><em>b</em></span>
+                    
                 </span>
                 <span class="twist-cont" :class="minusClicked ? 'clicked clicked-left' : ''" @click="prevBg" @dblclick.stop.prevent="" title="previous">
                     <span class="blue-dimmed twist-slash">((</span>
@@ -126,7 +134,8 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                 <span class="twist-cont" :class="plusClicked ? 'clicked' : ''" @click="nextBg" @dblclick.stop.prevent="" title="next">
                     <span class="blue-dimmed twist-slash">))</span>
                 </span>
-                <span class="twist-cont set-a" @click="upgradeTint" :class="tintToggleStateStyle()" title="toggle tint">
+                <span class="twist-cont set-a" @click="upgradeTint" :class="tintToggleStateStyle" title="toggle tint"
+                    >
                     <span class="blue-dimmed twist-slash">_</span>
                     <span class="white-dimmed" style="cursor: pointer; position:absolute; left: 0.5em;"><em>t</em></span>
                 </span>
@@ -156,6 +165,13 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                             &bullet;
                         </span>
                     </template>
+                    <span v-if="tintMode != TINT_OFF" style="position:absolute; right: .65em; top: 2.2em; width: .75em; background: rgba(0,0,0,0.1); border-radius: .15em">
+                        &nbsp;
+                    </span>
+                    <span v-if="tintMode != TINT_OFF" class="white-dimmed" style="position:absolute; right: .65em; top: 2.2em; width: .75em; background: rgba(255,255,255,0.2); border-radius: .15em" 
+                        :style="{'height': `${tintIndexProgress * 1.7}em` }">
+                        &nbsp;
+                    </span>
                 </span>
             </div>
         </div>
@@ -209,26 +225,86 @@ export default {
         currentBgIndex: 0,
         bgAnimFrame: 0,
         bgAnimIncrCount: 11,
+        bgImages: [
+            '/assets/art/wavy-haze-verydark.jpg', // bg-dark-01 (and 05)
+            '/assets/art/stochast/image-vAE8r.jpg',  // bg-dark-02
+            '/assets/art/stochast/image-i4u5hxybtk7g0vob36fsviqnn.jpg', // bg-dark-03 (and 54)
+            '/assets/art/stochast/cover-art-stochastic-recovery-20x6-album.jpg', // bg-dark-04
+            '/assets/art/wavy-haze-verydark.jpg', // bg-dark-05
+            '/assets/art/stochast/image-bg-cosmic-chasm-02.jpg', // bg-dark-06
+            '/assets/art/stochast/image-bg-cosmic-chasm-03.jpg', // bg-dark-07
+            '/assets/art/stochast/image-bg-cosmic-chasm-07.jpg', // bg-dark-08
+            '/assets/art/stochast/image-bg-cosmic-chasm-01.jpg', // bg-dark-09
+            '/assets/art/stochast/image-bg-cosmic-chasm-05.jpg', // bg-dark-10
+            '/assets/art/stochast/image-bg-cosmic-chasm-08.jpg', // bg-dark-11
+            '/assets/art/stochast/image-bg-cosmic-chasm-04.jpg', // bg-dark-12
+            '/assets/art/stochast/image-e1ovn41unr5c5pal3410r6cif.jpg', // bg-dark-13 (lava set)
+            '/assets/art/stochast/image-j900r29yhc9aac5yut1uui03o.jpg', // bg-dark-14
+            '/assets/art/stochast/image-3ijp4d9f0ia96j5rjjeaspmu6.jpg', // bg-dark-15 (and 22)
+            '/assets/art/stochast/image-nxqzngt7aqw0ngy8ry7lzqjzy.jpg', // bg-dark-16
+            '/assets/art/stochast/image-0jbxjc5nzrh0rfxrisy1fvhch.jpg',// bg-dark-17
+            '/assets/art/stochast/image-q8hmm6uzr0ll10wshv3jtlycg.jpg',// bg-dark-18
+            '/assets/art/stochast/image-akjl93i1i8foz2pkyoipkvu3s.jpg',// bg-dark-19
+            '/assets/art/stochast/image-jvtzt5hubnfc3ua1ejt12mh7k.jpg', // bg-dark-20
+            '/assets/art/stochast/image-tvy6t9gmbe03lwah2p51vj8ip.jpg',// bg-dark-21
+            '/assets/art/stochast/image-3ijp4d9f0ia96j5rjjeaspmu6.jpg', // bg-dark-22 (Duplicate URL, but keeping index integrity)
+            '/assets/art/stochast/image-n8qq0pv8k08vem880s5y5hd59.jpg',// bg-dark-23 (and 24)
+            '/assets/art/stochast/image-n8qq0pv8k08vem880s5y5hd59.jpg', // bg-dark-24
+            '/assets/art/stochast/image-jj5cnzozc5j1aasrr5iwf8sfs.jpg',// bg-dark-25 (round chasm)
+            '/assets/art/stochast/image-u65yjrw2hqp1wrwjwlb9p4d3i.jpg', // bg-dark-26
+            '/assets/art/stochast/image-guzjs8h3e95tgjga2xmkz8swr.jpg',// bg-dark-27
+            '/assets/art/stochast/image-0qvp9do65gnxjnd1966tndc74.jpg',// bg-dark-28
+            '/assets/art/stochast/image-4nxe77jlryt86s2gwcrtrq4s7.jpg',// bg-dark-29
+            '/assets/art/stochast/image-a9n0o5dlqlqd4rc8478xwjpgw.jpg',// bg-dark-30 (crystals)
+            '/assets/art/stochast/image-s9haeucixywznzdrpnll0usoy.jpg', // bg-dark-31
+            '/assets/art/stochast/image-df0voxaf6st0rh8uhjqzrakcp.jpg',// bg-dark-32
+            '/assets/art/stochast/image-5je899tihhk2tz10kfuvsrsaa.jpg', // bg-dark-33
+            '/assets/art/stochast/image-bz4tlm1dgtr6yeo8o0bt9rafo.jpg',// bg-dark-34 (icy crystals)
+            '/assets/art/stochast/image-doeki8a4cy1n65ul2spvu6s4u.jpg', // bg-dark-35
+            '/assets/art/stochast/image-1oxuqyamn6ai78phmz1je5she.jpg',// bg-dark-36
+            '/assets/art/stochast/image-g3kbilr4jxajspbhx2y1ienhg.jpg',// bg-dark-37
+            '/assets/art/stochast/image-ff2zdw93bls8bhun5752ksm4p.jpg',// bg-dark-38 (barren)
+            '/assets/art/stochast/image-s3ku9uavbjasuhvnlska1w6a1.jpg',// bg-dark-39
+            '/assets/art/stochast/image-lu1fekpob8xv1o776kghfwaq4.jpg',// bg-dark-40
+            '/assets/art/stochast/image-rj2i3twvfk5z1017aabqpd4ja.jpg',// bg-dark-41
+            '/assets/art/stochast/image-4q4rkz8ugb6rq24uxlhflysls.jpg',// bg-dark-42
+            '/assets/art/stochast/image-cgz3lwrfddhdc7hziyeymduxm.jpg',// bg-dark-43
+            '/assets/art/stochast/image-h33p566qlz4chisc5jtdudkmo.jpg',// bg-dark-44
+            '/assets/art/stochast/image-ve675eyt7rgsv5lo24xl57hyk.jpg',// bg-dark-45 (pillar witness)
+            '/assets/art/stochast/image-vmsihc7bgq23c4gxwz83lc2nn.jpg',// bg-dark-46
+            '/assets/art/stochast/image-elw8a7yne7n8nmf9yvu49kmv1.jpg', // bg-dark-47 (energy astroids)
+            '/assets/art/stochast/image-trwi89muff1j4k0fso08tg4sp.jpg',// bg-dark-48 (sound waves forms)
+            '/assets/art/stochast/image-r2aljv4yp0lrvqhcihs8ui3vv.jpg', // bg-dark-49 (pillars)
+            '/assets/art/stochast/image-t6v4he54c90cu8uonjccs8a8f.jpg', // bg-dark-50
+            '/assets/art/stochast/image-jP1Z1.jpg',// bg-dark-51
+            '/assets/art/stochast/image-x40gN.jpg',// bg-dark-52
+            '/assets/art/stochast/image-txqlyrhb7u6skn1bjp1707s2v.jpg', // bg-dark-53
+            '/assets/art/stochast/image-i4u5hxybtk7g0vob36fsviqnn.jpg'  // bg-dark-54 (Duplicate URL)
+        ],
         bgCount: 54,
         bgLayerToggle: 1, // 1 is layer 1, 2 is layer 2 last updated
-        bgColorIdx: 0,
+        bgColorIdx: 4,
         bgColors: [
             'rgba(0,0,0,.32)', 
             'rgba(90,30,21,.34)', 
-            'rgba(255,30,10,.36)', 
+            'rgba(180,10,5,.36)', 
+            'rgba(255,70,30,.36)', 
             'rgba(90,120,180,.41)', 
-            'rgba(50,30,220,.47', 
+            'rgba(150,30,220,.47', 
             'rgba(0,70,122,.55)', 
             'rgba(0,170,60,.52)', 
-            'rgba(0,0,0,.5)', 
-            'rgba(30,30,90,.53)', 
-            'rgba(0,60,120,.57)', 
-            'rgba(50,30,220,.60)', 
-            'rgba(190,170,240,.59)',
-            'rgba(255,255,255,.56)',
-            'rgba(255,255,80,.50)', 
-            'rgba(255,255,0,.45)', 
-            'rgba(0,120,255,.41)', 
+            'rgba(0,0,0,.48)', 
+            'rgba(30,30,90,.48)', 
+            'rgba(0,60,120,.43)', 
+            'rgba(50,30,220,.4)', 
+            'rgba(190,170,240,.35)',
+            'rgba(255,255,255,.3)',
+            'rgba(255,255,30,.32)', 
+            'rgba(210,180,0,.33)', 
+            'rgba(120,70,0,.35)', 
+            'rgba(60,10,10,.36)', 
+            'rgba(0,120,255,.38)', 
+            'rgba(0,220,120,.4)', 
             'rgba(0,255,0,.37)', 
             'rgba(255,60,0,.34)', 
             'rgba(220,255,0,.31', 
@@ -260,7 +336,9 @@ export default {
         timeRightClicked: -1,
         bodyRefs: {
             appDiv:null, overlay1: null, overlay2: null, overlay3: null
-        }
+        },
+        songStyles: [],
+        titleLetterStyles: []
     }
   },
   mounted() {
@@ -275,36 +353,37 @@ export default {
         this.bodyRefs.overlay3.style.display = '';
 
         // read overlay 1 and 2 bg frame state to pick up if present
-        const overlay1Frm = this.getFrameFromElem(this.bodyRefs.overlay1);
-        const overlay2Frm = this.getFrameFromElem(this.bodyRefs.overlay2);
-        const overlay2Transp = this.bodyRefs.overlay2.classList.contains('bg-transp');
+        // const overlay1Frm = this.getFrameFromElem(this.bodyRefs.overlay1);
+        // const overlay2Frm = this.getFrameFromElem(this.bodyRefs.overlay2);
+        //const overlay2Transp = this.bodyRefs.overlay2.classList.contains('bg-transp');
 
         let existingFrameIndex = 0; // default to first frame - 0
-        if (overlay2Frm != -1 && !overlay2Transp) {
-            existingFrameIndex = overlay2Frm;
-        }
-        else if (overlay1Frm != -1) {
-            existingFrameIndex = overlay1Frm;
-        }
+        // if (overlay2Frm != -1 && !overlay2Transp) {
+        //     existingFrameIndex = overlay2Frm;
+        // }
+        // else if (overlay1Frm != -1) {
+        //     existingFrameIndex = overlay1Frm;
+        // }
         // set model bg index
         this.currentBgIndex = existingFrameIndex;
-        let initialLayer1Bg = this.getBgCls(this.currentBgIndex);
+        //let initialLayer1Bg = this.getBgCls(this.currentBgIndex);
         this.removeBgClasses(this.bodyRefs.overlay1);
-        let cl = this.bodyRefs.overlay1.classList;
-        cl.add('bg-base');
-        cl.add(initialLayer1Bg);
+        // let cl = this.bodyRefs.overlay1.classList;
+        // cl.add('bg-base');
+        // cl.add(initialLayer1Bg);
+        this.setupBgClasses(this.bodyRefs.overlay1, this.currentBgIndex);
         
-        cl = this.bodyRefs.overlay2.classList;
+        let cl = this.bodyRefs.overlay2.classList;
         this.removeBgClasses(this.bodyRefs.overlay2);
         cl.add('bg-base');
         cl.add('bg-transp');
-        
-        let self = this;
-        setTimeout(function() { 
-            self.renderTintMode();
-        }, 3000);
+        this.recalcTitleLetterStyles();
     }
     catch (e) {}
+
+    if (this.bgCount != this.bgImages.length) {
+        console.error("BG Image mismatch!", this.bgCount, this.bgImages.length);
+    }
   },
   unmounted() {
     if (this.animInterval != -1) {
@@ -335,18 +414,22 @@ export default {
             this.tintMode = TINT_ON;
         }
         this.clearBgClicked();
+        this.renderTintMode();
     },
     incrementAnim() {
         // General text style anim
         this.animFr0 += 1;
+        let animFrameChange = false;
         if (this.animFr0 >= 3) {
             this.animFrame += 1;
             this.animFr0 = 0;
-        }
-        if (this.animFrame >= this.maxFrames) {
-            this.animFrame = 0;
+            if (this.animFrame >= this.maxFrames) {
+                this.animFrame = 0;
+            }
+            animFrameChange = true;
         }
         // Title anim
+        const titleAnimFrameChange = true;
         this.titleAnimFrame += 1;
         if (this.titleAnimFrame >= this.maxFrames * this.titleAnimRateMult) {
             this.titleAnimFrame = 0;
@@ -380,6 +463,10 @@ export default {
                 this.titleAnimSetPos[ts] = currPos;
             }
         }
+        // Did album title change?
+        if (this.titleLetterStyles.length != this.currentSongTitle.length || titleAnimFrameChange) {
+            this.recalcTitleLetterStyles();
+        }
         // Backdrop anim
         if (this.bgAnimEnabled) {
             this.bgAnimFrame += 1;
@@ -392,12 +479,26 @@ export default {
         if (this.tintMode != TINT_OFF) {
             this.tintFrame += 1;
             if ((this.tintMode == TINT_MAX && this.tintFrame >= 2)
-                || ((this.tintMode == TINT_LIGHT || this.tintMode == TINT_NIGHT) && this.tintFrame >= 7)
-                || (this.tintMode == TINT_ON && this.tintFrame >= 4)) {
+                || (this.tintMode == TINT_LIGHT && this.tintFrame >= 7)
+                || ((this.tintMode == TINT_ON || this.tintMode == TINT_NIGHT) && this.tintFrame >= 4)) {
                 this.tintFrame = 0;
                 this.updateColorTint();
             }
         }
+    },
+    recalcTitleLetterStyles() {
+        let albumLetters = this.albumNameChopped(this.currentSongAlbum);
+        let letterStyles = [];
+        for (let l=0; l < albumLetters.length; l++) {
+            let albumLetter = albumLetters[l];
+            let albumStyleCalc = this.albumLetterStyled(albumLetter, l);
+            let letterStyle = this.albumLetterStyle(albumStyleCalc.animMatchCt, l, albumStyleCalc.mutlTitleAnimFrame, albumStyleCalc.mutedLetter);
+            letterStyles.push({
+                letter: albumLetter,
+                style: letterStyle
+            });
+        }
+        this.titleLetterStyles = letterStyles;
     },
     albumNameChopped(albumName) {
         let letters = [];
@@ -406,32 +507,30 @@ export default {
         }
         return letters;
     },
-    albumLetterStyled(albumLetter, index, isTitle) {
+    albumLetterStyled(albumLetter, index) {
         if (albumLetter == ' ') return '';
         let mutlTitleAnimFrame = Math.round(1.0 * this.titleAnimFrame / this.titleAnimRateMult);
-        let revIndex = this.maxFrames - (index % this.maxFrames);
         let animMatchCt = 0;
         for (let p=0; p < this.titleAnimSetPos.length; p++) {
             if (index == this.titleAnimSetPos[p])
                 animMatchCt += 1;
         }
+        let mutedLetter = albumLetter == 'x';
+        return {
+            mutlTitleAnimFrame,
+            animMatchCt,
+            mutedLetter
+        };
+    },
+    albumLetterStyle(animMatchCt, index, mutlTitleAnimFrame, mutedLetter) {
         let animSetMatch = animMatchCt % 2 == 1;
+        let revIndex = this.maxFrames - (index % this.maxFrames);
         let choice = (revIndex + mutlTitleAnimFrame) % this.maxFrames;
-        let initialClasses = !isTitle ? 'album-letter ' : 'medium-dual-label ';
-        let albumClasses = initialClasses + `dual-label-${choice+1}` + (animSetMatch ? ' alt' : '');
-        if (albumLetter == 'x') return albumClasses + ' muted-letter';
+        let albumClasses = `album-letter dual-label-${choice+1}` 
+            + (animSetMatch ? ' alt' : '');
+            + (mutedLetter ? ' muted-letter' : '');
         return albumClasses;
     },
-    /*albumNameChopped(albumName) {
-        let albumChunk = '';
-        let labNum = 1;
-        for (let i=0; i< albumName.length; i++) {
-            albumChunk += `<span class="album-letter dual-label-${labNum}">${albumName[i]}</span>`;
-            labNum += 1;
-            if (labNum > 10) labNum = 1;
-        }
-        return albumChunk;
-    },*/
     clearBgClicked() {
         this.minusClicked = this.plusClicked = false;
     },
@@ -476,10 +575,10 @@ export default {
     },
     incrBgIndex(reverse) {
         this.currentBgIndex += reverse ? -1 : 1;
-        if (this.currentBgIndex >= this.bgCount)
+        if (this.currentBgIndex >= this.bgImages.length - 1)
             this.currentBgIndex = 0;
         else if (reverse && this.currentBgIndex < 0)
-            this.currentBgIndex = this.bgCount - 1;
+            this.currentBgIndex = this.bgImages.length - 1;
     },
     removeBgClasses(elem) {
         let cl = elem.classList;
@@ -492,10 +591,11 @@ export default {
         }
     },
     setupBgClasses(elem, idx) {
-        let nextClsName = this.getBgCls(idx);
+        //let nextClsName = this.getBgCls(idx);
         this.removeBgClasses(elem);
         elem.classList.add('bg-base');
-        elem.classList.add(nextClsName);
+        //elem.classList.add(nextClsName);
+        elem.style.backgroundImage = `url(${this.bgImages[idx]})`;
     },
     removeBgSlowFade() {
         // const overlay2 = document.getElementsByClassName('overlay-z2')[0];
@@ -516,8 +616,8 @@ export default {
 
         if (forceTransition) {
             this.bgLayerToggle = 1;
-            this.removeBgClasses(this.bodyRefs.overlay1);
-            this.removeBgClasses(this.bodyRefs.overlay2);
+            // this.removeBgClasses(this.bodyRefs.overlay1);
+            // this.removeBgClasses(this.bodyRefs.overlay2);
         }
 
         // go from fading to changing images
@@ -548,11 +648,10 @@ export default {
         this.bgColorIdx += 1;
         if (this.bgColorIdx >= colorSet.length)
             this.bgColorIdx = 0;
-        try {
-            // let overlay3 = document.getElementsByClassName('overlay-z3')[0];
+        
+        this.$nextTick(function() {
             this.bodyRefs.overlay3.style.backgroundColor = color;
-        }
-        catch (e) {}
+        });
     },
     playThisSong(songIndex) {
         console.log("Play song", songIndex);
@@ -748,13 +847,6 @@ export default {
         if (needsColorUpdate)
             this.updateColorTint();
     },
-    tintToggleStateStyle() {
-        if (this.tintMode == TINT_OFF) return '';
-        if (this.tintMode == TINT_MAX) return 'on tint-max';
-        if (this.tintMode == TINT_LIGHT) return 'on tint-light';
-        if (this.tintMode == TINT_NIGHT) return 'on tint-night';
-        return 'on';
-    },
     toggleBg() {
         try {
             this.bgOn = !this.bgOn;
@@ -768,6 +860,31 @@ export default {
             }
         }
         catch (e) {}
+    }
+  },
+  computed: {
+    tintToggleStateStyle() {
+        if (this.tintMode == TINT_OFF) return '';
+        if (this.tintMode == TINT_MAX) return 'on tint-max';
+        if (this.tintMode == TINT_LIGHT) return 'on tint-light';
+        if (this.tintMode == TINT_NIGHT) return 'on tint-night';
+        return 'on';
+    },
+    bgIndexProgress() {
+        const bgCount = this.bgImages.length;
+        if (bgCount > 0) {
+            let idx = Math.min(this.currentBgIndex, bgCount - 1);
+            return 1.0 * idx / bgCount;
+        }
+        return 0.0;
+    },
+    tintIndexProgress() {
+        const tintCount = this.bgColors.length;
+        if (tintCount > 0) {
+            let idx = Math.min(this.bgColorIdx, tintCount - 1);
+            return 1.0 * idx / tintCount;
+        }
+        return 0.0;
     }
   }
 }
@@ -806,203 +923,6 @@ export default {
 }
 .bg-dark-fade {
     background: rgba(0,0,0, 0.75);
-}
-
-/* haze */
-.bg-dark-01 {
-    background-image: url('/assets/art/wavy-haze-verydark.jpg');
-}
-/* monoliths and light with electric currents */
-.bg-dark-02 {
-    background-image: url('/assets/art/stochast/image-vAE8r.jpg');
-}
-
-/* energy wave front in space */
-.bg-dark-03 {
-    background-image: url('/assets/art/stochast/image-i4u5hxybtk7g0vob36fsviqnn.jpg');
-}
-/* album cover */
-.bg-dark-04 {
-    background-image: url('/assets/art/stochast/cover-art-stochastic-recovery-20x6-album.jpg');
-}
-/* haze */
-.bg-dark-05 {
-    background-image: url('/assets/art/wavy-haze-verydark.jpg');
-}
-
-/* base energy chasms */
-.bg-dark-06 {
-    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-02.jpg');
-}
-.bg-dark-07 {
-    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-03.jpg');
-}
-.bg-dark-08 {
-    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-07.jpg');
-}
-.bg-dark-09 {
-    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-01.jpg');
-}
-.bg-dark-10 {
-    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-05.jpg');
-}
-.bg-dark-11 {
-    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-08.jpg');
-}
-.bg-dark-12 {
-    background-image: url('/assets/art/stochast/image-bg-cosmic-chasm-04.jpg');
-}
-
-
-/* lava set */
-.bg-dark-13 {
-    background-image: url('/assets/art/stochast/image-e1ovn41unr5c5pal3410r6cif.jpg');
-}
-.bg-dark-14 {
-    background-image: url('/assets/art/stochast/image-j900r29yhc9aac5yut1uui03o.jpg');
-}
-
-/* irregular plamsa flow chasms */
-.bg-dark-15 {
-    background-image: url('/assets/art/stochast/image-3ijp4d9f0ia96j5rjjeaspmu6.jpg');
-}
-.bg-dark-16 {
-    background-image: url('/assets/art/stochast/image-nxqzngt7aqw0ngy8ry7lzqjzy.jpg');
-}
-.bg-dark-17 {
-    background-image: url('/assets/art/stochast/image-0jbxjc5nzrh0rfxrisy1fvhch.jpg');
-}
-.bg-dark-18 {
-    background-image: url('/assets/art/stochast/image-q8hmm6uzr0ll10wshv3jtlycg.jpg');
-}
-.bg-dark-19 {
-    background-image: url('/assets/art/stochast/image-akjl93i1i8foz2pkyoipkvu3s.jpg');
-}
-.bg-dark-20 {
-    background-image: url('/assets/art/stochast/image-jvtzt5hubnfc3ua1ejt12mh7k.jpg');
-}
-.bg-dark-21 {
-    background-image: url('/assets/art/stochast/image-tvy6t9gmbe03lwah2p51vj8ip.jpg');
-}
-.bg-dark-22 {
-    background-image: url('/assets/art/stochast/image-3ijp4d9f0ia96j5rjjeaspmu6.jpg');
-}
-.bg-dark-23 {
-    background-image: url('/assets/art/stochast/image-n8qq0pv8k08vem880s5y5hd59.jpg');
-}
-.bg-dark-24 {
-    background-image: url('/assets/art/stochast/image-n8qq0pv8k08vem880s5y5hd59.jpg');
-}
-
-/* round chasm plasma - constellations/portals */
-.bg-dark-25 {
-    background-image: url('/assets/art/stochast/image-jj5cnzozc5j1aasrr5iwf8sfs.jpg');
-}
-
-.bg-dark-26 {
-    background-image: url('/assets/art/stochast/image-u65yjrw2hqp1wrwjwlb9p4d3i.jpg');
-}
-.bg-dark-27 {
-    background-image: url('/assets/art/stochast/image-guzjs8h3e95tgjga2xmkz8swr.jpg');
-}
-.bg-dark-28 {
-    background-image: url('/assets/art/stochast/image-0qvp9do65gnxjnd1966tndc74.jpg');
-}
-.bg-dark-29 {
-    background-image: url('/assets/art/stochast/image-4nxe77jlryt86s2gwcrtrq4s7.jpg');
-}
-
-/* crystals in chasm */
-.bg-dark-30 {
-    background-image: url('/assets/art/stochast/image-a9n0o5dlqlqd4rc8478xwjpgw.jpg');
-}
-.bg-dark-31 {
-    background-image: url('/assets/art/stochast/image-s9haeucixywznzdrpnll0usoy.jpg');
-}
-.bg-dark-32 {
-    background-image: url('/assets/art/stochast/image-df0voxaf6st0rh8uhjqzrakcp.jpg');
-}
-.bg-dark-33 {
-    background-image: url('/assets/art/stochast/image-5je899tihhk2tz10kfuvsrsaa.jpg');
-}
-
-
-/* icy crystals - jagged chasms */
-.bg-dark-34 {
-    background-image: url('/assets/art/stochast/image-bz4tlm1dgtr6yeo8o0bt9rafo.jpg');
-}
-.bg-dark-35 {
-    background-image: url('/assets/art/stochast/image-doeki8a4cy1n65ul2spvu6s4u.jpg');
-}
-.bg-dark-36 {
-    background-image: url('/assets/art/stochast/image-1oxuqyamn6ai78phmz1je5she.jpg');
-}
-.bg-dark-37 {
-    background-image: url('/assets/art/stochast/image-g3kbilr4jxajspbhx2y1ienhg.jpg');
-}
-
-/* barren jagged chasms and canyons in space */
-
-.bg-dark-38 {
-    background-image: url('/assets/art/stochast/image-ff2zdw93bls8bhun5752ksm4p.jpg');
-}
-.bg-dark-39 {
-    background-image: url('/assets/art/stochast/image-s3ku9uavbjasuhvnlska1w6a1.jpg');
-}
-.bg-dark-40 {
-    background-image: url('/assets/art/stochast/image-lu1fekpob8xv1o776kghfwaq4.jpg');
-}
-.bg-dark-41 {
-    background-image: url('/assets/art/stochast/image-rj2i3twvfk5z1017aabqpd4ja.jpg');
-}
-.bg-dark-42 {
-    background-image: url('/assets/art/stochast/image-4q4rkz8ugb6rq24uxlhflysls.jpg');
-}
-.bg-dark-43 {
-    background-image: url('/assets/art/stochast/image-cgz3lwrfddhdc7hziyeymduxm.jpg');
-}
-.bg-dark-44 {
-    background-image: url('/assets/art/stochast/image-h33p566qlz4chisc5jtdudkmo.jpg');
-}
-
-/* pillar witness space eruptio */
-.bg-dark-45 {
-    background-image: url('/assets/art/stochast/image-ve675eyt7rgsv5lo24xl57hyk.jpg');
-}
-.bg-dark-46 {
-    background-image: url('/assets/art/stochast/image-vmsihc7bgq23c4gxwz83lc2nn.jpg');
-}
-
-/* energy astroids */
-.bg-dark-47 {
-    background-image: url('/assets/art/stochast/image-elw8a7yne7n8nmf9yvu49kmv1.jpg');
-}
-
-/* sound waves forms */
-.bg-dark-48 {
-    background-image: url('/assets/art/stochast/image-trwi89muff1j4k0fso08tg4sp.jpg');
-}
-
-/* pillars */
-.bg-dark-49 {
-    background-image: url('/assets/art/stochast/image-r2aljv4yp0lrvqhcihs8ui3vv.jpg');
-}
-.bg-dark-50 {
-    background-image: url('/assets/art/stochast/image-t6v4he54c90cu8uonjccs8a8f.jpg');
-}
-.bg-dark-51 {
-    background-image: url('/assets/art/stochast/image-jP1Z1.jpg');
-}
-.bg-dark-52 {
-    background-image: url('/assets/art/stochast/image-x40gN.jpg');
-}
-.bg-dark-53 {
-    background-image: url('/assets/art/stochast/image-txqlyrhb7u6skn1bjp1707s2v.jpg');
-}
-
-/* energy wave front in space */
-.bg-dark-54 {
-    background-image: url('/assets/art/stochast/image-i4u5hxybtk7g0vob36fsviqnn.jpg');
 }
 
 .small-dual-label {

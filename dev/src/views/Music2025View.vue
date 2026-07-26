@@ -83,7 +83,9 @@ export default {
         const overlay2 = document.getElementsByClassName('overlay-z2')[0];
         const overlay3 = document.getElementsByClassName('overlay-z3')[0];
         overlay1.style.display = '';
+        overlay1.style.background = '';
         overlay2.style.display = '';
+        overlay2.style.background = '';
         overlay3.style.display = '';
         this.removeBgClasses(overlay3);
         this.removeBgClasses(overlay2);
