@@ -281,9 +281,8 @@ export default {
             '/assets/art/stochast/image-txqlyrhb7u6skn1bjp1707s2v.jpg', // bg-dark-53
             '/assets/art/stochast/image-i4u5hxybtk7g0vob36fsviqnn.jpg'  // bg-dark-54 (Duplicate URL)
         ],
-        bgCount: 54,
         bgLayerToggle: 1, // 1 is layer 1, 2 is layer 2 last updated
-        bgColorIdx: 4,
+        bgColorIdx: 0,
         bgColors: [
             'rgba(0,0,0,.32)', 
             'rgba(90,30,21,.34)', 
@@ -380,10 +379,6 @@ export default {
         this.recalcTitleLetterStyles();
     }
     catch (e) {}
-
-    if (this.bgCount != this.bgImages.length) {
-        console.error("BG Image mismatch!", this.bgCount, this.bgImages.length);
-    }
   },
   unmounted() {
     if (this.animInterval != -1) {
@@ -632,7 +627,7 @@ export default {
         else {
             this.bgLayerToggle = 2;
             // clear and rebuild bg styles - clears transparant anim class also
-            this.setupBgClasses(this.bodyRefs.overlay2, this.currentBgIndex); // (this.currentBgIndex + 5) % this.bgCount);
+            this.setupBgClasses(this.bodyRefs.overlay2, this.currentBgIndex);
         }
         
         if (forceTransition) {
