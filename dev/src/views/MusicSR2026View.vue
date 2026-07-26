@@ -726,6 +726,7 @@ export default {
     },
     upgradeTint() {
         const currTintMode = this.tintMode;
+        let needsColorUpdate = false;
         if (currTintMode == TINT_OFF) {
             this.tintMode = TINT_ON;
         }
@@ -734,14 +735,18 @@ export default {
         }
         else if (currTintMode == TINT_LIGHT) {
             this.tintMode = TINT_NIGHT;
+            needsColorUpdate = true;
         }
         else if (currTintMode == TINT_NIGHT) {
             this.tintMode = TINT_MAX;
+            needsColorUpdate = true;
         }
         else {
             this.tintMode = TINT_OFF;
         }
         this.renderTintMode();
+        if (needsColorUpdate)
+            this.updateColorTint();
     },
     tintToggleStateStyle() {
         if (this.tintMode == TINT_OFF) return '';
