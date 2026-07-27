@@ -33,10 +33,10 @@
   background: 
   radial-gradient(ellipse 120% 100% at 50% 25%,
     rgba(0, 0, 0, 0), 
-    50%,
+    53%,
     rgba(110, 144, 183, 10%),  
     rgba(72, 156, 229, 15%), 
-    80%, 
+    75%, 
     rgba(72, 156, 229, 25%), 
     rgba(7, 37, 63, 28%), 
     90%,
@@ -75,6 +75,7 @@
 
 .overlay-z3.overlay-z3-tint-max {
   opacity: .55;
+  transition: background 4s, background-color 6s, opacity 4s;
   background: radial-gradient(ellipse 120% 100% at 50% 25%,
     rgba(0, 0, 0, 0), 
     50%,
@@ -92,17 +93,17 @@
 .overlay-z3.overlay-night-mode {
   opacity: 1;
   transition: background 4s, background-color 4s, opacity 4s;
-  background: radial-gradient(ellipse 120% 100% at 50% 25%,
-    rgba(95, 73, 0, 0.055), 
-    25%,
+  background: radial-gradient(ellipse 120% 93% at 50% 32%,
+    rgba(95, 73, 0, 0.03), 
+    35%,
     rgba(116, 82, 9, 0.25),  
-    50%,
-    rgba(2, 109, 82, 0.2),  
-    70%,
-    rgba(56, 43, 0, 0.35), 
+    53%,
+    rgba(2, 109, 64, 0.25),  
+    75%,
+    rgba(56, 32, 0, 0.45), 
     rgba(31, 2, 2, 0.65), 
-    100%,
-    rgb(15, 4, 0));
+    90%,
+    rgb(5, 1, 0));
 }
 
 .overlay-50 {
@@ -152,6 +153,7 @@ a,
 span.blue-dimmed-bg {
   background-color: hsla(208, 75%, 59%,80%);
 }
+
 .over-bg-shadow {
   text-shadow: 0 0.05em 0.5em #000000;
 }
@@ -276,8 +278,8 @@ span.blue-dimmed-bg {
 }
 .twist-cont.set-a.on.tint-night {
   transform: rotate(270deg);
-  background-color: rgba(255, 121, 121, 0.25);
-  box-shadow: 0 0 .75em 0.25em rgba(255, 121, 121,0.25);
+  background-color: rgba(255, 121, 121, 0.45);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 121, 121,0.35);
 }
 .twist-cont.set-a.on.tint-night:hover {
   background-color: rgba(255, 121, 121,0.2);
@@ -464,6 +466,10 @@ nav a.router-link-exact-active {
   border: 0 solid transparent;
 }
 
+.night-mode nav a.router-link-exact-active {
+  color: rgba(252, 141, 90, 0.75)
+}
+
 nav a.router-link-exact-active:hover {
   background-color: rgba(255,255,255,0.0);
   box-shadow: 0 0 1em 0.5em rgba(255,255,255,0.0);
@@ -481,6 +487,11 @@ a.active-border, nav a {
   box-shadow: 0 0 1em 0.5em rgba(0,0,0,0.15);
   border: 0 solid transparent;
 }
+
+.night-mode a.active-border, .night-mode nav a {
+  color: rgba(211, 83, 61, 0.75);
+}
+
 
 a.active-border:hover, nav a:hover {
   background-color: rgba(230,230,230,0.15);

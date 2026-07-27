@@ -40,6 +40,15 @@ footer {
   z-index: 2;
 }
 
+#app.night-mode .blue-dimmed {
+  color: rgba(211, 83, 61, 0.75);
+}
+
+#app.night-mode span.blue-dimmed-bg {
+  background-color: rgba(211, 83, 61, 0.75);
+}
+
+
 @media (min-width: 1024px) {
   header {
     display: flex;

@@ -35,7 +35,7 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
             </div>
             <vue-audio-player ref="audioPlayer"
                 :audio-list="songList"
-                theme-color="hsl(208, 75%, 89%)"
+                :theme-color="playerThemeColor"
                 :before-play="playNext"
                 :progress-interval="500"
                 @pause="playEnded"
@@ -88,34 +88,38 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
         </div>
     </div>
 
-    <div class="centered-div" v-show="playlistVisible">
+    <div class="instructions-row centered-div" v-show="playlistVisible" :class="{'night-mode': tintMode == TINT_NIGHT, 'tint-max': tintMode == TINT_MAX}">
         <div class="instructions blue over-bg-shadow over-bg-area-shadow">
             double click song to play <span class="minor-slash">/</span> click <span class="download-icon blue-dimmed-bg">&nbsp;</span> to download
         </div>
     </div>
 
-    <div class="controls-row" :class="{'alone':!playlistVisible}">
+    <div class="controls-row" :class="{'alone':!playlistVisible, 'night-mode': tintMode == TINT_NIGHT, 'tint-max': tintMode == TINT_MAX}">
         <div class="bg-controls centered-div">
             <span class="blue-dimmed over-bg-shadow over-bg-area-shadow text-faint">backdrop &amp; tint</span>
         </div>
         <div class="bg-controls centered-div">
             <div class="over-bg-area-shadow-dark centered-div">
-                <span style="display: inline-block; width: 0; position: relative; font-size: 8pt; text-shadow: 0 0.05em 0.5em rgba(255,255,255,70%)">
+                <span class="bg-controls-label bg-controls-label-left">
                     <template v-if="!bgOn">
-                        <span style="position: absolute; right: .35em; top: 0.15em; color:#181818;">
+                        <span class="bg-controls-label-off">
                             off
                         </span>
                     </template>
                     <template v-else>
-                        <span style="position: absolute; right: .35em; top: 0.15em; color: hsla(208, 64%, 79%, 0.5);">
+                        <span class="blue-dimmed bg-controls-label-bullet">
                             &bullet;
                         </span>
                     </template>
-                    <span v-if="bgOn" style="position:absolute; left: .65em; top: 2.2em; width: .75em; background: rgba(0,0,0,0.1); border-radius: .15em">
+                    <span v-if="bgOn" class="bg-controls-guage-base-left">
                         &nbsp;
                     </span>
-                    <span v-if="bgOn" class="white-dimmed" style="position:absolute; left: .65em; top: 2.2em; width: .75em; background: rgba(255,255,255,0.2); border-radius: .15em" 
-                        :style="{'height': `${bgIndexProgress * 1.7}em` }">
+                    <span v-if="bgOn" class="white-dimmed bg-controls-guage-filled-left" style="" 
+                        :style="{'height': `${bgIndexProgress * 1.5}em` }">
+                        &nbsp;
+                    </span>
+                    <span v-if="bgOn" class="bg-controls-guage-progress-left"
+                        :style="{'top': `${((2.1 + 0.75) - (bgAdvanceProgress * 0.65))}em`, 'height': `${bgAdvanceProgress * 1.3}em` }">
                         &nbsp;
                     </span>
                 </span>
@@ -139,37 +143,41 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                     <span class="blue-dimmed twist-slash">_</span>
                     <span class="white-dimmed" style="cursor: pointer; position:absolute; left: 0.5em;"><em>t</em></span>
                 </span>
-                <span style="display: inline-block; width: 0; position: relative; font-size: 8pt; text-shadow: 0 0.05em 0.5em rgba(255,255,255,70%)">
+                <span class="bg-controls-label bg-controls-label-right">
                     <template v-if="tintMode == TINT_MAX">
-                        <span style="position: absolute; left: .35em; top: 0.15em; color: #886000;">
+                        <span class="bg-ctrl-label-base bg-ctrl-label-max">
                             MAX
                         </span>
                     </template>
                     <template v-else-if="tintMode == TINT_LIGHT">
-                        <span style="position: absolute; left: .5em; top: 0.15em; color: #557799;">
+                        <span class="bg-ctrl-label-base bg-ctrl-label-light">
                             light
                         </span>
                     </template>
                     <template v-else-if="tintMode == TINT_NIGHT">
-                        <span style="position: absolute; left: .5em; top: 0.15em; color: #903000;">
+                        <span class="bg-ctrl-label-base bg-ctrl-label-night">
                             night
                         </span>
                     </template>
                     <template v-else-if="tintMode == TINT_OFF">
-                        <span style="position: absolute; left: .5em; top: 0.15em; color: #181818;">
+                        <span class="bg-controls-label-off label-right">
                             off
                         </span>
                     </template>
                     <template v-else>
-                        <span style="position: absolute; left: .35em; top: 0.15em; color: hsla(208, 64%, 79%, 0.5);">
+                        <span style="" class="blue-dimmed bg-controls-label-bullet label-right">
                             &bullet;
                         </span>
                     </template>
-                    <span v-if="tintMode != TINT_OFF" style="position:absolute; right: .65em; top: 2.2em; width: .75em; background: rgba(0,0,0,0.1); border-radius: .15em">
+                    <span v-if="tintMode != TINT_OFF" style="" class="bg-controls-guage-base-right">
                         &nbsp;
                     </span>
-                    <span v-if="tintMode != TINT_OFF" class="white-dimmed" style="position:absolute; right: .65em; top: 2.2em; width: .75em; background: rgba(255,255,255,0.2); border-radius: .15em" 
-                        :style="{'height': `${tintIndexProgress * 1.7}em` }">
+                    <span v-if="tintMode != TINT_OFF" class="white-dimmed bg-controls-guage-filled-right" style="" 
+                        :style="{'height': `${tintIndexProgress * 1.5}em` }">
+                        &nbsp;
+                    </span>
+                    <span v-if="tintMode != TINT_OFF" class="bg-controls-guage-progress-right"
+                        :style="{'top': `${((2.1 + 0.75) - (tintAdvanceProgress * 0.65))}em`, 'height': `${tintAdvanceProgress * 1.3}em` }">
                         &nbsp;
                     </span>
                 </span>
@@ -224,7 +232,7 @@ export default {
         // bg ui state
         currentBgIndex: 0,
         bgAnimFrame: 0,
-        bgAnimIncrCount: 11,
+        bgAnimIncrCount: 21,
         bgImages: [
             '/assets/art/wavy-haze-verydark.jpg', // bg-dark-01 (and 05)
             '/assets/art/stochast/image-vAE8r.jpg',  // bg-dark-02
@@ -350,6 +358,11 @@ export default {
         this.bodyRefs.overlay1.style.display = '';
         this.bodyRefs.overlay2.style.display = '';
         this.bodyRefs.overlay3.style.display = '';
+
+        // read night mode from app
+        if (this.bodyRefs.appDiv.classList.contains('night-mode')) {
+            this.tintMode = TINT_NIGHT;
+        }
 
         // read overlay 1 and 2 bg frame state to pick up if present
         // const overlay1Frm = this.getFrameFromElem(this.bodyRefs.overlay1);
@@ -858,6 +871,30 @@ export default {
     }
   },
   computed: {
+    bgAdvanceProgress() {
+        if (!this.bgOn) return 0.0;
+        let idx = Math.max(0, this.bgAnimFrame);
+        if (this.bgAnimIncrCount <= 0) return 0.0;
+        idx = Math.min(idx, this.bgAnimIncrCount - 1);
+        return 1.0 * (this.bgAnimIncrCount - idx) / (this.bgAnimIncrCount);
+    },
+    tintAdvanceProgress() {
+        const mode = this.tintMode;
+        if (mode == TINT_OFF) return 0.0;
+        let idx = Math.max(0, this.tintFrame);
+        /*
+        if ((this.tintMode == TINT_MAX && this.tintFrame >= 2)
+                || (this.tintMode == TINT_LIGHT && this.tintFrame >= 7)
+                || ((this.tintMode == TINT_ON || this.tintMode == TINT_NIGHT) && this.tintFrame >= 4)) {
+                this.tintFrame = 0;
+                this.updateColorTint();
+            }
+        */
+        let frameCount = mode == TINT_MAX ? 2 : (mode == TINT_LIGHT ? 7 : 4);
+        if (!frameCount) return 0.0;
+        idx = Math.min(idx, frameCount - 1);
+        return 1.0 * (frameCount - idx) / (frameCount);
+    },
     tintToggleStateStyle() {
         if (this.tintMode == TINT_OFF) return '';
         if (this.tintMode == TINT_MAX) return 'on tint-max';
@@ -869,7 +906,7 @@ export default {
         const bgCount = this.bgImages.length;
         if (bgCount > 0) {
             let idx = Math.min(this.currentBgIndex, bgCount - 1);
-            return 1.0 * idx / bgCount;
+            return 1.0 - (1.0 * idx / (bgCount - 1));
         }
         return 0.0;
     },
@@ -877,9 +914,34 @@ export default {
         const tintCount = this.bgColors.length;
         if (tintCount > 0) {
             let idx = Math.min(this.bgColorIdx, tintCount - 1);
-            return 1.0 * idx / tintCount;
+            return 1.0 - (1.0 * idx / tintCount);
         }
         return 0.0;
+    },
+    inNightMode() {
+        return this.tintMode == TINT_NIGHT;
+    },
+    playerThemeColor() {
+        if (this.inNightMode) {
+            return 'hsl(32, 96%, 65%)';
+        }
+        else {
+            return 'hsl(208, 75%, 70%)';
+        }
+    }
+  },
+  watch: {
+    inNightMode(modeOn) {
+        try {
+            let acl = this.bodyRefs.appDiv.classList;
+            if (modeOn && !acl.contains('night-mode')) {
+                acl.add('night-mode');
+            }
+            else if (!modeOn && acl.contains('night-mode')) {
+                acl.remove('night-mode');
+            }
+        }
+        catch(e) {}
     }
   }
 }
@@ -1307,8 +1369,132 @@ h2.medium-dual-label {
     align-items: center;
 }
 
+.instructions-row.night-mode {
+    opacity: 70%;
+}
+
+.controls-row.night-mode {
+    opacity: 70%;
+}
+
+span.blue-dimmed-bg {
+  background-color: hsla(208, 75%, 59%,80%);
+}
+
+.night-mode span.blue-dimmed-bg {
+  background-color: rgba(211, 83, 61, 0.75);
+}
 .bg-controls {
     font-size: 9pt;
 }
+
+.bg-controls-label {
+    display: inline-block;
+    width: 0;
+    position: relative;
+    font-size: 8pt;
+    text-shadow: 0 0.05em 0.5em rgba(255,255,255,70%);
+}
+.bg-controls-label.bg-controls-label-left {
+    
+}
+.bg-controls.label.bg-controls-label-right {
+    
+}
+
+.bg-ctrl-label-base {
+    position: absolute; left: .5em; top: 0.15em;
+}
+.bg-ctrl-label-max {
+    color: #886000;
+}
+.bg-ctrl-label-light {
+    color: #557799;
+}
+.bg-ctrl-label-night {
+    color: #cb1400;
+}
+
+.bg-controls-label-off {
+    position: absolute;
+    right: .35em;
+    top: 0.15em;
+    color:#181818;
+}
+.bg-controls-label-off.label-right {
+    left: .5em;
+}
+.bg-controls-label-bullet {
+    position: absolute;
+    right: .35em;
+    top: 0.15em;
+}
+.bg-controls-label-bullet.label-right {
+    left: .35em;
+}
+
+.night-mode {
+
+}
+
+.night-mode .blue {
+    color: rgba(231, 50, 44, 0.75);
+}
+
+.night-mode .blue-dimmed {
+    color: rgba(211, 83, 61, 0.75);
+}
+
+.night-mode .white-dimmed {
+    color: rgba(252, 141, 90, 0.75)
+}
+
+.bg-controls-guage-base-left {
+    position:absolute; top: 2em; left: .75em; padding: 0.15em 0; width: .5em; 
+    background: rgba(0,0,0,0.2); /* linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.4), rgba(0,0,0,0.4), rgba(0,0,0,0.2));  */
+    border-radius: .15em;
+}
+
+.bg-controls-guage-progress-left {
+    position:absolute; left: 1.25em; width: .15em; 
+    border-right: 0.15em solid rgba(255,255,255,0.5);
+    transition: height 0.5s, top 0.5s;
+}
+.night-mode .bg-controls-guage-progress-left {
+    border-right: 0.15em solid rgba(252, 141, 90, 0.75);
+}
+.bg-controls-guage-progress-right {
+    position:absolute; top: 2.2em; right: 1.25em; width: .15em; 
+    border-right: 0.15em solid rgba(255,255,255,0.5);
+    transition: height 0.5s, top 0.5s;
+}
+.night-mode .bg-controls-guage-progress-right {
+    border-right: 0.15em solid rgba(252, 141, 90, 0.75);
+}
+
+.bg-controls-guage-filled-left {
+    position:absolute; left: .75em; top: 2.1em; width: .5em; 
+    background: linear-gradient(to bottom, rgba(219, 172, 178, 0.2), 50%, rgba(89, 194, 255, 0.4), 95%, rgba(89, 194, 255, 0.65)); 
+    border-radius: .15em;
+    transition: height 1s;
+}
+.night-mode .bg-controls-guage-filled-left {
+    background: linear-gradient(to bottom, rgba(63, 0, 8, 0.5), 50%, rgba(248, 182, 128, 0.5), 95%, rgba(248, 182, 128, 0.65));
+}
+.bg-controls-guage-base-right {
+    position:absolute; top: 2em; right: .75em; padding: 0.15em 0; width: .5em; 
+    background: rgba(0,0,0,0.2); /* linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.4), rgba(0,0,0,0.4), rgba(0,0,0,0.2));  */
+    border-radius: .15em;
+}
+.bg-controls-guage-filled-right {
+    position:absolute; right: .75em; top: 2.1em; width: .5em; 
+    background: linear-gradient(to bottom, rgba(219, 172, 178, 0.2), 50%, rgba(89, 194, 255, 0.4), 95%, rgba(89, 194, 255, 0.65)); 
+    border-radius: .15em;
+    transition: height 1s;
+}
+.night-mode .bg-controls-label-right .bg-controls-guage-filled-right {
+    background: linear-gradient(to bottom, rgba(63, 0, 8, 0.5), 50%, rgba(248, 182, 128, 0.5), 95%, rgba(248, 182, 128, 0.65));
+}
+
 
 </style>
