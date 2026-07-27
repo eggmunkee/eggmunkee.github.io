@@ -111,10 +111,10 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                             &bullet;
                         </span>
                     </template>
-                    <span v-if="bgOn" class="bg-controls-guage-base-left" @click="incrementBgAnim(false, true)">
+                    <span v-if="bgOn" class="bg-controls-guage-base-left">
                         &nbsp;
                     </span>
-                    <span v-if="bgOn" class="white-dimmed bg-controls-guage-filled-left" @click="incrementBgAnim(false, true)" 
+                    <span v-if="bgOn" class="white-dimmed bg-controls-guage-filled-left" 
                         :style="{'height': `${bgIndexProgress * 1.75}em` }">
                         &nbsp;
                     </span>
@@ -169,10 +169,10 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                             &bullet;
                         </span>
                     </template>
-                    <span v-if="tintMode != TINT_OFF" style="" class="bg-controls-guage-base-right" @click="updateColorTint">
+                    <span v-if="tintMode != TINT_OFF" style="" class="bg-controls-guage-base-right">
                         &nbsp;
                     </span>
-                    <span v-if="tintMode != TINT_OFF" class="white-dimmed bg-controls-guage-filled-right" @click="updateColorTint" 
+                    <span v-if="tintMode != TINT_OFF" class="white-dimmed bg-controls-guage-filled-right"
                         :style="{'height': `${tintIndexProgress * 1.7}em` }">
                         &nbsp;
                     </span>
@@ -232,7 +232,7 @@ export default {
         // bg ui state
         currentBgIndex: 0,
         bgAnimFrame: 0,
-        bgAnimIncrCount: 21,
+        bgAnimIncrCount: 16,
         bgImages: [
             '/assets/art/wavy-haze-verydark.jpg', // bg-dark-01 (and 05)
             '/assets/art/stochast/image-vAE8r.jpg',  // bg-dark-02
@@ -1461,26 +1461,52 @@ span.blue-dimmed-bg {
     position:absolute; top: 2.05em; left: .75em; padding: 0.1em 0; width: .65em; 
     background: rgba(0,0,0,0.25);
     border-radius: .15em;
+    height: 2em;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 .night-mode .bg-controls-guage-base-left {
+    background: rgba(0,0,0,0.35);
+}
+.bg-controls-guage-base-right {
+    position:absolute; top: 2.05em; right: .75em; padding: 0.1em 0; width: .65em; 
+    background: rgba(0,0,0,0.25); /* linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.4), rgba(0,0,0,0.4), rgba(0,0,0,0.2));  */
+    border-radius: .15em;
+    height: 2em;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+.night-mode .bg-controls-guage-base-right {
     background: rgba(0,0,0,0.35);
 }
 
 .bg-controls-guage-progress-left {
     position:absolute; top: 2.2em; left: 1.15em; width: .2em; 
-    border-right: 0.15em dashed rgba(255,255,255,0.35);
+    border-right: 0.15em solid rgba(255,255,255,0.35);
     transition: height 0.5s, top 0.5s;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 .night-mode .bg-controls-guage-progress-left {
-    border-right: 0.15em dashed rgba(252, 141, 90, 0.65);
+    border-right: 0.15em solid rgba(252, 141, 90, 0.65);
 }
 .bg-controls-guage-progress-right {
     position:absolute; top: 2.2em; right: 1.2em; width: .2em; 
-    border-right: 0.15em dashed rgba(255,255,255,0.35);
+    border-right: 0.15em solid rgba(255,255,255,0.35);
     transition: height 0.5s, top 0.5s;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 .night-mode .bg-controls-guage-progress-right {
-    border-right: 0.15em dashed rgba(252, 141, 90, 0.65);
+    border-right: 0.15em solid rgba(252, 141, 90, 0.65);
 }
 
 .bg-controls-guage-filled-left {
@@ -1488,23 +1514,24 @@ span.blue-dimmed-bg {
     background: linear-gradient(to bottom, rgba(219, 172, 178, 0.2), 30%, rgba(89, 194, 255, 0.4), 95%, rgba(89, 194, 255, 0.65)); 
     border-radius: .15em;
     transition: height 1s;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 .night-mode .bg-controls-guage-filled-left {
     background: linear-gradient(to bottom, rgba(63, 0, 8, 0.5), 30%, rgba(248, 182, 128, 0.5), 95%, rgba(248, 182, 128, 0.65));
 }
-.bg-controls-guage-base-right {
-    position:absolute; top: 2.05em; right: .76em; padding: 0.1em 0; width: .65em; 
-    background: rgba(0,0,0,0.2); /* linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.4), rgba(0,0,0,0.4), rgba(0,0,0,0.2));  */
-    border-radius: .15em;
-}
-.night-mode .bg-controls-guage-base-right {
-    background: rgba(0,0,0,0.35);
-}
+
 .bg-controls-guage-filled-right {
     position:absolute; right: .8em; top: 2.1em; width: .5em; 
     background: linear-gradient(to bottom, rgba(219, 172, 178, 0.2), 30%, rgba(89, 194, 255, 0.4), 95%, rgba(89, 194, 255, 0.65)); 
     border-radius: .15em;
     transition: height 1s;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 .night-mode .bg-controls-label-right .bg-controls-guage-filled-right {
     background: linear-gradient(to bottom, rgba(63, 0, 8, 0.5), 30%, rgba(248, 182, 128, 0.5), 95%, rgba(248, 182, 128, 0.65));

@@ -228,6 +228,10 @@ span.blue-dimmed-bg {
   transition: transform 1.25s ease, background-color 1.25s ease, box-shadow 1.25s ease;
   background-color: rgba(200,210,255,0.1);
   box-shadow: 0 0 1em 0.5em rgba(200,210,255,0.1);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 .twist-cont:hover {
   background-color: rgba(200,210,255,0.25);
