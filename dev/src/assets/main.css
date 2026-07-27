@@ -238,8 +238,8 @@ span.blue-dimmed-bg {
 .twist-cont.set-a {
   transform: rotate(0deg);
   transition: transform 0.5s, background-color 1.25s, box-shadow 1.25s;
-  background-color: rgba(255, 247, 175, 0.1);
-  box-shadow: 0 0 .75em 0.25em rgba(255, 247, 175,0.1);
+  background-color: rgba(138, 133, 93, 0.2);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 247, 175,0.3);
 }
 .twist-cont.set-a:hover {
   background-color: rgba(255, 247, 175,0.3);
@@ -248,23 +248,12 @@ span.blue-dimmed-bg {
 .twist-cont.set-a.on {
   transform: rotate(90deg);
   transition: transform 1.25s, background-color 1.25s, box-shadow 1.25s;
-  background-color: rgba(255, 247, 175,0.25);
+  background-color: rgba(255, 247, 175, 0.25);
   box-shadow: 0 0 .75em 0.25em rgba(255, 247, 175,0.25);
 }
 .twist-cont.set-a.on:hover {
-  background-color: rgba(175,190,255,0.2);
-  box-shadow: 0 0 .75em 0.25em rgba(175,190,255,0.2);
-}
-.twist-cont.set-a.on.tint-max {
-  transform: rotate(315deg);
-  
-  background-color: rgba(255, 207, 175, 0.25);
-  box-shadow: 0 0 .75em 0.25em rgba(255, 207, 175,0.25);
-}
-.twist-cont.set-a.on.tint-max:hover {
-  
-  background-color: rgba(255, 207, 175,0.2);
-  box-shadow: 0 0 .75em 0.25em rgba(255, 207, 175,0.2);
+  background-color: rgba(175, 255, 215, 0.3);
+  box-shadow: 0 0 .75em 0.25em rgba(175, 255, 215,0.35);
 }
 .twist-cont.set-a.on.tint-light {
   transform: rotate(180deg);
@@ -273,8 +262,8 @@ span.blue-dimmed-bg {
   box-shadow: 0 0 .75em 0.25em rgba(175, 255, 215,0.25);
 }
 .twist-cont.set-a.on.tint-light:hover {
-  background-color: rgba(175, 255, 215,0.2);
-  box-shadow: 0 0 .75em 0.25em rgba(175, 255, 215,0.2);
+  background-color: rgba(255, 121, 121, 0.25);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 121, 121,0.25);
 }
 .twist-cont.set-a.on.tint-night {
   transform: rotate(270deg);
@@ -282,15 +271,26 @@ span.blue-dimmed-bg {
   box-shadow: 0 0 .75em 0.25em rgba(255, 121, 121,0.35);
 }
 .twist-cont.set-a.on.tint-night:hover {
-  background-color: rgba(255, 121, 121,0.2);
-  box-shadow: 0 0 .75em 0.25em rgba(255, 121, 121,0.2);
+  background-color: rgba(255, 184, 136, 0.35);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 207, 175,0.4);
+}
+.twist-cont.set-a.on.tint-max {
+  transform: rotate(315deg);
+  
+  background-color: rgba(255, 194, 107, 0.35);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 194, 107,0.35);
+}
+.twist-cont.set-a.on.tint-max:hover {
+  
+  background-color: rgba(255, 207, 175,0.2);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 207, 175,0.2);
 }
 
 .twist-cont.set-b {
   transform: rotate(0deg);
 
-  background-color: rgba(255, 175, 192, 0.1);
-  box-shadow: 0 0 .75em 0.25em rgba(255, 175, 192,0.1);
+  background-color: rgba(134, 92, 101, 0.2);
+  box-shadow: 0 0 .75em 0.25em rgba(255, 175, 192,0.3);
 }
 .twist-cont.set-b:hover {
   background-color: rgba(255, 175, 192,0.3);
@@ -310,8 +310,8 @@ span.blue-dimmed-bg {
 .twist-cont.set-c {
   transform: rotate(-115deg);
 
-  background-color: rgba(146, 255, 146, 0.1);
-  box-shadow: 0 0 .75em 0.25em rgba(146, 255, 146,0.1);
+  background-color: rgba(79, 138, 79, 0.2);
+  box-shadow: 0 0 .75em 0.25em rgba(146, 255, 146,0.3);
 }
 .twist-cont.set-c:hover {
   background-color: rgba(146, 255, 146,0.35);
