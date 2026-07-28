@@ -8,7 +8,8 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
 
 <template>
 <div class="root-div">
-    <div class="player-section-outer" :class="tintMode == TINT_NIGHT ? 'night-mode' : tintMode == TINT_MAX ? 'tint-max' : ''">
+    <div class="player-section-outer" :class="tintMode == TINT_NIGHT ? 'night-mode' : tintMode == TINT_MAX ? 'tint-max' : ''"
+        :style="{borderLeft:styledBorderVal,borderRight:styledBorderVal}">
         <div class="player-section" :class="playerBgVisible ? '' : 'no-bg'">
             <div class="player-heading">
                 <span class="stick-top-left from-padded">
@@ -53,7 +54,8 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
         </div>
     </div>
     
-    <div class="playlist-section-outer" :class="tintMode == TINT_NIGHT ? 'night-mode' : tintMode == TINT_MAX ? 'tint-max' : ''">
+    <div class="playlist-section-outer" :class="tintMode == TINT_NIGHT ? 'night-mode' : tintMode == TINT_MAX ? 'tint-max' : ''"
+        :style="{borderLeft:styledBorderVal,borderRight:styledBorderVal}">
         <div class="playlist-section">
             <!-- corner ui -->
             <span class="stick-top-left">
@@ -71,15 +73,15 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                 </span>
             </span>
 
-            <h3 >
+            <h3 style="display:flex; flex-direction: row; justify-content: center; align-items: center;">
                 
-                <span class="icon-cont-shadow">
-                    <a href="#" class="small-label shadow letter-icon upside-down" title="shuffle song order" :class="songStyle(5, false)" @click.prevent="filterNonMegagongTracks">
+                <span class="icon-cont-shadow" >
+                    <a href="#" class="small-label shadow letter-icon upside-down" title="non-megagong songs" :class="songStyle(5, false)" @click.prevent="filterNonMegagongTracks">
                         W
                     </a>
                 </span>
                 <span class="icon-cont-shadow">
-                    <a href="#" class="small-label shadow letter-icon" title="shuffle song order" :class="songStyle(5, false)" @click.prevent="filterMegagongTracks">
+                    <a href="#" class="small-label shadow letter-icon" title="megagong songs" :class="songStyle(5, false)" @click.prevent="filterMegagongTracks">
                         M
                     </a>
                 </span>
@@ -88,11 +90,11 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                     <span class="playlist-title medium-dual-label" :class="songStyle(3, false)" >Songs ({{songList.length}})</span>
                 </span>
                 
-                <span class="icon-cont-shadow">
+                <span class="icon-cont-shadow" >
                     <a href="#" class="small-label shadow shuffle-icon" title="shuffle song order" :class="songStyle(5, false)" style="color: rgb(100, 156, 200)" @click.prevent="shuffleTracks">
                     </a>
                 </span>
-                <span class="icon-cont-shadow">
+                <span class="icon-cont-shadow" >
                     <a href="#" class="small-label shadow letter-icon" title="original song order" :class="songStyle(5, false)" @click.prevent="unshuffleTracks">
                         O
                     </a>
@@ -1041,6 +1043,15 @@ export default {
         else {
             return 'hsla(208, 75%, 80%, 90%)';
         }
+    },
+    styledBorderVal() {
+        if (this.inNightMode) {
+            return '.15em dashed ' + this.playerThemeColor;
+            //return '.15em dashed red';
+        }
+        else {
+            return '.15em dashed ' + this.playerThemeColor;
+        }
     }
   },
   watch: {
@@ -1444,35 +1455,40 @@ h2.medium-dual-label {
     box-shadow: 0 0 .3em .3em rgba(60,90,130,0.2);
 }
 
-
 .icon-cont-shadow {
     background: rgba(60,90,130,0.3);
     border-radius: 0.5em;
     box-shadow: 0 0 .3em .3em rgba(60,90,130,0.3);
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+    flex-basis: 0.3em;
+}
+
+@media screen {
+    
 }
 
 .shuffle-icon {
-  /* Set dimensions */
-  width: .8em;
-  height: .8em;
-  display: inline-block; 
-  vertical-align:-0.3vh;
-  margin-left: 0.25em;
-  
-  /* Set the desired color */
-  background-color: hsl(208, 75%, 80%); 
-  
-  /* Apply the image as a mask */
-  -webkit-mask-image: url('/assets/icon-shuffle.png');
-  mask-image: url('/assets/icon-shuffle.png');
-  
-  /* Ensure the mask covers the element */
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
+    /* Set dimensions */
+    width: .8em;
+    height: .8em;
+    display: inline-block; 
+    vertical-align:-0.3vh;
+    
+    /* Set the desired color */
+    background-color: hsl(208, 75%, 80%); 
+
+    /* Apply the image as a mask */
+    -webkit-mask-image: url('/assets/icon-shuffle.png');
+    mask-image: url('/assets/icon-shuffle.png');
+
+    /* Ensure the mask covers the element */
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
 }
 
 .letter-icon {
@@ -1483,8 +1499,11 @@ h2.medium-dual-label {
     color: rgb(100, 156, 200); 
     font-weight:bolder;
     line-height: 1;
-    margin-left: 0.25em;
-    margin-right: 0.25em;
+    
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .playlist-controls {
@@ -1504,11 +1523,11 @@ h2.medium-dual-label {
 }
 
 span.blue-dimmed-bg {
-  background-color: hsla(208, 75%, 59%,80%);
+    background-color: hsla(208, 75%, 59%,80%);
 }
 
 .night-mode span.blue-dimmed-bg {
-  background-color: rgba(211, 83, 61, 0.75);
+    background-color: rgba(211, 83, 61, 0.75);
 }
 .bg-controls {
     font-size: 9pt;

@@ -224,7 +224,7 @@ defineOptions({
         </div>
         <div class="status-row">
             <div class="status-progress" @click="progressClick" ref="progbar">
-                <div class="status-progress-on" :style="{width:progressWidth+'%'}"></div>
+                <div class="status-progress-on" :style="{width:progressWidth+'%',background:themeColor}"></div>
             </div>
             <span class="time-status" :style="{color:themeColor}">{{ displayTime }} <span class="minor-slash">/</span> {{ displayDuration }}</span>
         </div>
@@ -284,7 +284,7 @@ defineOptions({
 
     .status-progress {
         position: relative;
-        background: rgba(0,0,0,25%);
+        background: rgba(0,0,0,28%);
         height: .35em;
         border-radius: .15em;
     }
@@ -292,15 +292,19 @@ defineOptions({
         position: relative;
         left: 0.05em;
         top: 0.05em;
-        border-top: .2em dashed rgba(0,0,0,50%);
-        background: rgba(255,255,255,70%);
+        border-top: .2em dashed rgba(0,0,0,60%);
+        /* background: rgba(255,255,255,75%); */
         height: .25em;
         border-radius: 0.15em;
         box-sizing: border-box;
+        box-shadow: 0 0 1em rgba(255,255,255,0.7);
     }
     .time-status {
         font-size: 10pt;
         opacity: 80%;
+        box-shadow: 0 0 .65em rgba(0,0,0,0.35);
+        background: rgba(0,0,0,0.175);
+        border-radius: 0.5em;
     }
     .night-mode .time-status {
         opacity: 65%;
