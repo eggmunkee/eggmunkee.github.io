@@ -1,5 +1,5 @@
 <script setup>
-import VueAudioPlayer from '@liripeng/vue-audio-player'
+import EgPglayer from '../components/EgPglayer.vue'
 
 import Song from '../components/Song.vue'
 // Import the song list JSON file
@@ -33,13 +33,15 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                     </span>
                 </div>
             </div>
-            <vue-audio-player ref="audioPlayer"
-                :audio-list="songList"
-                :theme-color="playerThemeColor"
-                :before-play="playNext"
-                :progress-interval="500"
-                @pause="playEnded"
-            ></vue-audio-player>
+            <eg-pglayer 
+                :theme-color="playerThemeColor" 
+                :selected-song="currentSong"
+                @play-click="newPlayClick"
+                @previous-click="newPrevClick"
+                @next-click="newNextClick"
+                @status="updateSongStatus"
+                @play-ended="playEnded"
+            ></eg-pglayer>
             <div class="song-label">
                 <div class="song-title medium-dual-label" :class="songStyle(1, false)">
                     {{ currentSongTitle }}
@@ -70,12 +72,29 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
             </span>
 
             <h3 >
+                
+                <span class="icon-cont-shadow">
+                    <a href="#" class="small-label shadow letter-icon upside-down" title="shuffle song order" :class="songStyle(5, false)" @click.prevent="filterNonMegagongTracks">
+                        W
+                    </a>
+                </span>
+                <span class="icon-cont-shadow">
+                    <a href="#" class="small-label shadow letter-icon" title="shuffle song order" :class="songStyle(5, false)" @click.prevent="filterMegagongTracks">
+                        M
+                    </a>
+                </span>
+
                 <span class="box-shadow">
                     <span class="playlist-title medium-dual-label" :class="songStyle(3, false)" >Songs ({{songList.length}})</span>
                 </span>
                 
                 <span class="icon-cont-shadow">
                     <a href="#" class="small-label shadow shuffle-icon" title="shuffle song order" :class="songStyle(5, false)" style="color: rgb(100, 156, 200)" @click.prevent="shuffleTracks">
+                    </a>
+                </span>
+                <span class="icon-cont-shadow">
+                    <a href="#" class="small-label shadow letter-icon" title="original song order" :class="songStyle(5, false)" @click.prevent="unshuffleTracks">
+                        O
                     </a>
                 </span>
             </h3>
@@ -221,8 +240,9 @@ export default {
         currentSongTitle: ALBUM_NAME,
         currentSongArtist: ALBUM_ARTIST,
         currentSongAlbum: ALBUM_NAME,
+        currentSong: null,
         // Configuration
-        songList: initialSongList,
+        songList: [],
         // play next state
         queueSongByIndex: false,
         nextSongIndex: 0,
@@ -390,6 +410,10 @@ export default {
         cl.add('bg-base');
         cl.add('bg-transp');
         this.recalcTitleLetterStyles();
+
+        for (let s=0; s < initialSongList.length; s++) {
+            this.songList.push(initialSongList[s]);
+        }
     }
     catch (e) {}
   },
@@ -661,19 +685,31 @@ export default {
             this.bodyRefs.overlay3.style.backgroundColor = color;
         });
     },
+    setSongIndex(songIndex) {
+        if (songIndex >= 0 && songIndex < this.songList.length) {
+            let song = this.songList[songIndex];
+            this.currentSongIndex = songIndex;
+            this.currentSong = song;
+            this.currentSongArtist = song.artist;
+            this.currentSongAlbum = song.album;
+            this.currentSongTitle = song.title;
+
+        }
+    },
     playThisSong(songIndex) {
-        console.log("Play song", songIndex);
+        //console.log("Play song", songIndex);
         try {
-            let player = this.$refs['audioPlayer'];
-            if (player.currentPlayIndex != songIndex) {
-                this.queueSongByIndex = true;
-                this.nextSongIndex = songIndex;
-                player.pause();
-                //this.playEnded();
-            }
-            else {
-                player.play();
-            }
+            // let player = this.$refs['audioPlayer'];
+            // if (player.currentPlayIndex != songIndex) {
+            //     this.queueSongByIndex = true;
+            //     this.nextSongIndex = songIndex;
+            //     player.pause();
+            //     //this.playEnded();
+            // }
+            // else {
+            //     player.play();
+            // }
+            this.setSongIndex(songIndex);
         }
         catch (e) {
             console.error(e);
@@ -682,40 +718,42 @@ export default {
     playStarted() {
     },
     playEnded() {
-        if (this.queueSongByIndex) {
-            this.$nextTick(function() {
-            try
-            {
-                let player = this.$refs['audioPlayer'];
-                if (player) {
-                    player.currentPlayIndex = this.nextSongIndex - 1;
-                    player.playNext();
-                }
-                this.queueSongByIndex = false;
-                this.nextSongIndex = 0;
-            }
-            catch (e) { console.error(e); }
-            });
-        }
+        this.newNextClick();
+        // if (this.queueSongByIndex) {
+        //     this.$nextTick(function() {
+        //     try
+        //     {
+        //         let player = this.$refs['audioPlayer'];
+        //         if (player) {
+        //             player.currentPlayIndex = this.nextSongIndex - 1;
+        //             player.playNext();
+        //         }
+        //         this.queueSongByIndex = false;
+        //         this.nextSongIndex = 0;
+        //     }
+        //     catch (e) { console.error(e); }
+        //     });
+        // }
     },
     playNext(next) {
-        try {
-            let songIdx = this.$refs['audioPlayer'].currentPlayIndex;
-            let song = this.songList[songIdx];
-            this.currentSongIndex = songIdx;
-            this.currentSongTitle = song.title || ALBUM_NAME;
-            this.currentSongArtist = song.artist || ALBUM_ARTIST;
-            this.currentSongAlbum = song.album || ALBUM_NAME;
-            if (this.playlistVisible)
-                this.scrollCurrentSongIntoView();
-        } catch (e) {
-            this.currentSongTitle = ALBUM_NAME;
-            this.currentSongArtist = ALBUM_ARTIST;
-            this.currentSongAlbum = ALBUM_NAME;
-            this.currentSongIndex = 0;
-        }
+        // try {
+        //     let songIdx = this.$refs['audioPlayer'].currentPlayIndex;
+        //     let song = this.songList[songIdx];
+        //     this.currentSong = song;
+        //     this.currentSongIndex = songIdx;
+        //     this.currentSongTitle = song.title || ALBUM_NAME;
+        //     this.currentSongArtist = song.artist || ALBUM_ARTIST;
+        //     this.currentSongAlbum = song.album || ALBUM_NAME;
+        //     if (this.playlistVisible)
+        //         this.scrollCurrentSongIntoView();
+        // } catch (e) {
+        //     this.currentSongTitle = ALBUM_NAME;
+        //     this.currentSongArtist = ALBUM_ARTIST;
+        //     this.currentSongAlbum = ALBUM_NAME;
+        //     this.currentSongIndex = 0;
+        // }
 
-        this.$nextTick(next(true));
+        // this.$nextTick(next(true));
     },
     scrollCurrentSongIntoView() {
         try {
@@ -739,6 +777,53 @@ export default {
         for (let i = songs.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [songs[i], songs[j]] = [songs[j], songs[i]];
+        }
+        this.songList = songs;
+    },
+    unshuffleTracks() {
+        let songs = [];
+        //console.log(initialSongList);
+        for (let i = 0; i < initialSongList.length; i++) {
+            songs.push(initialSongList[i]);
+        }
+        this.songList = songs;
+    },
+    filterSongMegagong(song, reverse) {
+        if (
+            song.title.toLowerCase().indexOf("megagong") != -1 ||
+            song.title.toLowerCase().indexOf("static") != -1 ||
+            song.title.toLowerCase().indexOf("synthwave") != -1 ||
+            song.title.toLowerCase().indexOf("haze") != -1 ||
+            song.title.toLowerCase().indexOf("rewound") != -1 ||
+            song.title.toLowerCase().indexOf("echo") != -1 ||
+            song.title.toLowerCase().indexOf("calculation") != -1 ||
+            song.title.toLowerCase().indexOf("repixelated") != -1 ||
+            song.title.toLowerCase().indexOf("rewind") != -1 ||
+            song.title.toLowerCase().indexOf("disruptive") != -1
+        ) {
+            return !reverse;
+        }
+        return reverse;
+    },
+    filterMegagongTracks() {
+        let songs = [];
+        for (let i = 0; i < initialSongList.length; i++) {
+            if (
+                this.filterSongMegagong(initialSongList[i], false)
+            ) {
+                songs.push(initialSongList[i]);
+            }
+        }
+        this.songList = songs;
+    },
+    filterNonMegagongTracks() {
+        let songs = [];
+        for (let i = 0; i < initialSongList.length; i++) {
+            if (
+                this.filterSongMegagong(initialSongList[i], true)
+            ) {
+                songs.push(initialSongList[i]);
+            }
         }
         this.songList = songs;
     },
@@ -868,6 +953,34 @@ export default {
             }
         }
         catch (e) {}
+    },
+    newPrevClick() {
+        //console.log("Previous");
+        let currSongIndex = this.currentSongIndex - 1;
+        if (currSongIndex < 0) {
+            currSongIndex = this.songList.length - 1;
+        }
+        this.setSongIndex(currSongIndex);
+        if (this.playlistVisible)
+            this.scrollCurrentSongIntoView();
+    },
+    newNextClick() {
+        //console.log("Next");
+        let currSongIndex = this.currentSongIndex + 1;
+        if (currSongIndex >= this.songList.length) {
+            currSongIndex = 0;
+        }
+        this.setSongIndex(currSongIndex);
+        if (this.playlistVisible)
+            this.scrollCurrentSongIntoView();
+    },
+    newPlayClick() {
+        this.setSongIndex(this.currentSongIndex);
+        if (this.playlistVisible)
+            this.scrollCurrentSongIntoView();
+    },
+    updateSongStatus(status) {
+        //console.log(status);
     }
   },
   computed: {
@@ -923,10 +1036,10 @@ export default {
     },
     playerThemeColor() {
         if (this.inNightMode) {
-            return 'hsl(32, 96%, 65%)';
+            return 'hsla(22, 96%, 75%, 100%)';
         }
         else {
-            return 'hsl(208, 75%, 70%)';
+            return 'hsla(208, 75%, 80%, 90%)';
         }
     }
   },
@@ -1344,6 +1457,7 @@ h2.medium-dual-label {
   height: .8em;
   display: inline-block; 
   vertical-align:-0.3vh;
+  margin-left: 0.25em;
   
   /* Set the desired color */
   background-color: hsl(208, 75%, 80%); 
@@ -1359,6 +1473,18 @@ h2.medium-dual-label {
   mask-repeat: no-repeat;
   -webkit-mask-position: center;
   mask-position: center;
+}
+
+.letter-icon {
+    font-size: 12pt;
+    position: relative;
+    top: 0.05em; 
+    padding: 0.05em;
+    color: rgb(100, 156, 200); 
+    font-weight:bolder;
+    line-height: 1;
+    margin-left: 0.25em;
+    margin-right: 0.25em;
 }
 
 .playlist-controls {
