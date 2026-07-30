@@ -229,9 +229,6 @@ export default {
 </script>
 
 <style>
-.vue-audio-player__play-rate {
-    visibility: hidden;
-}
 .bg-wavy-blue-dark {
     background-size: 100% auto;
     background-position-y: 80%;

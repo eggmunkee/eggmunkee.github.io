@@ -1047,11 +1047,6 @@ export default {
 </script>
 
 <style>
-.vue-audio-player__play-rate {
-    visibility: hidden;
-}
-
-
 .bg-base {
     background-repeat: no-repeat;
     background-attachment: fixed;
