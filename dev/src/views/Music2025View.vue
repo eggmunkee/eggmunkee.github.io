@@ -1,5 +1,5 @@
 <script setup>
-import VueAudioPlayer from '@liripeng/vue-audio-player'
+import EgPglayer from '../components/EgPglayer.vue'
 
 import Song from '../components/Song.vue'
 // Import the song list JSON file
@@ -9,24 +9,35 @@ import initialSongList from '../data/musicPlaylist_2025.json';
 <template>
 <div class="root-div">    
     <div class="player-section" style="" >
-        <h4 class="inner-title">EGGMUNKEE MUSIC OCT 2025</h4>
-        <vue-audio-player ref="audioPlayer"
-            :audio-list="songList"
-            theme-color="hsl(208, 75%, 80%)"
-            :before-play="playNext"
-            :progress-interval="500"
-            @pause="playEnded"
-        ></vue-audio-player>
+        <h4 class="inner-title">MUSIC COLLECTION <span class="minor-slash">/</span> OCT. 2025</h4>
+        <eg-pglayer 
+            play-content="&bullet;" pause-content="&bullet;"
+            left-content="((" right-content="))"
+            theme-color="hsl(208, 75%, 80%)" 
+            :prev-restart-sec="3"
+            :selected-song="currentSong"
+            :artwork="'/assets/art/wavy-blue.jpg'"
+            @play-click="playClick"
+            @previous-click="prevClick"
+            @next-click="nextClick"
+            @status="updateSongStatus"
+            @play-ended="playEnded"
+        ></eg-pglayer>
         <div class="song-label">
-            <div class="song-title">{{currentSongTitle}}</div>
-            <div class="song-artist">
-                <span v-show="currentSongArtist">by {{currentSongArtist}}</span> <span v-show="currentSongAlbum">[{{currentSongAlbum}}]</span>
-            </div>
+            <span class="song-title">{{currentSongTitle}}</span>
+            <span class="song-artist" v-if="currentSongArtist || currentSongAlbum">
+                &bullet; <span v-if="currentSongArtist">by {{currentSongArtist}}</span> <span v-if="currentSongAlbum">{{currentSongAlbum}}</span>
+            </span>
         </div>
     </div>
     
     <div class="playlist-section">
         <h3>
+            <span class="icon-cont-shadow">
+                <a href="#" class="small-label shadow order-icon" title="original song order" 
+                 style="color: rgb(100, 156, 200)" @click.prevent="unshuffleTracks">
+                </a>
+            </span>
             <span class="box-shadow">
                 <span class="playlist-title">Songs ({{songList.length}})</span>
             </span>
@@ -61,10 +72,10 @@ export default {
         currentSongIndex: 0,
         currentSongTitle: 'Collection from October 2025',
         currentSongArtist: '',
-        currentSongAlbum: 'Assorted',
+        currentSongAlbum: 'Assorted Music',
+        currentSong: null,
         // Configuration
-        songList: initialSongList,
-        initialSongs: initialSongList,
+        songList: [],
         // play next state
         queueSongByIndex: false,
         nextSongIndex: 0,
@@ -96,6 +107,8 @@ export default {
         setTimeout(function() { 
             overlay3.classList.add('overlay-z3-12');
         }, 100);
+
+        this.unshuffleTracks();
     }
     catch (e) {}
   },
@@ -117,59 +130,6 @@ export default {
             }
         }
     },
-    playThisSong(songIndex) {
-        console.log("Play song", songIndex);
-        try {
-            let player = this.$refs['audioPlayer'];
-            if (player.currentPlayIndex != songIndex) {
-                this.queueSongByIndex = true;
-                this.nextSongIndex = songIndex;
-                player.pause();
-                //this.playEnded();
-            }
-            else {
-                player.play();
-            }
-        }
-        catch (e) {
-            console.error(e);
-        }
-    },
-    playEnded() {
-        if (this.queueSongByIndex) {
-            this.$nextTick(function() {
-            try
-            {
-                let player = this.$refs['audioPlayer'];
-                if (player) {
-                    player.currentPlayIndex = this.nextSongIndex - 1;
-                    player.playNext();
-                }
-                this.queueSongByIndex = false;
-                this.nextSongIndex = 0;
-            }
-            catch (e) { console.error(e); }
-            });
-        }
-    },
-    playNext(next) {
-        try {
-            let songIdx = this.$refs['audioPlayer'].currentPlayIndex;
-            let song = this.songList[songIdx];
-            this.currentSongIndex = songIdx;
-            this.currentSongTitle = song.title || ' ';
-            // this.currentSongArtist = song.artist || ' ';
-            this.currentSongAlbum = song.album || ' ';
-            this.scrollCurrentSongIntoView();
-        } catch (e) {
-            this.currentSongTitle = 'Unknown';
-            this.currentSongArtist = ' ';
-            this.currentSongAlbum = e.message;
-            this.currentSongIndex = 0;
-        }
-
-        next() // Start play
-    },
     scrollCurrentSongIntoView() {
         try {
             const viewportHeight = window.innerHeight;
@@ -187,24 +147,19 @@ export default {
         }
         catch {}
     },
-    originalOrderTracks() {
-        console.warn("ordering...");
-        // let songs = this.initialSongs;
-        // while( this.songList.length > 1) {
-        //     this.songList.pop();
-        // };
-        // this.$nextTick(function() {
-        // for (let i = 0; i < songs.length; i++) {
-        //     this.songList.push(songs[i]);
-        // }
-        // });
-        //this.songList = this.initialSongs; //.splice(0, this.initialSongs.length, [...this.initialSongs]);
-    },
     shuffleTracks() {
         let songs = this.songList;
         for (let i = songs.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [songs[i], songs[j]] = [songs[j], songs[i]];
+        }
+        this.songList = songs;
+    },
+    unshuffleTracks() {
+        let songs = [];
+        //console.log(initialSongList);
+        for (let i = 0; i < initialSongList.length; i++) {
+            songs.push(initialSongList[i]);
         }
         this.songList = songs;
     },
@@ -218,6 +173,56 @@ export default {
         catch {
             return 'song-entry';
         }
+    },
+
+    setSongIndex(songIndex) {
+        if (songIndex >= 0 && songIndex < this.songList.length) {
+            let song = this.songList[songIndex];
+            this.currentSongIndex = songIndex;
+            this.currentSong = song;
+            this.currentSongArtist = '';
+            this.currentSongAlbum = song.album;
+            this.currentSongTitle = song.title;
+
+        }
+    },
+    playThisSong(songIndex) {
+        try {
+            this.setSongIndex(songIndex);
+        }
+        catch (e) {
+            console.error(e);
+        }
+    },
+    playStarted() {
+    },
+    playEnded() {
+        this.nextClick();
+    },
+    prevClick() {
+        //console.log("Previous");
+        let currSongIndex = this.currentSongIndex - 1;
+        if (currSongIndex < 0) {
+            currSongIndex = this.songList.length - 1;
+        }
+        this.setSongIndex(currSongIndex);
+        this.scrollCurrentSongIntoView();
+    },
+    nextClick() {
+        //console.log("Next");
+        let currSongIndex = this.currentSongIndex + 1;
+        if (currSongIndex >= this.songList.length) {
+            currSongIndex = 0;
+        }
+        this.setSongIndex(currSongIndex);
+        this.scrollCurrentSongIntoView();
+    },
+    playClick() {
+        this.setSongIndex(this.currentSongIndex);
+        this.scrollCurrentSongIntoView();
+    },
+    updateSongStatus(status) {
+        //console.log(status);
     }
   }
 }
@@ -417,6 +422,22 @@ export default {
   -webkit-mask-position: center;
   mask-position: center;
 }
+
+.letter-icon {
+    font-size: 12pt;
+    position: relative;
+    top: 0.05em; 
+    padding: 0.05em;
+    color: rgb(100, 156, 200); 
+    font-weight:bolder;
+    line-height: 1;
+    
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
 .order-icon {
   /* Set dimensions */
   width: 0.8em;

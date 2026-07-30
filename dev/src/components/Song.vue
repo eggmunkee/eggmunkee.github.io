@@ -100,8 +100,8 @@ const antiSelectHandler = (event) => {
         justify-content: center;
         align-items: center;   
         padding: .25em .125em .25em .125em;   
-        margin-left: 1.0em;
-        margin-right: 0.5em;
+        margin-left: 1.5em;
+        
     }
     .song-text {
       cursor: pointer;

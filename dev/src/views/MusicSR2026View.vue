@@ -37,10 +37,14 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
             <eg-pglayer 
                 :theme-color="playerThemeColor" 
                 :selected-song="currentSong"
-                @play-click="newPlayClick"
-                @previous-click="newPrevClick"
-                @next-click="newNextClick"
+                :prev-restart-sec="3"
+                :artwork="currentArtworkUrl"
+                @play-click="playClick"
+                @previous-click="prevClick"
+                @next-click="nextClick"
                 @status="updateSongStatus"
+                @play-start="updateSongStatus"
+                @play-pause="updateSongStatus"
                 @play-ended="playEnded"
             ></eg-pglayer>
             <div class="song-label">
@@ -73,35 +77,35 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                 </span>
             </span>
 
-            <h3 style="display:flex; flex-direction: row; justify-content: center; align-items: center;">
-                
+            <h3 style="display:flex; flex-direction: row; justify-content: space-evenly; align-items: center; margin: 0 1em 0 0.5em">
+                <span style="flex-basis: .5em; flex-grow:1"></span>
                 <span class="icon-cont-shadow" >
-                    <a href="#" class="small-label shadow letter-icon upside-down" title="non-megagong songs" :class="songStyle(5, false)" @click.prevent="filterNonMegagongTracks">
-                        W
+                    <a href="#" class="small-label shadow order-icon" title="original song order" :class="songStyle(2, false)" :style="{backgroundColor: playerThemeColor}" @click.prevent="unshuffleTracks">
                     </a>
                 </span>
-                <span class="icon-cont-shadow">
-                    <a href="#" class="small-label shadow letter-icon" title="megagong songs" :class="songStyle(5, false)" @click.prevent="filterMegagongTracks">
-                        M
+                <span class="icon-cont-shadow" >
+                    <a href="#" class="small-label shadow shuffle-icon" title="shuffle song order" :class="songStyle(5, false)" :style="{backgroundColor: playerThemeColor}" @click.prevent="shuffleTracks">
                     </a>
-                </span>
-
-                <span class="box-shadow">
+                </span>                
+                <span class="box-shadow" style="flex-basis: 7em">
                     <span class="playlist-title medium-dual-label" :class="songStyle(3, false)" >Songs ({{songList.length}})</span>
                 </span>
-                
-                <span class="icon-cont-shadow" >
-                    <a href="#" class="small-label shadow shuffle-icon" title="shuffle song order" :class="songStyle(5, false)" style="color: rgb(100, 156, 200)" @click.prevent="shuffleTracks">
+                <span class="icon-cont-shadow" title="megagong songs" @click.prevent="filterMegagongTracks">
+                    <a id="megagong-filter" href="#" class="small-label shadow megagong-icon" :class="songStyle(4, false)" :style="{backgroundColor: playerThemeColor}">
                     </a>
                 </span>
-                <span class="icon-cont-shadow" >
-                    <a href="#" class="small-label shadow letter-icon" title="original song order" :class="songStyle(5, false)" @click.prevent="unshuffleTracks">
-                        O
+                <span class="icon-cont-shadow" title="non-megagong songs" @click.prevent="filterNonMegagongTracks">
+                    <a href="#" class="small-label shadow anti-megagong-icon" :class="songStyle(1, false)" :style="{backgroundColor: playerThemeColor}">
                     </a>
                 </span>
+                <span style="flex-basis: .5em; flex-grow:1"></span>
             </h3>
             <div class="song-list" ref="songContainer" :class="playlistVisible ? '' : 'collapsed'">
-                <div v-for="(song, songIndex) in songList" :key="song.src" :class="songContainerClass(songIndex)">
+                <div class="song-list-note">
+                    released july 2026
+                </div>
+                <div v-for="(song, songIndex) in songList" :key="song.src" class="song-entry" :class="{'song-selected':songIndex==currentSongIndex}"
+                    :style="{borderTop:songIndex==currentSongIndex?styledBorderVal:'',borderBottom:songIndex==currentSongIndex?styledBorderVal:''}">
                     <Song :url="song.src" :title="song.title" :title-class="songStyle(songIndex, true)" :muted="true" 
                     :show-player="false" :show-download="true" @title-dblclick="playThisSong(songIndex)" />
                 </div>
@@ -248,6 +252,7 @@ export default {
         // play next state
         queueSongByIndex: false,
         nextSongIndex: 0,
+        playerSongStatus: null,
         // visible toggles
         playerBgVisible: true,
         playlistVisible: true,
@@ -255,6 +260,7 @@ export default {
         currentBgIndex: 0,
         bgAnimFrame: 0,
         bgAnimIncrCount: 16,
+        albumArtworkUrl: '/assets/art/stochast/cover-art-stochastic-recovery-20x6-album.jpg',
         bgImages: [
             '/assets/art/wavy-haze-verydark.jpg', // bg-dark-01 (and 05)
             '/assets/art/stochast/image-vAE8r.jpg',  // bg-dark-02
@@ -344,7 +350,9 @@ export default {
             'rgba(0,0,0,.7)', 
             'rgba(15,5,0,.69)', 
             'rgba(25,10,0,.67)', 
-            'rgba(30,15,5,.65)', 
+            'rgba(45,5,0,.69)', 
+            'rgba(56,15,5,.7)', 
+            'rgba(30,15,5,.66)', 
             'rgba(15,25,5,.64)',
             'rgba(25,15,5,.63)',  
             'rgba(0,0,0,.62)', 
@@ -413,9 +421,7 @@ export default {
         cl.add('bg-transp');
         this.recalcTitleLetterStyles();
 
-        for (let s=0; s < initialSongList.length; s++) {
-            this.songList.push(initialSongList[s]);
-        }
+        this.unshuffleTracks();
     }
     catch (e) {}
   },
@@ -451,6 +457,8 @@ export default {
         this.renderTintMode();
     },
     incrementAnim() {
+        if (!this.playerSongStatus || !this.playerSongStatus.playing) return;
+
         // General text style anim
         this.animFr0 += 1;
         let animFrameChange = false;
@@ -687,76 +695,6 @@ export default {
             this.bodyRefs.overlay3.style.backgroundColor = color;
         });
     },
-    setSongIndex(songIndex) {
-        if (songIndex >= 0 && songIndex < this.songList.length) {
-            let song = this.songList[songIndex];
-            this.currentSongIndex = songIndex;
-            this.currentSong = song;
-            this.currentSongArtist = song.artist;
-            this.currentSongAlbum = song.album;
-            this.currentSongTitle = song.title;
-
-        }
-    },
-    playThisSong(songIndex) {
-        //console.log("Play song", songIndex);
-        try {
-            // let player = this.$refs['audioPlayer'];
-            // if (player.currentPlayIndex != songIndex) {
-            //     this.queueSongByIndex = true;
-            //     this.nextSongIndex = songIndex;
-            //     player.pause();
-            //     //this.playEnded();
-            // }
-            // else {
-            //     player.play();
-            // }
-            this.setSongIndex(songIndex);
-        }
-        catch (e) {
-            console.error(e);
-        }
-    },
-    playStarted() {
-    },
-    playEnded() {
-        this.newNextClick();
-        // if (this.queueSongByIndex) {
-        //     this.$nextTick(function() {
-        //     try
-        //     {
-        //         let player = this.$refs['audioPlayer'];
-        //         if (player) {
-        //             player.currentPlayIndex = this.nextSongIndex - 1;
-        //             player.playNext();
-        //         }
-        //         this.queueSongByIndex = false;
-        //         this.nextSongIndex = 0;
-        //     }
-        //     catch (e) { console.error(e); }
-        //     });
-        // }
-    },
-    playNext(next) {
-        // try {
-        //     let songIdx = this.$refs['audioPlayer'].currentPlayIndex;
-        //     let song = this.songList[songIdx];
-        //     this.currentSong = song;
-        //     this.currentSongIndex = songIdx;
-        //     this.currentSongTitle = song.title || ALBUM_NAME;
-        //     this.currentSongArtist = song.artist || ALBUM_ARTIST;
-        //     this.currentSongAlbum = song.album || ALBUM_NAME;
-        //     if (this.playlistVisible)
-        //         this.scrollCurrentSongIntoView();
-        // } catch (e) {
-        //     this.currentSongTitle = ALBUM_NAME;
-        //     this.currentSongArtist = ALBUM_ARTIST;
-        //     this.currentSongAlbum = ALBUM_NAME;
-        //     this.currentSongIndex = 0;
-        // }
-
-        // this.$nextTick(next(true));
-    },
     scrollCurrentSongIntoView() {
         try {
             const viewportHeight = window.innerHeight;
@@ -956,7 +894,33 @@ export default {
         }
         catch (e) {}
     },
-    newPrevClick() {
+
+    setSongIndex(songIndex) {
+        if (songIndex >= 0 && songIndex < this.songList.length) {
+            let song = this.songList[songIndex];
+            this.currentSongIndex = songIndex;
+            this.currentSong = song;
+            this.currentSongArtist = song.artist;
+            this.currentSongAlbum = song.album;
+            this.currentSongTitle = song.title;
+
+        }
+    },
+    playThisSong(songIndex) {
+        try {
+            this.setSongIndex(songIndex);
+        }
+        catch (e) {
+            console.error(e);
+        }
+    },
+    playStarted() {
+    },
+    playEnded() {
+        if (this.currentSongIndex < this.songList.length - 1)
+            this.nextClick();
+    },
+    prevClick() {
         //console.log("Previous");
         let currSongIndex = this.currentSongIndex - 1;
         if (currSongIndex < 0) {
@@ -966,7 +930,7 @@ export default {
         if (this.playlistVisible)
             this.scrollCurrentSongIntoView();
     },
-    newNextClick() {
+    nextClick() {
         //console.log("Next");
         let currSongIndex = this.currentSongIndex + 1;
         if (currSongIndex >= this.songList.length) {
@@ -976,16 +940,27 @@ export default {
         if (this.playlistVisible)
             this.scrollCurrentSongIntoView();
     },
-    newPlayClick() {
+    playClick() {
         this.setSongIndex(this.currentSongIndex);
         if (this.playlistVisible)
             this.scrollCurrentSongIntoView();
     },
     updateSongStatus(status) {
-        //console.log(status);
+        this.playerSongStatus = status;
     }
   },
   computed: {
+    currentArtworkUrl() {
+        let baseUrl = this.albumArtworkUrl;
+        // If backdrop is on and we have images configured and a valid index show it
+        // (not negative, not zero so it starts on the album art not the hazy
+        if (this.bgOn && this.bgImages.length > 0 && this.currentBgIndex >= 1) {
+            let idx = this.currentBgIndex % this.bgImages.length;
+            let bgSrc = this.bgImages[idx];
+            return bgSrc;
+        }
+        return baseUrl;
+    },
     bgAdvanceProgress() {
         if (!this.bgOn) return 0.0;
         let idx = Math.max(0, this.bgAnimFrame);
@@ -1168,12 +1143,11 @@ h2.medium-dual-label {
 }
 
 .player-section-outer {
-    /* border-top:  2px dashed rgba(0,0,0,0.22); */
-    border-left:   .15em dashed rgba(255,255,255,0.32);
-    border-right:    .15em dashed rgba(255,255,255,0.32);    
-    /* border-bottom: 2px dashed rgba(0,0,0,0.22); */
+    /* border-left:   .15em dashed rgba(255,255,255,0.32);
+    border-right:    .15em dashed rgba(255,255,255,0.32); */
     box-shadow: 0 -0.05rem 2.5rem -0.5rem rgba(0,0,0,.22);
     border-radius: 2rem;
+    transition: border-left 2s, border-right 2s;
 }
 .player-section-outer.tint-max {
     opacity: 0.75;
@@ -1193,11 +1167,6 @@ h2.medium-dual-label {
     background-position-y: 80%;
     background-attachment: fixed;    
     background-image: url('/assets/art/stochast/cover-art-stochastic-recovery-20x6-album.jpg');
-
-    /*border-right:   2px dashed rgba(0,0,0,0.82);
-    border-left:  2px dashed rgba(255,255,255,0.92);
-    border-bottom:    2px dashed rgba(255,255,255,0.92);    
-    border-top: 2px dashed rgba(0,0,0,0.82);*/
 }
 
 .player-section.no-bg {
@@ -1322,14 +1291,13 @@ h2.medium-dual-label {
 }
 
 .playlist-section-outer {
-    /* border-top:  2px dashed rgba(0,0,0,0.22); */
-    border-left:   .15em dashed rgba(255,255,255,0.32);
-    border-right:    .15em dashed rgba(255,255,255,0.32);    
-    /* border-bottom: 2px dashed rgba(0,0,0,0.22); */
+    /* border-left:   .15em dashed rgba(255,255,255,0.32);
+    border-right:    .15em dashed rgba(255,255,255,0.32); */
     box-shadow: 0 0.05rem 2.5rem -0.5rem rgba(0,0,0,.22);
     border-radius: 2rem;
     padding: 0;
     border-collapse: collapse;
+    transition: border-left 2s, border-right 2s;
 }
 .playlist-section-outer.tint-max {
     opacity: 0.75;
@@ -1393,7 +1361,7 @@ h2.medium-dual-label {
     max-height: 19.3em;
     overflow-x: hidden;
     overflow-y: auto;
-    padding: 5px 5px 0 5px;
+    padding: 0 .5em 0 .5em;
 
 
     transition-property: height, max-height;
@@ -1418,6 +1386,17 @@ h2.medium-dual-label {
     background: rgba(30,30,30,.5);
 }
 
+.playlist-section .song-list .song-list-note {
+    font-size: 9pt; 
+    color: rgba(176, 212, 243, 0.75);
+    text-shadow: 0.05em 0.1em 0.5em black;
+    margin-top: 0;
+    margin-bottom: 0.2em;
+}
+.playlist-section-outer.night-mode .song-list .song-list-note {
+    color: hsla(22, 96%, 75%, 100%);
+}
+
 .song-entry {
     border: .15em solid rgba(255,255,255,0);
     border-collapse: collapse;
@@ -1431,12 +1410,17 @@ h2.medium-dual-label {
     margin-bottom: 0;
     border-right-width: 0;
     border-left-width: 0;
-    border-top:    .15em dashed rgba(240,240,255,0.7);
-    border-bottom: .15em dashed rgba(240,240,255,0.7);
+    /* border-top:    .15em dashed rgba(240,240,255,0.7);
+    border-bottom: .15em dashed rgba(240,240,255,0.7); */
     border-collapse: collapse;
-    box-shadow: inset 0 0 3em -1em rgba(59, 127, 187, 0.75);
-    background: rgba(100, 156, 200, 0.25);
+    box-shadow: inset 0 0 1em .5em rgba(59, 127, 187, 0.5);
     border-radius: 0.75em;
+    transition: box-shadow 2s, border-top 2s, border-bottom 2s;
+}
+
+.playlist-section-outer.night-mode .song-selected {
+    box-shadow: inset 0 0 1em .25em rgba(241, 177, 81, 0.5);
+    /* background: rgba(185, 68, 0, 0.35); */
 }
 
 .shadow {
@@ -1456,19 +1440,25 @@ h2.medium-dual-label {
 }
 
 .icon-cont-shadow {
-    background: rgba(60,90,130,0.3);
+    background: rgba(60,90,130,0.4);
     border-radius: 0.5em;
-    box-shadow: 0 0 .3em .3em rgba(60,90,130,0.3);
+    box-shadow: 0 0 .3em .3em rgba(60,90,130,0.4);
     margin-left: 0.25em;
     margin-right: 0.25em;
-    flex-basis: 0.3em;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+    flex-basis: 0.25em;
+    line-height: 1.2;
+    cursor: pointer;
 }
 
-@media screen {
-    
+.icon-cont-shadow:hover {
+    background: rgba(60,90,130,0.8);
+    box-shadow: 0 0 .3em .3em rgba(60,90,130,0.6);
 }
 
-.shuffle-icon {
+.icon-cont-shadow > a {
+    padding: 0 .5em;
     /* Set dimensions */
     width: .8em;
     height: .8em;
@@ -1477,11 +1467,6 @@ h2.medium-dual-label {
     
     /* Set the desired color */
     background-color: hsl(208, 75%, 80%); 
-
-    /* Apply the image as a mask */
-    -webkit-mask-image: url('/assets/icon-shuffle.png');
-    mask-image: url('/assets/icon-shuffle.png');
-
     /* Ensure the mask covers the element */
     -webkit-mask-size: contain;
     mask-size: contain;
@@ -1489,6 +1474,16 @@ h2.medium-dual-label {
     mask-repeat: no-repeat;
     -webkit-mask-position: center;
     mask-position: center;
+}
+
+.shuffle-icon {
+    
+
+    /* Apply the image as a mask */
+    -webkit-mask-image: url('/assets/icon-shuffle.png');
+    mask-image: url('/assets/icon-shuffle.png');
+
+    
 }
 
 .letter-icon {
@@ -1504,6 +1499,27 @@ h2.medium-dual-label {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+}
+
+.megagong-icon {
+  /* Apply the image as a mask */
+  -webkit-mask-image: url('/assets/icon-megagong.png');
+  mask-image: url('/assets/icon-megagong.png');
+  
+}
+
+
+.anti-megagong-icon {
+  /* Apply the image as a mask */
+  -webkit-mask-image: url('/assets/icon-anti-megagong.png');
+  mask-image: url('/assets/icon-anti-megagong.png');
+}
+
+.order-icon {
+  /* Apply the image as a mask */
+  -webkit-mask-image: url('/assets/icon-order.png');
+  mask-image: url('/assets/icon-order.png');
+  
 }
 
 .playlist-controls {
