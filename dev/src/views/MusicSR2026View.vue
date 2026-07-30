@@ -78,27 +78,29 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
             </span>
 
             <h3 style="display:flex; flex-direction: row; justify-content: space-evenly; align-items: center; margin: 0 1em 0 0.5em">
-                <span style="flex-basis: .5em; flex-grow:1"></span>
+                <span style="flex-basis: 1.5em; flex-grow:1"></span>
                 <span class="icon-cont-shadow" >
                     <a href="#" class="small-label shadow order-icon" title="original song order" :class="songStyle(2, false)" :style="{backgroundColor: playerThemeColor}" @click.prevent="unshuffleTracks">
                     </a>
                 </span>
+                <span class="minor-slash" style="top: 0.1em; opacity: 15%;">/</span>
                 <span class="icon-cont-shadow" >
                     <a href="#" class="small-label shadow shuffle-icon" title="shuffle song order" :class="songStyle(5, false)" :style="{backgroundColor: playerThemeColor}" @click.prevent="shuffleTracks">
                     </a>
                 </span>                
-                <span class="box-shadow" style="flex-basis: 7em">
+                <span class="box-shadow" style="flex-basis: 7em; flex-grow: 0.15">
                     <span class="playlist-title medium-dual-label" :class="songStyle(3, false)" >Songs ({{songList.length}})</span>
                 </span>
                 <span class="icon-cont-shadow" title="megagong songs" @click.prevent="filterMegagongTracks">
                     <a id="megagong-filter" href="#" class="small-label shadow megagong-icon" :class="songStyle(4, false)" :style="{backgroundColor: playerThemeColor}">
                     </a>
                 </span>
+                <span class="minor-slash" style="top: 0.1em; opacity: 15%;">/</span>
                 <span class="icon-cont-shadow" title="non-megagong songs" @click.prevent="filterNonMegagongTracks">
                     <a href="#" class="small-label shadow anti-megagong-icon" :class="songStyle(1, false)" :style="{backgroundColor: playerThemeColor}">
                     </a>
                 </span>
-                <span style="flex-basis: .5em; flex-grow:1"></span>
+                <span style="flex-basis: 1.5em; flex-grow:1"></span>
             </h3>
             <div class="song-list" ref="songContainer" :class="playlistVisible ? '' : 'collapsed'">
                 <div class="song-list-note">
@@ -257,6 +259,7 @@ export default {
         playerBgVisible: true,
         playlistVisible: true,
         // bg ui state
+        playOnceTrigger: false,
         currentBgIndex: 0,
         bgAnimFrame: 0,
         bgAnimIncrCount: 16,
@@ -457,8 +460,6 @@ export default {
         this.renderTintMode();
     },
     incrementAnim() {
-        if (!this.playerSongStatus || !this.playerSongStatus.playing) return;
-
         // General text style anim
         this.animFr0 += 1;
         let animFrameChange = false;
@@ -470,12 +471,26 @@ export default {
             }
             animFrameChange = true;
         }
-        // Title anim
-        const titleAnimFrameChange = true;
-        this.titleAnimFrame += 1;
-        if (this.titleAnimFrame >= this.maxFrames * this.titleAnimRateMult) {
-            this.titleAnimFrame = 0;
+        // If played at all, even if paused
+        if (this.playOnceTrigger) {
+            // Tint Anim
+            if (this.tintMode != TINT_OFF) {
+                this.tintFrame += 1;
+                if ((this.tintMode == TINT_MAX && this.tintFrame >= 2)
+                    || (this.tintMode == TINT_LIGHT && this.tintFrame >= 7)
+                    || ((this.tintMode == TINT_ON || this.tintMode == TINT_NIGHT) && this.tintFrame >= 4)) {
+                    this.tintFrame = 0;
+                    this.updateColorTint();
+                }
+            }
         }
+
+        // Only if playing animations beyond this point
+        if (!this.playerSongStatus || !this.playerSongStatus.playing) return;
+
+        // Set play once trigger
+        this.playOnceTrigger = true;
+
         // Roving title char anim
         const currTitleLength = this.currentSongAlbum.length;
         function capPos(p) {
@@ -505,6 +520,12 @@ export default {
                 this.titleAnimSetPos[ts] = currPos;
             }
         }
+        // Title anim
+        const titleAnimFrameChange = true;
+        this.titleAnimFrame += 1;
+        if (this.titleAnimFrame >= this.maxFrames * this.titleAnimRateMult) {
+            this.titleAnimFrame = 0;
+        }
         // Did album title change?
         if (this.titleLetterStyles.length != this.currentSongTitle.length || titleAnimFrameChange) {
             this.recalcTitleLetterStyles();
@@ -515,16 +536,6 @@ export default {
             if (this.bgAnimFrame >= this.bgAnimIncrCount) {
                 this.bgAnimFrame = 0;
                 this.incrementBgAnim();
-            }
-        }
-        // Tint Anim
-        if (this.tintMode != TINT_OFF) {
-            this.tintFrame += 1;
-            if ((this.tintMode == TINT_MAX && this.tintFrame >= 2)
-                || (this.tintMode == TINT_LIGHT && this.tintFrame >= 7)
-                || ((this.tintMode == TINT_ON || this.tintMode == TINT_NIGHT) && this.tintFrame >= 4)) {
-                this.tintFrame = 0;
-                this.updateColorTint();
             }
         }
     },
@@ -1424,7 +1435,7 @@ h2.medium-dual-label {
 
 .playlist-title {
     font-size: 12pt;
-    padding: 0 1em 0 1em;
+    padding: 0 .15em;
     opacity: 0.8;
 }
 
@@ -1438,13 +1449,14 @@ h2.medium-dual-label {
     background: rgba(60,90,130,0.4);
     border-radius: 0.5em;
     box-shadow: 0 0 .3em .3em rgba(60,90,130,0.4);
-    margin-left: 0.25em;
-    margin-right: 0.25em;
-    padding-left: 0.25em;
-    padding-right: 0.25em;
-    flex-basis: 0.25em;
     line-height: 1.2;
     cursor: pointer;
+    margin-left: -0.15em;
+    margin-right: -0.15em;
+    padding-left: 0.15em;
+    padding-right: 0.15em;
+    flex-basis: 0.25em;
+
 }
 
 .icon-cont-shadow:hover {
@@ -1453,7 +1465,7 @@ h2.medium-dual-label {
 }
 
 .icon-cont-shadow > a {
-    padding: 0 .5em;
+    padding: 0 .25em;
     /* Set dimensions */
     width: .8em;
     height: .8em;
@@ -1469,6 +1481,19 @@ h2.medium-dual-label {
     mask-repeat: no-repeat;
     -webkit-mask-position: center;
     mask-position: center;
+}
+
+@media only screen and (min-width: 700px) {
+    .icon-cont-shadow {
+        margin-left: 0.4m;
+        margin-right: 0.4m;
+        padding-left: 0.25em;
+        padding-right: 0.25em;
+        flex-basis: 0.25em;
+    }
+    .icon-cont-shadow > a {
+        padding: 0 .5em;
+    }
 }
 
 .shuffle-icon {
