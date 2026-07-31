@@ -439,7 +439,7 @@ defineOptions({
         <h2 v-if="displayInfo">{{ displaySong }}</h2>
         <h2 v-if="displayInfo">{{ displayArtist }}</h2>
         <div class="controls-row" :style="{color:themeColor}">
-            <span class="" style="flex-grow: 1; text-align: left;">
+            <span class="" style="flex: 1 1 1.5em; text-align: left;">
                 <span class="button-wrap">
                     <span class="icon-cont-shadow sound" 
                         :class="{on:!muteMode}" @click="nextMuteMode"
@@ -448,23 +448,23 @@ defineOptions({
                     </span>
                 </span>
             </span>
-            <span>
+            <span style="flex: .1 1 1em;">
                 <span class="button-wrap">
                     <span role="button" @click.prevent="previous" title="previous track" class="nav-arrow" v-html="leftContent"></span>
                 </span>
             </span>
-            <span>
+            <span style="flex: .2 1 1em;">
                 <span class="button-wrap">
                     <span role="button" @click.prevent="play" :title="playing?'pause':'play'" :class="{playing:playing,paused:!playing}" v-html="playing?pauseContent:playContent"></span>
                     
                 </span>
             </span>
-            <span>
+            <span style="flex: .1 1 1em;">
                 <span class="button-wrap">
                     <span role="button" @click.prevent="next" title="next track" class="nav-arrow" v-html="rightContent"></span>
                 </span>
             </span>
-            <span class="" style="flex-grow: 1; text-align: right;">
+            <span class="" style="flex: 1 0 1.5em; text-align: right;">
                 <span class="button-wrap">
                     <span class="icon-cont-shadow" 
                         :class="{repeat:loopMode!=LOOP_ONE,'repeat-one':loopMode==LOOP_ONE,'on':loopMode!=LOOP_NONE}" 
@@ -509,10 +509,13 @@ defineOptions({
         font-weight: bolder;
         background-color: rgba(47, 155, 255, 0.25);
         box-shadow: 0 0 .5em .2em rgba(47, 155, 255, 0.4);
-        border-radius: .75em;
+        border-radius: .5em;
         padding: 0;
-        margin: 0 .5em;
-        line-height: 1.1;
+        margin: 0.15em .25em;
+        line-height: 1;
+        text-align: center;
+        vertical-align: middle;
+        
     }
     .button-wrap > span[role=button] {
         display: inline-block;
@@ -520,7 +523,7 @@ defineOptions({
         line-height: 1.1;
         font-weight: bolder;
         text-shadow: 0 0.05em 0.4em rgba(0, 0, 0, 85%);
-        border-radius: .75em;
+        border-radius: .5em;
         cursor: pointer;
         transition: opacity 0.5s, background-color .5s, box-shadow .5s;
         opacity: 65%;
@@ -613,14 +616,16 @@ defineOptions({
         display: inline-block; 
         width: 1em;
         height: 1em;
-        line-height: 1.1;
-        vertical-align:-.8vh;
+        line-height: 1;
+        text-align: center;
+        vertical-align: middle;
+        border-radius: 0.5em;
         
         
         background-color: hsl(208, 75%, 80%); 
         /* Ensure the mask covers the element */
-        -webkit-mask-size: cover;
-        mask-size: cover;
+        -webkit-mask-size: contain;
+        mask-size: contain;
         -webkit-mask-repeat: no-repeat;
         mask-repeat: no-repeat;
         -webkit-mask-position: center;
