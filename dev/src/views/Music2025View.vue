@@ -22,6 +22,8 @@ import initialSongList from '../data/musicPlaylist_2025.json';
             @next-click="nextClick"
             @status="updateSongStatus"
             @play-ended="playEnded"
+            @mute-change="muteChanged"
+            @loop-change="loopChanged"
         ></eg-pglayer>
         <div class="song-label">
             <span class="song-title">{{currentSongTitle}}</span>
@@ -77,6 +79,8 @@ export default {
         // Configuration
         songList: [],
         // play next state
+        loopAll: true,
+        loopOne: false,
         queueSongByIndex: false,
         nextSongIndex: 0,
         bodyRefs: {
@@ -197,7 +201,11 @@ export default {
     playStarted() {
     },
     playEnded() {
-        this.nextClick();
+        // player will loop same track on its own, otherwise, see if we should continue
+        if (!this.loopOne) {
+            if (this.loopAll || this.currentSongIndex < this.songList.length - 1)
+                this.nextClick();
+        }
     },
     prevClick() {
         //console.log("Previous");
@@ -223,6 +231,15 @@ export default {
     },
     updateSongStatus(status) {
         //console.log(status);
+    },
+    muteChanged(muteState) {
+
+    },
+    loopChanged(loopState) {
+        let { loopAll, loopOne } = loopState;
+        this.loopAll = loopAll;
+        this.loopOne = loopOne;
+        console.log("Loop all", loopAll, "Loop One", loopOne);
     }
   }
 }

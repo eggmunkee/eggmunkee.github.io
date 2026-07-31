@@ -61,8 +61,30 @@ defineProps({
     prevRestartSec: {
         type: Number,
         default: -1.0
+    },
+    showLoop: {
+        type: Boolean,
+        default() {
+            return true
+        }
+    },
+    showLoopOne: {
+        type: Boolean,
+        default() {
+            return true
+        }
+    },
+    showMute: {
+        type: Boolean,
+        default() {
+            return true
+        }
     }
-})
+});
+const LOOP_NONE = 0;
+const LOOP_ALL = 1;
+const LOOP_ONE = 2;
+const MAX_LOOP_OPTION = LOOP_ONE;
 defineOptions({
     data() {
         return {
@@ -73,7 +95,9 @@ defineOptions({
             playError: false,
             playing: false,
             progTimer: -1,
-            lastError: null
+            lastError: null,
+            loopMode: LOOP_NONE,
+            muteMode: false
         }
     },
     methods: {
@@ -181,16 +205,6 @@ defineOptions({
                     album: playStatus.album,
                     artwork: artArray
                 });
-                /*{
-                    src: "https://dummyimage.com/96x96",
-                    sizes: "96x96",
-                    type: "image/png",
-                },
-                {
-                    src: "https://dummyimage.com/128x128",
-                    sizes: "128x128",
-                    type: "image/png",
-                },*/
             }
         },
         update() {
@@ -223,6 +237,9 @@ defineOptions({
             this.playing = false;
             this.starting = this.playError = false;
             this.$emit('play-ended', this.getPlayStatus());
+            if (this.loopMode == LOOP_ONE) {
+                this.play();
+            }
         },
         setPlayTime(timeValue) {
             try {
@@ -300,8 +317,36 @@ defineOptions({
                 return NULL_TIME;
             else
                 return timeVal;
+        },
+        nextMuteMode() {
+            this.muteMode = !this.muteMode;
+            this.$emit('mute-change', this.muteMode);
+        },
+        nextLoopMode() {
+            if (this.loopMode == LOOP_NONE) {
+                if (this.showLoop) {
+                    this.loopMode = LOOP_ALL;
+                }
+                else if (this.showLoopOne) {
+                    this.loopMode = LOOP_ONE;
+                }
+            }
+            else if (this.loopMode == LOOP_ALL) {
+                if (this.showLoopOne) {
+                    this.loopMode = LOOP_ONE;
+                }
+                else {
+                    this.loopMode = LOOP_NONE;
+                }
+            }
+            else if (this.loopMode == LOOP_ONE) {
+                this.loopMode = LOOP_NONE;
+            }
+            this.$emit('loop-change', {
+                loopAll: this.loopMode == LOOP_ALL,
+                loopOne: this.loopMode == LOOP_ONE
+            });
         }
-        
     },
     computed: {
         actualSrc() {
@@ -369,10 +414,17 @@ defineOptions({
                 clearInterval(this.progTimer);
                 this.progTimer = -1;
             }
+        },
+        muteMode() {
+            // try {
+            //     this.$refs.audio.volume = this.muteMode ? 0.0 : 1.0;
+            // }
+            // catch (e) {}
         }
     },
     mounted() {
-        
+        this.muteMode = false;
+        this.loopMode = this.showLoop ? LOOP_ALL : LOOP_NONE;
     },
     unmounted() {
         if (this.progTimer != -1) {
@@ -387,14 +439,39 @@ defineOptions({
         <h2 v-if="displayInfo">{{ displaySong }}</h2>
         <h2 v-if="displayInfo">{{ displayArtist }}</h2>
         <div class="controls-row" :style="{color:themeColor}">
-            <span class="button-wrap">
-                <span role="button" @click.prevent="previous" title="previous track" class="nav-arrow" v-html="leftContent"></span>
+            <span class="" style="flex-grow: 1; text-align: left;">
+                <span class="button-wrap">
+                    <span class="icon-cont-shadow sound" 
+                        :class="{on:!muteMode}" @click="nextMuteMode"
+                        style="text-align: center;" title="mute">
+                        <a :style="{background:currentProgressBarBg}"></a>
+                    </span>
+                </span>
             </span>
-            <span class="button-wrap">
-                <span role="button" @click.prevent="play" :title="playing?'pause':'play'" :class="{playing:playing,paused:!playing}" v-html="playing?pauseContent:playContent"></span>
+            <span>
+                <span class="button-wrap">
+                    <span role="button" @click.prevent="previous" title="previous track" class="nav-arrow" v-html="leftContent"></span>
+                </span>
             </span>
-            <span class="button-wrap">
-                <span role="button" @click.prevent="next" title="next track" class="nav-arrow" v-html="rightContent"></span>
+            <span>
+                <span class="button-wrap">
+                    <span role="button" @click.prevent="play" :title="playing?'pause':'play'" :class="{playing:playing,paused:!playing}" v-html="playing?pauseContent:playContent"></span>
+                    
+                </span>
+            </span>
+            <span>
+                <span class="button-wrap">
+                    <span role="button" @click.prevent="next" title="next track" class="nav-arrow" v-html="rightContent"></span>
+                </span>
+            </span>
+            <span class="" style="flex-grow: 1; text-align: right;">
+                <span class="button-wrap">
+                    <span class="icon-cont-shadow" 
+                        :class="{repeat:loopMode!=LOOP_ONE,'repeat-one':loopMode==LOOP_ONE,'on':loopMode!=LOOP_NONE}" 
+                        style="text-align: center;" @click="nextLoopMode" title="loop mode">
+                        <a :style="{background:currentProgressBarBg}"></a>
+                    </span>
+                </span>
             </span>
         </div>
         <div class="status-row">
@@ -409,7 +486,8 @@ defineOptions({
             :src="actualSrc" 
             @pause="playPaused"
             @play="playStarted"
-            @ended="playEnd" />
+            @ended="playEnd"
+            :volume="muteMode?0.0:1.0" />
     </div>
 
 </template>
@@ -418,12 +496,15 @@ defineOptions({
 <style scoped>
     .controls-row {
         transition: color 2s;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
     }
     .button-wrap {
         display: inline-block; 
         position: relative;
         overflow: hidden;
-        width: 1.5em;
+        width: 1em;
         font-size: 24pt;
         font-weight: bolder;
         background-color: rgba(47, 155, 255, 0.25);
@@ -431,11 +512,12 @@ defineOptions({
         border-radius: .75em;
         padding: 0;
         margin: 0 .5em;
-        line-height: 1.2;
+        line-height: 1.1;
     }
     .button-wrap > span[role=button] {
         display: inline-block;
-        width: 1.5em;
+        width: 1em;
+        line-height: 1.1;
         font-weight: bolder;
         text-shadow: 0 0.05em 0.4em rgba(0, 0, 0, 85%);
         border-radius: .75em;
@@ -509,5 +591,63 @@ defineOptions({
     }
     .night-mode .time-status {
         opacity: 65%;
+    }
+
+
+
+
+    .icon-cont-shadow {
+        border-radius: 0.5em;
+        cursor: pointer;
+        opacity: 50%;
+    }
+
+    .icon-cont-shadow:hover {
+        background: rgba(112, 132, 158, 0.4);
+        opacity: 80%;
+        transition: opacity 0.5s, background-color .5s, box-shadow .5s;
+    }
+
+    .icon-cont-shadow > a {
+        padding: 0;
+        display: inline-block; 
+        width: 1em;
+        height: 1em;
+        line-height: 1.1;
+        vertical-align:-.8vh;
+        
+        
+        background-color: hsl(208, 75%, 80%); 
+        /* Ensure the mask covers the element */
+        -webkit-mask-size: cover;
+        mask-size: cover;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+    }
+
+    .icon-cont-shadow.on {
+        opacity: 90%;
+        background: rgba(185, 185, 185, 0.35);
+    }
+
+    .icon-cont-shadow.repeat > a {
+        /* Apply the image as a mask */
+        -webkit-mask-image: url('/assets/icon-repeat.png');
+        mask-image: url('/assets/icon-repeat.png');
+    }
+
+    .icon-cont-shadow.repeat-one > a {
+        /* Apply the image as a mask */
+        -webkit-mask-image: url('/assets/icon-repeat-one.png');
+        mask-image: url('/assets/icon-repeat-one.png');
+    }
+
+
+    .icon-cont-shadow.sound > a {
+        /* Apply the image as a mask */
+        -webkit-mask-image: url('/assets/icon-sound.png');
+        mask-image: url('/assets/icon-sound.png');
     }
 </style>

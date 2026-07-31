@@ -46,6 +46,8 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                 @play-start="updateSongStatus"
                 @play-pause="updateSongStatus"
                 @play-ended="playEnded"
+                @mute-change="muteChanged"
+                @loop-change="loopChanged"
             ></eg-pglayer>
             <div class="song-label">
                 <div class="song-title medium-dual-label" :class="songStyle(1, false)">
@@ -88,8 +90,10 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                     <a href="#" class="small-label shadow shuffle-icon" title="shuffle song order" :class="songStyle(5, false)" :style="{backgroundColor: playerThemeColor}" @click.prevent="shuffleTracks">
                     </a>
                 </span>                
-                <span class="box-shadow" style="flex-basis: 7em; flex-grow: 0.15">
-                    <span class="playlist-title medium-dual-label" :class="songStyle(3, false)" >Songs ({{songList.length}})</span>
+                <span class="box-shadow songs-total-cont">
+                    <span class="playlist-title medium-dual-label" :class="songStyle(3, false)" :title="songList.length + ' songs'">
+                        <span class="larger-view">Songs</span> ({{songList.length}})
+                    </span>
                 </span>
                 <span class="icon-cont-shadow" title="megagong songs" @click.prevent="filterMegagongTracks">
                     <a id="megagong-filter" href="#" class="small-label shadow megagong-icon" :class="songStyle(4, false)" :style="{backgroundColor: playerThemeColor}">
@@ -255,6 +259,8 @@ export default {
         queueSongByIndex: false,
         nextSongIndex: 0,
         playerSongStatus: null,
+        loopAll: true,
+        loopOne: false,
         // visible toggles
         playerBgVisible: true,
         playlistVisible: true,
@@ -928,8 +934,11 @@ export default {
     playStarted() {
     },
     playEnded() {
-        if (this.currentSongIndex < this.songList.length - 1)
-            this.nextClick();
+        // player will loop same track on its own, otherwise, see if we should continue
+        if (!this.loopOne) {
+            if (this.loopAll || this.currentSongIndex < this.songList.length - 1)
+                this.nextClick();
+        }
     },
     prevClick() {
         //console.log("Previous");
@@ -958,6 +967,15 @@ export default {
     },
     updateSongStatus(status) {
         this.playerSongStatus = status;
+    },
+    muteChanged(muteState) {
+
+    },
+    loopChanged(loopState) {
+        let { loopAll, loopOne } = loopState;
+        this.loopAll = loopAll;
+        this.loopOne = loopOne;
+        console.log("Loop all", loopAll, "Loop One", loopOne);
     }
   },
   computed: {
@@ -1446,9 +1464,9 @@ h2.medium-dual-label {
 }
 
 .icon-cont-shadow {
-    background: rgba(60,90,130,0.4);
+    background: rgba(0, 0, 0, 0.5);
     border-radius: 0.5em;
-    box-shadow: 0 0 .3em .3em rgba(60,90,130,0.4);
+    box-shadow: 0 0 .3em .3em rgba(0, 0, 0, 0.5);
     line-height: 1.2;
     cursor: pointer;
     margin-left: -0.15em;
@@ -1467,8 +1485,8 @@ h2.medium-dual-label {
 .icon-cont-shadow > a {
     padding: 0 .25em;
     /* Set dimensions */
-    width: .8em;
-    height: .8em;
+    width: 1em;
+    height: 1em;
     display: inline-block; 
     vertical-align:-0.3vh;
     
@@ -1483,6 +1501,15 @@ h2.medium-dual-label {
     mask-position: center;
 }
 
+.songs-total-cont {
+    flex-basis: 3em;
+    flex-grow: 0.1;
+}
+
+.larger-view {
+    display: none;    
+}
+
 @media only screen and (min-width: 700px) {
     .icon-cont-shadow {
         margin-left: 0.4m;
@@ -1493,6 +1520,13 @@ h2.medium-dual-label {
     }
     .icon-cont-shadow > a {
         padding: 0 .5em;
+    }
+    .songs-total-cont {
+        flex-basis: 7em;
+        flex-grow: 0.25;
+    }
+    .larger-view {
+        display: initial;
     }
 }
 
