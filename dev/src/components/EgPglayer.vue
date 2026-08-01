@@ -439,8 +439,8 @@ defineOptions({
         <h2 v-if="displayInfo">{{ displaySong }}</h2>
         <h2 v-if="displayInfo">{{ displayArtist }}</h2>
         <div class="controls-row" :style="{color:themeColor}">
-            <span class="" style="flex: 1 1 1.5em; text-align: left;">
-                <span class="button-wrap">
+            <span class="align-left-control-span">
+                <span class="button-wrap button-wrap-sm">
                     <span class="icon-cont-shadow sound" 
                         :class="{on:!muteMode}" @click="nextMuteMode"
                         style="text-align: center;" title="mute">
@@ -464,8 +464,8 @@ defineOptions({
                     <span role="button" @click.prevent="next" title="next track" class="nav-arrow" v-html="rightContent"></span>
                 </span>
             </span>
-            <span class="" style="flex: 1 0 1.5em; text-align: right;">
-                <span class="button-wrap">
+            <span class="align-right-control-span">
+                <span class="button-wrap button-wrap-sm">
                     <span class="icon-cont-shadow" 
                         :class="{repeat:loopMode!=LOOP_ONE,'repeat-one':loopMode==LOOP_ONE,'on':loopMode!=LOOP_NONE}" 
                         style="text-align: center;" @click="nextLoopMode" title="loop mode">
@@ -500,11 +500,27 @@ defineOptions({
         flex-direction: row;
         justify-content: center;
     }
+    .align-left-control-span {
+        flex: 1 1 1em; 
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        justify-content: center;
+
+    }
+    .align-right-control-span {
+        flex: 1 1 1em; 
+        display: flex;
+        flex-direction: column;
+        align-items: end;
+        justify-content: center;
+    }
     .button-wrap {
         display: inline-block; 
         position: relative;
         overflow: hidden;
         width: 1em;
+        height: 1em;
         font-size: 24pt;
         font-weight: bolder;
         background-color: rgba(47, 155, 255, 0.25);
@@ -516,6 +532,16 @@ defineOptions({
         text-align: center;
         vertical-align: middle;
         
+    }
+    .night-mode .button-wrap {
+        background-color: rgba(255, 141, 47, 0.25);
+        box-shadow: 0 0 .5em .2em rgba(255, 147, 47, 0.4);
+    }
+    .button-wrap.button-wrap-sm {
+        width: 1em;
+        font-size: 16pt;
+        padding: 0;
+        margin: 0.15em .25em;
     }
     .button-wrap > span[role=button] {
         display: inline-block;
@@ -532,24 +558,40 @@ defineOptions({
         -moz-user-select: none;
         -ms-user-select: none;
     }
+    .button-wrap.button-wrap-sm > span[role=button] {
+        width: 1em;
+        border-radius: .5em;
+    }
     .button-wrap > span[role=button].nav-arrow:hover {
         opacity: 90%;
-        background-color: rgba(138, 138, 138, 0.35);
-        box-shadow: 0 0 .5em .2em rgb(179, 179, 179);
+        background-color: rgba(47, 155, 255, 0.35); /* rgba(138, 138, 138, 0.35);*/
+        box-shadow: 0 0 .5em .2em rgba(47, 155, 255, 0.7); /*rgb(179, 179, 179);*/
     }
+    .night-mode .button-wrap > span[role=button].nav-arrow:hover {
+        background-color: rgba(255, 165, 47, 0.35); /* rgba(138, 138, 138, 0.35);*/
+        box-shadow: 0 0 .5em .2em rgba(255, 182, 47, 0.7); /*rgb(179, 179, 179);*/
+    }   
     .button-wrap > span[role=button].paused {
         opacity: 55%;
         
     }
     .button-wrap > span[role=button].paused:hover {
         opacity: 90%;
-        background-color: rgba(138, 138, 138, 0.35);
-        box-shadow: 0 0 .5em .2em rgb(179, 179, 179);
+        background-color: rgba(47, 155, 255, 0.35); /* rgba(138, 138, 138, 0.35); */
+        box-shadow: 0 0 .5em .2em rgba(47, 155, 255, 0.7); /* rgb(179, 179, 179); */
+    }
+    .night-mode .button-wrap > span[role=button].paused:hover {
+        background-color: rgba(255, 165, 47, 0.35); /* rgba(138, 138, 138, 0.35); */
+        box-shadow: 0 0 .5em .2em rgba(255, 172, 47, 0.7); /* rgb(179, 179, 179); */
     }
     .button-wrap > span[role=button].playing {
         opacity: 80%;
-        background-color: rgba(185, 185, 185, 0.35);
-        box-shadow: 0 0 .5em .2em rgb(179, 149, 149);
+        background-color: rgba(47, 155, 255, 0.35); /* rgba(185, 185, 185, 0.35); */
+        box-shadow: 0 0 .5em .2em rgba(47, 155, 255, 0.7); /* rgb(179, 149, 149);*/
+    }
+    .night-mode .button-wrap > span[role=button].playing {
+        background-color: rgba(255, 172, 47, 0.35); /* rgba(185, 185, 185, 0.35); */
+        box-shadow: 0 0 .5em .2em rgba(255, 172, 47, 0.7); /* rgb(179, 149, 149);*/
     }
     .button-wrap > span[role=button].playing:hover {
         opacity: 100%;
@@ -606,9 +648,12 @@ defineOptions({
     }
 
     .icon-cont-shadow:hover {
-        background: rgba(112, 132, 158, 0.4);
+        background: rgba(47, 155, 255, 0.35);
         opacity: 80%;
         transition: opacity 0.5s, background-color .5s, box-shadow .5s;
+    }
+    .night-mode .icon-cont-shadow:hover {
+        background: rgba(255, 172, 47, 0.35);
     }
 
     .icon-cont-shadow > a {
@@ -618,7 +663,7 @@ defineOptions({
         height: 1em;
         line-height: 1;
         text-align: center;
-        vertical-align: middle;
+        /*vertical-align: -1vh;*/
         border-radius: 0.5em;
         
         
@@ -632,9 +677,19 @@ defineOptions({
         mask-position: center;
     }
 
+    .night-mode .icon-cont-shadow > a {
+        background-color: hsl(41, 75%, 80%); 
+    }
+
     .icon-cont-shadow.on {
+        opacity: 100%;
+        background: rgba(47, 155, 255, 0.35); /* rgba(185, 185, 185, 0.35); */
+    }
+    .night-mode .icon-cont-shadow.on {
+        background: rgba(255, 165, 47, 0.35); /* rgba(185, 185, 185, 0.35); */
+    }
+    .icon-cont-shadow.on:hover {
         opacity: 90%;
-        background: rgba(185, 185, 185, 0.35);
     }
 
     .icon-cont-shadow.repeat > a {

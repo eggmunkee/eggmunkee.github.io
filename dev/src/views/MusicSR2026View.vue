@@ -79,13 +79,13 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                 </span>
             </span>
 
-            <h3 style="display:flex; flex-direction: row; justify-content: space-evenly; align-items: center; margin: 0 1em 0 0.5em">
+            <h3 style="display:flex; flex-direction: row; justify-content: space-evenly; align-items: center; margin: 0 1em 0 0.5em;">
                 <span style="flex-basis: 1.5em; flex-grow:1"></span>
                 <span class="icon-cont-shadow" >
                     <a href="#" class="small-label shadow order-icon" title="original song order" :class="songStyle(2, false)" :style="{backgroundColor: playerThemeColor}" @click.prevent="unshuffleTracks">
                     </a>
                 </span>
-                <span class="minor-slash" style="top: 0.1em; opacity: 15%;">/</span>
+                <span class="relative-container"><span class="collapsible-minor-slash">/</span></span>
                 <span class="icon-cont-shadow" >
                     <a href="#" class="small-label shadow shuffle-icon" title="shuffle song order" :class="songStyle(5, false)" :style="{backgroundColor: playerThemeColor}" @click.prevent="shuffleTracks">
                     </a>
@@ -99,7 +99,7 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
                     <a id="megagong-filter" href="#" class="small-label shadow megagong-icon" :class="songStyle(4, false)" :style="{backgroundColor: playerThemeColor}">
                     </a>
                 </span>
-                <span class="minor-slash" style="top: 0.1em; opacity: 15%;">/</span>
+                <span class="relative-container"><span class="collapsible-minor-slash">/</span></span>
                 <span class="icon-cont-shadow" title="non-megagong songs" @click.prevent="filterNonMegagongTracks">
                     <a href="#" class="small-label shadow anti-megagong-icon" :class="songStyle(1, false)" :style="{backgroundColor: playerThemeColor}">
                     </a>
@@ -1440,6 +1440,30 @@ h2.medium-dual-label {
     box-shadow: inset 0 0 1em .5em rgba(59, 127, 187, 0.5);
     border-radius: 0.75em;
     transition: box-shadow 2s, border-top 2s, border-bottom 2s;
+}
+
+
+.relative-container {
+    position: relative;
+}
+
+.collapsible-minor-slash {
+    position: relative;
+    font-weight: bolder;
+    opacity: 0.15;
+    width: .3em;
+    top: 0.03em;
+}
+
+@media only screen and (min-width: 490px) {
+    .collapsible-minor-slash {
+        position: relative;
+        line-height: 0.1;  
+        font-size: 1.5em;
+        top: 0.15em;
+        width: auto;
+        opacity: 0.25;
+    }
 }
 
 .playlist-section-outer.night-mode .song-selected {
