@@ -22,7 +22,7 @@ import initialSongList from '../data/musicPlaylist_stash.json';
             </h1>
             
             <eg-pglayer 
-                theme-color="themeColor" 
+                :theme-color="themeColor" 
                 :selected-song="currentSong"
                 :prev-restart-sec="3"
                 @play-click="playClick"
