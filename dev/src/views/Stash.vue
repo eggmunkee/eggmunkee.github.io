@@ -44,12 +44,16 @@ import initialSongList from '../data/musicPlaylist_stash.json';
                     <li>
                         <a @click.prevent="shuffleTracks" href="#">Shuffle</a>
                     </li>
-                    <li :style="{'border-bottom': '1px dashed ' + themeColor}">
+                    <li :style="{'border-bottom': currentSongIndex > 0 ? ('1px dashed ' + themeColor) : ''}">
                         <a @click.prevent="unshuffleTracks" href="#">Unshuffle</a>
                     </li>
-                    <li v-for="(song, songIndex) in songList" :key="song.src">
-                        <span @dblclick="playThisSong(songIndex)" style="cursor:pointer" :style="{color: currentSongIndex==songIndex ? '#66FF00' : ''}">   
-                            {{ song.title }}
+                    <li v-for="(song, songIndex) in songList" :key="song.src"
+                        :style="{
+                            'border-top': currentSongIndex==songIndex ? ('1px dashed ' + themeColor) : '',
+                            'border-bottom': currentSongIndex==songIndex ? ('1px dashed ' + themeColor) : ''
+                        }">
+                        <span @dblclick="playThisSong(songIndex)" style="cursor:pointer" :style="{color: currentSongIndex==songIndex ? '#66FF00' : ''}"
+                            v-html="decoTitle(song.title)">
                         </span>
                     </li>
                 </ul>
@@ -92,6 +96,19 @@ export default {
     unmounted() {
     },
     methods: {
+        decoTitle(title) {
+            let a = title.indexOf('Concrete Blog');
+            let b = title.indexOf('Archetypic');
+            if (a == 0) {
+                title = title.substring(13);
+                return `<s>Concrete Blog</s> ${title}`;
+            }
+            if (b == 0) {
+                title = title.substring(10);
+                return `<s>Archetypic</s> ${title}`;
+            }
+            return title;
+        },
         shuffleTracks() {
         let songs = this.songList;
         for (let i = songs.length - 1; i > 0; i--) {
