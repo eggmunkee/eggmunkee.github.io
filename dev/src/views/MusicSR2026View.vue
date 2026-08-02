@@ -816,7 +816,7 @@ export default {
         if (-this.lastXSeq.length <= this.seqMagNum) {
             let last5 = this.lastXSeq.slice(this.seqMagNum).join(',');
             if (last5 == this.first3Seq + ',right,' + this.last3Seq) {
-                window.location = '/stash';
+                this.$router.push('/stash');
             }
         }
     },
