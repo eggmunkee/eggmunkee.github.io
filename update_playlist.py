@@ -5,9 +5,9 @@ from datetime import datetime
 # --- Configuration ---
 WEB_BASE_DIR = "docs"
 SOURCE_DIR = "docs/mp3"
-ALBUM_DIR = "stochastic recovery 20x6"
-PLAYLIST_JSON_PATH = "dev/src/data/musicPlaylist_stochastic_recovery_20x6.json"
-ALBUM_NAME = "STOCHASTIC RECOVERY 20x6"
+ALBUM_DIR = "stash"
+PLAYLIST_JSON_PATH = "dev/src/data/musicPlaylist_stash.json" #"dev/src/data/musicPlaylist_stochastic_recovery_20x6.json"
+ALBUM_NAME = "stash"
 DEFAULT_ARTIST = "eggmunkee"
 
 def get_file_mtime(filepath):

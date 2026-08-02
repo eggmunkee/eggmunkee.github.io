@@ -244,6 +244,7 @@ export default {
         titleLetterAnimRateMult: 7,
         titleAnimSetPos: [14, 22, 24, 14],
         titleAnimSetFr: [0, 3, 1, 5],
+        seqMagNum: -11,
         tintFrame: 0,
         maxFrames: 6,
         animInterval: -1,
@@ -266,6 +267,7 @@ export default {
         playlistVisible: true,
         // bg ui state
         playOnceTrigger: false,
+        last3Seq: 'left,right,a,b,start',
         currentBgIndex: 0,
         bgAnimFrame: 0,
         bgAnimIncrCount: 16,
@@ -375,6 +377,7 @@ export default {
         bgAnimEnabled: false,
         bgAnimEnFr: false,
         bgOn: true,
+        first3Seq: 'up,down,up,down,left',
         tintMode: TINT_ON,
         minusClicked: true,
         plusClicked: true,
@@ -384,7 +387,8 @@ export default {
             appDiv:null, overlay1: null, overlay2: null, overlay3: null
         },
         songStyles: [],
-        titleLetterStyles: []
+        titleLetterStyles: [],
+        lastXSeq: []
     }
   },
   mounted() {
@@ -804,17 +808,31 @@ export default {
             return (addBaseClass ? 'small-dual-label ' : '') + 'dual-label-1';
         }
     },
+    pushSeq(s) {
+        while (-this.lastXSeq.length < this.seqMagNum * 2) {
+            this.lastXSeq.shift();
+        }
+        this.lastXSeq.push(s);
+        if (-this.lastXSeq.length <= this.seqMagNum) {
+            let last5 = this.lastXSeq.slice(this.seqMagNum).join(',');
+            if (last5 == this.first3Seq + ',right,' + this.last3Seq) {
+                window.location = '/stash';
+            }
+        }
+    },
     togglePlayerBg() {
         this.playerBgVisible = !this.playerBgVisible;
-        console.warn("New Player BG Visible = ", this.playerBgVisible);
+        this.pushSeq('up');
     },
     togglePlaylist() {
         this.playlistVisible = !this.playlistVisible;
+        this.pushSeq('down');
     },
     toggleBgAnim() {
         this.bgAnimEnabled = !this.bgAnimEnabled
         if (!this.bgAnimEnabled)
             this.bgAnimEnFr = false;
+        this.pushSeq('start');
     },
     prevBg(event) {
         if (event.detail > 1) {
@@ -824,6 +842,7 @@ export default {
             this.incrementBgAnim(REVERSE, FORCE_TRANSITION);
         }
         this.setBgPrevClicked();
+        this.pushSeq('left');
     },
     nextBg(event) {
         if (event.detail > 1) {
@@ -834,6 +853,7 @@ export default {
             this.incrementBgAnim(FORWARD, FORCE_TRANSITION);
         }
         this.setBgNextClicked();
+        this.pushSeq('right');
     },
     toggleTint() {
         if (this.tintMode == TINT_ON) {
@@ -844,6 +864,7 @@ export default {
             this.tintMode = TINT_ON;
             this.renderTintMode();
         }
+        this.pushSeq('b');
     },
     renderTintMode() {
         try {
@@ -896,6 +917,7 @@ export default {
         this.renderTintMode();
         if (needsColorUpdate)
             this.updateColorTint();
+        this.pushSeq('a');
     },
     toggleBg() {
         try {
@@ -908,6 +930,7 @@ export default {
                 this.bodyRefs.overlay1.style.display = 'none';
                 this.bodyRefs.overlay2.style.display = 'none';
             }
+            this.pushSeq('b');
         }
         catch (e) {}
     },
@@ -969,13 +992,13 @@ export default {
         this.playerSongStatus = status;
     },
     muteChanged(muteState) {
-
+        // this.muted = muteState;
     },
     loopChanged(loopState) {
         let { loopAll, loopOne } = loopState;
         this.loopAll = loopAll;
         this.loopOne = loopOne;
-        console.log("Loop all", loopAll, "Loop One", loopOne);
+        //log("Loop all", loopAll, "Loop One", loopOne);
     }
   },
   computed: {

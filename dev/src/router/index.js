@@ -17,6 +17,11 @@ const router = createRouter({
       path: '/2025',
       name: 'legacy_music',
       component: () => import('../views/Music2025View.vue')
+    },
+    {
+      path: '/stash',
+      name: 'stash',
+      component: () => import('../views/Stash.vue')
     }
   ]
 })
