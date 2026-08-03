@@ -2,8 +2,14 @@
 import EgPglayer from '../components/EgPglayer.vue'
 
 import Song from '../components/Song.vue'
+
+import SongList from '../data/song-list.js'
+
 // Import the song list JSON file
-import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json';
+import stochastSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json';
+
+import stashSongList from '../data/musicPlaylist_stash.json';
+import earlierSongList from '../data/musicPlaylist_2025.json';
 </script>
 
 <template>
@@ -82,7 +88,7 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
             <h3 style="display:flex; flex-direction: row; justify-content: space-evenly; align-items: center; margin: 0 1em 0 0.5em;">
                 <span style="flex-basis: 1.5em; flex-grow:1"></span>
                 <span class="icon-cont-shadow" >
-                    <a href="#" class="small-label shadow order-icon" title="original song order" :class="songStyle(2, false)" :style="{backgroundColor: playerThemeColor}" @click.prevent="unshuffleTracks">
+                    <a href="#" class="small-label shadow order-icon" title="original song order" :class="songStyle(2, false)" :style="{backgroundColor: playerThemeColor}" @click.prevent="unshuffleTracks('stochast')">
                     </a>
                 </span>
                 <span class="relative-container"><span class="collapsible-minor-slash">/</span></span>
@@ -121,7 +127,7 @@ import initialSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json
 
     <div class="instructions-row centered-div" v-show="playlistVisible" :class="{'night-mode': tintMode == TINT_NIGHT, 'tint-max': tintMode == TINT_MAX}">
         <div class="instructions blue over-bg-shadow over-bg-area-shadow">
-            double click song to play <span class="minor-slash">/</span> click <span class="download-icon blue-dimmed-bg">&nbsp;</span> to download
+            double <span @dblclick="addA">click</span> <span @dblclick="addB">song</span> to <span @dblclick="addC">play</span> <span class="minor-slash">/</span> click <span class="download-icon blue-dimmed-bg">&nbsp;</span> to download
         </div>
     </div>
 
@@ -234,6 +240,9 @@ const TINT_NIGHT = 4;
 
 
 export default {
+  mixins: [
+    SongList
+  ],
   data() {
     return {
         // State
@@ -256,6 +265,9 @@ export default {
         currentSong: null,
         // Configuration
         songList: [],
+        stochastSongList: stochastSongList,
+        earlierSongList: earlierSongList,
+        stashSongList: stashSongList,
         // play next state
         queueSongByIndex: false,
         nextSongIndex: 0,
@@ -434,9 +446,11 @@ export default {
         cl.add('bg-transp');
         this.recalcTitleLetterStyles();
 
-        this.unshuffleTracks();
+        this.unshuffleTracks('stochast');
     }
-    catch (e) {}
+    catch (e) {
+        console.error('view init error:', e);
+    }
   },
   unmounted() {
     if (this.animInterval != -1) {
@@ -733,61 +747,114 @@ export default {
         }
         catch {}
     },
-    shuffleTracks() {
-        let songs = this.songList;
-        for (let i = songs.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [songs[i], songs[j]] = [songs[j], songs[i]];
+    // shuffleTracks() {
+    //     let songs = this.songList;
+    //     for (let i = songs.length - 1; i > 0; i--) {
+    //         const j = Math.floor(Math.random() * (i + 1));
+    //         [songs[i], songs[j]] = [songs[j], songs[i]];
+    //     }
+    //     this.songList = songs;
+    // },
+    // unshuffleTracks() {
+    //     this.songList = [];
+    //     this.addStochast();
+    // },
+    // filterSongMegagong(song, reverse) {
+    //     if (
+    //         song.title.toLowerCase().indexOf("megagong") != -1 ||
+    //         song.title.toLowerCase().indexOf("static") != -1 ||
+    //         song.title.toLowerCase().indexOf("synthwave") != -1 ||
+    //         song.title.toLowerCase().indexOf("haze") != -1 ||
+    //         song.title.toLowerCase().indexOf("rewound") != -1 ||
+    //         song.title.toLowerCase().indexOf("echo") != -1 ||
+    //         song.title.toLowerCase().indexOf("calculation") != -1 ||
+    //         song.title.toLowerCase().indexOf("repixelated") != -1 ||
+    //         song.title.toLowerCase().indexOf("rewind") != -1 ||
+    //         song.title.toLowerCase().indexOf("disruptive") != -1
+    //     ) {
+    //         return !reverse;
+    //     }
+    //     return reverse;
+    // },
+    // filterMegagongTracks() {
+    //     let songs = [];
+    //     for (let i = 0; i < this.stochastSongList.length; i++) {
+    //         if (
+    //             this.filterSongMegagong(this.stochastSongList[i], false)
+    //         ) {
+    //             songs.push(this.stochastSongList[i]);
+    //         }
+    //     }
+    //     this.songList = songs;
+    // },
+    // filterNonMegagongTracks() {
+    //     let songs = [];
+    //     for (let i = 0; i < this.stochastSongList.length; i++) {
+    //         if (
+    //             this.filterSongMegagong(this.stochastSongList[i], true)
+    //         ) {
+    //             songs.push(this.stochastSongList[i]);
+    //         }
+    //     }
+    //     this.songList = songs;
+    // },
+    // getExisting() {
+    //     let existing = {};
+    //     for (let e = 0; e < this.songList.length; e++) {
+    //         if (this.songList[e]) {
+    //             existing[this.songList[e].src] = this.songList[e];
+    //         }
+    //     }
+    //     return existing;
+    // },
+    addA() {
+        if (!this.addA.count)
+            this.addA.count = 0;
+        this.addA.count += 1;
+        if (this.addA.count >= 2) {
+            this.addEarlier();
+            this.addA.count = 0;
         }
-        this.songList = songs;
     },
-    unshuffleTracks() {
-        let songs = [];
-        //console.log(initialSongList);
+    addB() {
+        if (!this.addB.count)
+            this.addB.count = 0;
+        this.addB.count += 1;
+        if (this.addB.count >= 2) {
+            this.addStash();
+            this.addB.count = 0;
+        }
+    },
+    addC() {
+        if (!this.addC.count)
+            this.addC.count = 0;
+        this.addC.count += 1;
+        if (this.addC.count >= 2) {
+            this.songList = [];
+            this.addC.count = 0;
+        }
+    },
+    /* addStochast() {
+        let existing = this.getExisting();
         for (let i = 0; i < initialSongList.length; i++) {
-            songs.push(initialSongList[i]);
+            if (initialSongList[i].src && !(initialSongList[i].src in existing))
+                this.songList.push(initialSongList[i]);
         }
-        this.songList = songs;
     },
-    filterSongMegagong(song, reverse) {
-        if (
-            song.title.toLowerCase().indexOf("megagong") != -1 ||
-            song.title.toLowerCase().indexOf("static") != -1 ||
-            song.title.toLowerCase().indexOf("synthwave") != -1 ||
-            song.title.toLowerCase().indexOf("haze") != -1 ||
-            song.title.toLowerCase().indexOf("rewound") != -1 ||
-            song.title.toLowerCase().indexOf("echo") != -1 ||
-            song.title.toLowerCase().indexOf("calculation") != -1 ||
-            song.title.toLowerCase().indexOf("repixelated") != -1 ||
-            song.title.toLowerCase().indexOf("rewind") != -1 ||
-            song.title.toLowerCase().indexOf("disruptive") != -1
-        ) {
-            return !reverse;
+    addEarlier() {
+        let existing = this.getExisting();
+        for (let i = 0; i < earlierSongList.length; i++) {
+            if (earlierSongList[i].src && !(earlierSongList[i].src in existing))
+                this.songList.push(earlierSongList[i]);
         }
-        return reverse;
     },
-    filterMegagongTracks() {
-        let songs = [];
-        for (let i = 0; i < initialSongList.length; i++) {
-            if (
-                this.filterSongMegagong(initialSongList[i], false)
-            ) {
-                songs.push(initialSongList[i]);
-            }
+    addStash() {
+        let existing = this.getExisting();
+        for (let i = 0; i < stashSongList.length; i++) {
+            if (stashSongList[i].src && !(stashSongList[i].src in existing))
+                this.songList.push(stashSongList[i]);
         }
-        this.songList = songs;
-    },
-    filterNonMegagongTracks() {
-        let songs = [];
-        for (let i = 0; i < initialSongList.length; i++) {
-            if (
-                this.filterSongMegagong(initialSongList[i], true)
-            ) {
-                songs.push(initialSongList[i]);
-            }
-        }
-        this.songList = songs;
-    },
+    }, */
     songContainerClass(index) {
         try {
             if (index === this.currentSongIndex)
