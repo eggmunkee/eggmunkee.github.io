@@ -257,8 +257,11 @@ export default {
         },
         // Expects imgUrls array to store
         loadImgs() {
+            
+            this.loadImgsCapped(0, import.meta.glob('../../../docs/assets/art/stash/*.{png,jpg,jpeg}'));
+
             let imgAssets = import.meta.glob('../../../docs/assets/art/extra/*.{png,jpg,jpeg}');
-            this.loadImgsCapped(0, imgAssets);
+            this.loadImgsCapped(-1, imgAssets);
 
             let imgAssets2 = import.meta.glob('../../../docs/assets/art/extra2/*.{png,jpg,jpeg}');
             this.loadImgsCapped(-1, imgAssets2);

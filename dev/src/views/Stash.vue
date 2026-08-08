@@ -655,7 +655,7 @@ export default {
         padding: 1.5em;
     }
     .root-div.hid .player-section {
-        opacity: 75%;
+        opacity: 80%;
         /*background: linear-gradient(to right, rgba(60,0,0,.25), 15%, transparent, 85%, rgba(60,0,0,.25));*/
         background: /*rgba(35,0,0,.7);*/
             linear-gradient(to right, rgba(60,0,0,.5), rgba(120,0,0,.15), 20%, rgba(200,0,0,.05), 80%, rgba(120,0,0,.15), rgba(60,0,0,.5)),
@@ -668,7 +668,7 @@ export default {
         text-align:left;
     }
     .root-div.hid .playlist-section {
-        opacity: 55%;
+        opacity: 75%;
     }
     .song-list {
         overflow-x: visible;
