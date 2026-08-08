@@ -4,6 +4,7 @@ import EgPglayer from '../components/EgPglayer.vue'
 import Song from '../components/Song.vue'
 
 import SongList from '../data/song-list.js'
+import BgShift from '../data/bg-shift.js'
 
 // Import the song list JSON file
 import stochastSongList from '../data/musicPlaylist_stochastic_recovery_20x6.json';
@@ -101,12 +102,12 @@ import earlierSongList from '../data/musicPlaylist_2025.json';
                         <span class="larger-view">Songs</span> ({{songList.length}})
                     </span>
                 </span>
-                <span class="icon-cont-shadow" title="megagong songs" @click.prevent="filterMegagongTracks">
+                <span class="icon-cont-shadow" title="megagong songs" @click.prevent="filterMegagongTracks(false)">
                     <a id="megagong-filter" href="#" class="small-label shadow megagong-icon" :class="songStyle(4, false)" :style="{backgroundColor: playerThemeColor}">
                     </a>
                 </span>
                 <span class="relative-container"><span class="collapsible-minor-slash">/</span></span>
-                <span class="icon-cont-shadow" title="non-megagong songs" @click.prevent="filterNonMegagongTracks">
+                <span class="icon-cont-shadow" title="non-megagong songs" @click.prevent="filterNonMegagongTracks(false)">
                     <a href="#" class="small-label shadow anti-megagong-icon" :class="songStyle(1, false)" :style="{backgroundColor: playerThemeColor}">
                     </a>
                 </span>
@@ -241,7 +242,8 @@ const TINT_NIGHT = 4;
 
 export default {
   mixins: [
-    SongList
+    SongList,
+    BgShift
   ],
   data() {
     return {
@@ -289,7 +291,7 @@ export default {
             '/assets/art/stochast/image-vAE8r.jpg',  // bg-dark-02
             '/assets/art/stochast/image-i4u5hxybtk7g0vob36fsviqnn.jpg', // bg-dark-03 (and 54)
             '/assets/art/stochast/cover-art-stochastic-recovery-20x6-album.jpg', // bg-dark-04
-            '/assets/art/wavy-haze-verydark.jpg', // bg-dark-05
+            '/assets/art/combined_art_wide.jpg', // bg-dark-05
             '/assets/art/stochast/image-bg-cosmic-chasm-02.jpg', // bg-dark-06
             '/assets/art/stochast/image-bg-cosmic-chasm-03.jpg', // bg-dark-07
             '/assets/art/stochast/image-bg-cosmic-chasm-07.jpg', // bg-dark-08
@@ -406,13 +408,14 @@ export default {
   mounted() {
     this.animInterval = setTimeout(this.startAnim, 3000);
     try {
-        this.bodyRefs.appDiv = document.getElementById('app');
-        this.bodyRefs.overlay1 = document.getElementsByClassName('overlay-z1')[0];
-        this.bodyRefs.overlay2 = document.getElementsByClassName('overlay-z2')[0];
-        this.bodyRefs.overlay3 = document.getElementsByClassName('overlay-z3')[0];
-        this.bodyRefs.overlay1.style.display = '';
-        this.bodyRefs.overlay2.style.display = '';
-        this.bodyRefs.overlay3.style.display = '';
+        this.loadBodyRefs(true); // true = clearDisplay
+        // this.bodyRefs.appDiv = document.getElementById('app');
+        // this.bodyRefs.overlay1 = document.getElementsByClassName('overlay-z1')[0];
+        // this.bodyRefs.overlay2 = document.getElementsByClassName('overlay-z2')[0];
+        // this.bodyRefs.overlay3 = document.getElementsByClassName('overlay-z3')[0];
+        // this.bodyRefs.overlay1.style.display = '';
+        // this.bodyRefs.overlay2.style.display = '';
+        // this.bodyRefs.overlay3.style.display = '';
 
         // read night mode from app
         if (this.bodyRefs.appDiv.classList.contains('night-mode')) {
@@ -433,17 +436,17 @@ export default {
         // }
         // set model bg index
         this.currentBgIndex = existingFrameIndex;
-        //let initialLayer1Bg = this.getBgCls(this.currentBgIndex);
-        this.removeBgClasses(this.bodyRefs.overlay1);
+        //this.removeBgClasses(this.bodyRefs.overlay1);
         // let cl = this.bodyRefs.overlay1.classList;
         // cl.add('bg-base');
-        // cl.add(initialLayer1Bg);
-        this.setupBgClasses(this.bodyRefs.overlay1, this.currentBgIndex);
+        this.setupBgClassesSlowFade(this.bodyRefs.overlay1, this.currentBgIndex);
         
-        let cl = this.bodyRefs.overlay2.classList;
-        this.removeBgClasses(this.bodyRefs.overlay2);
-        cl.add('bg-base');
-        cl.add('bg-transp');
+        //let cl = this.bodyRefs.overlay2.classList;
+        //this.removeBgClasses(this.bodyRefs.overlay2);
+        // cl.add('bg-base');
+        // cl.add('bg-transp');
+        this.setupBgClassesSlowFade(this.bodyRefs.overlay2, -1, true);
+
         this.recalcTitleLetterStyles();
 
         this.unshuffleTracks('stochast');
@@ -631,9 +634,6 @@ export default {
             clearTimeout(this.timeRightClicked);
         this.timeRightClicked = setTimeout(this.clearBgNext, BUTTON_TIMEOUT);
     },
-    getBgCls(idx) {
-        return 'bg-dark-' + (idx+1).toString().padStart(2,"0");
-    },
     getFrameFromElem(elem) {
         let cl = elem.classList;
         for (let i=0; i < cl.length; i++) {
@@ -668,7 +668,6 @@ export default {
         }
     },
     setupBgClasses(elem, idx) {
-        //let nextClsName = this.getBgCls(idx);
         this.removeBgClasses(elem);
         elem.classList.add('bg-base');
         //elem.classList.add(nextClsName);
@@ -811,7 +810,7 @@ export default {
         if (!this.addA.count)
             this.addA.count = 0;
         this.addA.count += 1;
-        if (this.addA.count >= 2) {
+        if (this.addA.count >= 5) {
             this.addEarlier();
             this.addA.count = 0;
         }
@@ -820,7 +819,7 @@ export default {
         if (!this.addB.count)
             this.addB.count = 0;
         this.addB.count += 1;
-        if (this.addB.count >= 2) {
+        if (this.addB.count >= 5) {
             this.addStash();
             this.addB.count = 0;
         }
@@ -829,7 +828,7 @@ export default {
         if (!this.addC.count)
             this.addC.count = 0;
         this.addC.count += 1;
-        if (this.addC.count >= 2) {
+        if (this.addC.count >= 5) {
             this.songList = [];
             this.addC.count = 0;
         }
@@ -1171,16 +1170,14 @@ export default {
     background-attachment: fixed;
     background-size: cover;
     background-position-x: center;
-    background-position-y: bottom;
+    background-position-y: center;
     background-attachment: fixed; 
     opacity: 1;
-    transition-property: opacity;
-    transition-duration: 28s ; /* 25  30s; */
+    transition: opacity 28s ease-out ; /* 25  30s; */
 }
 
 .bg-base.bg-fast-transition {
-    transition-property: opacity;
-    transition-duration: 2s ; /* 25  30s; */
+    transition: opacity 2s ease-out; /* 25  30s; */
 }
 
 .bg-wavy-blue-verydark {
@@ -1198,9 +1195,7 @@ export default {
 .small-dual-label {
     font-size: 13pt;
     font-weight: bolder;
-    transition-property: text-shadow, color;
-    transition-duration: 3.5s;
-    transition-timing-function: ease;
+    transition: text-shadow 3.5s ease, color 3.5s ease;
 }
 
 h2.medium-dual-label {
@@ -1210,9 +1205,7 @@ h2.medium-dual-label {
     font-size: 14pt;
     font-weight: bolder;
     line-height: 1.1;
-    transition-property: text-shadow, color;
-    transition-duration: 3s;
-    transition-timing-function: ease;
+    transition: text-shadow 3s ease, color 3s ease;
     transition-delay: 0.5s;
 }
 
@@ -1278,7 +1271,7 @@ h2.medium-dual-label {
     background-color: rgba(190,200,255,0.35);
     background-size: cover;
     background-position-x: center;
-    background-position-y: 80%;
+    background-position-y: center;
     background-attachment: fixed;    
     background-image: url('/assets/art/stochast/cover-art-stochastic-recovery-20x6-album.jpg');
 }

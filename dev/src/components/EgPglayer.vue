@@ -79,6 +79,14 @@ defineProps({
         default() {
             return true
         }
+    },
+    enableAnalysis: {
+        type: Boolean,
+        default: true
+    },
+    analysisDataWidth: {
+        type: Number,
+        default: 64
     }
 });
 const LOOP_NONE = 0;
@@ -97,7 +105,14 @@ defineOptions({
             progTimer: -1,
             lastError: null,
             loopMode: LOOP_NONE,
-            muteMode: false
+            muteMode: false,
+            // Audio interface
+            audioCtx: null,
+            audioSrc: null,
+            audioAnl: null,
+            analysisFreqData: null,
+            analysisTimeData: null
+            //analysisSnapshotCount: 0
         }
     },
     methods: {
@@ -143,6 +158,62 @@ defineOptions({
                 playing: this.playing
             }
         },
+        getAudioAnalysisSnapshot() {
+            try {
+                if (!this.audioCtx || !this.audioAnl) return null;
+
+                this.audioAnl.getFloatFrequencyData(this.analysisFreqData);
+                this.audioAnl.getFloatTimeDomainData(this.analysisTimeData);
+                //this.analysisSnapshotCount += 1;
+                this.$emit('audio-freq-analysis', this.analysisFreqData);
+                this.$emit('audio-time-analysis', this.analysisTimeData);
+                return true;
+            }
+            catch (e) {
+                console.error("Analysis snapshot snag", e);
+                return false;
+            }
+        },
+        getAudioCtx(audioElem) {
+            try {
+                if (this.audioCtx != null) return true;
+
+                let ctx = new AudioContext();
+                let source = ctx.createMediaElementSource(audioElem);
+
+                if (this.enableAnalysis) {
+                    // Create analysis node in between audio source and output
+                    let audioAnalyzer = ctx.createAnalyser();
+                    audioAnalyzer.fftSize = this.analysisDataWidth; // 2048;
+                    audioAnalyzer.minDecibels = -90;
+                    audioAnalyzer.maxDecibels = -10;
+                    const freqBuffer = new Float32Array(audioAnalyzer.frequencyBinCount);
+                    const timeBuffer = new Float32Array(audioAnalyzer.frequencyBinCount);
+
+                    // Connect source to analysis, then analysis to output
+                    source.connect(audioAnalyzer);
+                    audioAnalyzer.connect(ctx.destination);
+
+                    this.audioAnl = audioAnalyzer;
+                    this.analysisFreqData = freqBuffer;
+                    this.analysisTimeData = timeBuffer;
+                    this.$emit('analysis-started', audioAnalyzer);
+                }
+                else {
+                    // Direct connect flight from source to destination
+                    source.connect(ctx.destination);
+                }
+
+                this.audioCtx = ctx;
+                this.audioSrc = source;
+                return true;
+            }
+            catch (e) {
+                this.lastError = e;
+                console.error("create audio context error:",e);
+                return false;
+            }
+        },
         play() {
             // play before audio selection - just emit
             if (!this.audioSelected()) {
@@ -155,22 +226,38 @@ defineOptions({
                 this.starting = true;
                 this.$nextTick(function() {
                     if (!this.$refs.audio) return;
-                    this.$refs.audio.play()
-                    .then(() => {
-                        this.playing = true;
-                        this.starting = false;
-                        this.playError = false;
-                        let playStatus = this.getPlayStatus()
-                        this.$emit('play-start', playStatus);
-                        this.setDeviceMediaMetadata(playStatus);
-                    })
-                    .catch((e) => {
-                        this.playing = false;
+                    if (this.getAudioCtx(this.$refs.audio)) {
+                        this.$refs.audio.play()
+                        .then(() => {
+                            this.playing = true;
+                            this.starting = false;
+                            this.playError = false;
+                            let playStatus = this.getPlayStatus()
+                            this.$emit('play-start', playStatus);
+                            this.setDeviceMediaMetadata(playStatus);
+
+                            this.$nextTick(function() {
+                                if (this.getAudioAnalysisSnapshot()) {
+                                    console.log("Audio snapshot got:", this.analysisFreqData);
+                                }
+                                else {
+                                    console.error("Audio snapshot dumped along the way");
+                                }
+                            })
+                        })
+                        .catch((e) => {
+                            this.playing = false;
+                            this.playError = true;
+                            this.starting = false;
+                            this.lastError = e.toString();
+                        });
+                    }
+                    else {
                         this.playError = true;
+                        this.playing = false;
                         this.starting = false;
-                        this.lastError = e.toString();
-                    });
-                    
+                        this.lastError = 'No Audio Context';
+                    }
                 })
             }
             // play while playing - start pause
@@ -214,6 +301,12 @@ defineOptions({
                 this.currentTime = currentTime;
                 this.currentDuration = duration;
                 this.$emit('status', this.getPlayStatus());
+
+                if (this.enableAnalysis) {
+                    if (!this.getAudioAnalysisSnapshot()) {
+                        console.warn("Audio snapshot bungled this time");
+                    }
+                }
             }
             catch(e) {}
         },
@@ -438,6 +531,7 @@ defineOptions({
     <div>
         <h2 v-if="displayInfo">{{ displaySong }}</h2>
         <h2 v-if="displayInfo">{{ displayArtist }}</h2>
+        
         <div class="controls-row" :style="{color:themeColor}">
             <span class="align-left-control-span">
                 <span class="button-wrap button-wrap-sm">

@@ -1,6 +1,8 @@
 <script setup>
 import EgPglayer from '../components/EgPglayer.vue'
 import SongList from '../data/song-list.js'
+import BgShift from '../data/bg-shift.js'
+import DisplaySound from '../data/display-sound.js'
 
 // Import the song list JSON file
 import stashSongList from '../data/musicPlaylist_stash.json';
@@ -14,8 +16,15 @@ import earlierSongList from '../data/musicPlaylist_2025.json';
         <div v-if="bgStat" class="corner-ui" @click.prevent="bgm(100)">
             <a>X</a>
         </div>
+        <div v-if="bgStat" class="corner-ui corner-ui-left-slot" @click.prevent="toggUiStat">
+            <a>_</a>
+        </div>
+        <div v-if="bgStat" class="corner-ui corner-ui-bottom-slot" @click.prevent="toggleAnimPaused">
+            <a>=</a>
+        </div>
+        
         <div class="player-section">
-            <h1 style="line-height:1.2">
+            <h1>
                 <template v-if="currentSongTitle">
                     {{ currentSongTitle }}
                 </template>
@@ -27,27 +36,64 @@ import earlierSongList from '../data/musicPlaylist_2025.json';
                     <sub style="margin-left: 1.5em">{{ currentSongAlbum }}</sub>
                 </template>
             </h1>
-            
-            <eg-pglayer 
-                :theme-color="themeColor" 
-                :selected-song="currentSong"
-                :prev-restart-sec="3"
-                @play-click="playClick"
-                @previous-click="prevClick"
-                @next-click="nextClick"
-                @status="updateSongStatus"
-                @play-start="updateSongStatus"
-                @play-pause="updateSongStatus"
-                @play-ended="playEnded"
-                @mute-change="muteChanged"
-                @loop-change="loopChanged"    
-            ></eg-pglayer>
 
-            <div class="playlist-section">
+            <div style="z-index: 10">
+                <eg-pglayer 
+                    :theme-color="themeColor" 
+                    :selected-song="currentSong"
+                    :prev-restart-sec="3"
+                    @play-click="playClick"
+                    @previous-click="prevClick"
+                    @next-click="nextClick"
+                    @status="updateSongStatus"
+                    @play-start="updateSongStatus"
+                    @play-pause="updateSongStatus"
+                    @play-ended="playEnded"
+                    @mute-change="muteChanged"
+                    @loop-change="loopChanged"
+                    @audio-freq-analysis="audioFreqSnapshot"
+                    @audio-time-analysis="audioTimeSnapshot"
+                ></eg-pglayer>
+            </div>
+
+            <div style="position: relative; height: 1em; z-index: -1;">
+                <div v-if="audioFreqData" style="" class="audio-freq-data-cont">
+                    <div v-for="(i) in (audioFreqData.length-1)" :key="i" style="" class="audio-freq-data-slice">
+                        <div :style="{
+                            height: 
+                                Math.max(0.0, 
+                                    audioFreqData[
+                                        middleCoalateIndex(i,audioFreqData.length)
+                                    ] + 100.0
+                                )+'%'
+                            }" 
+                            class="audio-freq-bar-freq" />
+                        
+                        <div v-if="i < audioTimeData.length" :style="{
+                            height: (
+                                (
+                                    
+                                    (0.0, 
+                                        (1.0 - 
+                                            Math.abs(
+                                                (i - (audioTimeData.length/2.0))
+                                                /
+                                                (audioTimeData.length/2.0)
+                                            )
+                                        ) * 0.5)
+                                    + Math.max(0.0,audioTimeData[i])
+                                ) 
+                                * 100.0) + '%'}" 
+                            class="audio-freq-bar-time" />  <!-- 'calc(' + (Math.max(0.0, (0.5+audioTimeData[i]) * 100.0))+'% - 2em)' -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="playlist-section" :class="{'ui-hidden': !uiStat}">
                 <h1>
                     Songs <sub>{{ songList.length }}</sub>
                 </h1>
-                <ul>
+                <ul class="para-song">
                     <li :style="{'border-bottom': currentSongIndex != 0 ? ('1px dashed ' + themeColor) : ''}">
                         <a @click.prevent="shuffleTracks" href="#">Shuffle</a>
                     </li>
@@ -64,7 +110,7 @@ import earlierSongList from '../data/musicPlaylist_2025.json';
                         </span>
                     </li>
                 </ul>
-                <ul>
+                <ul class="para-song">
                     <li :style="{'border-top': currentSongIndex != songList.length - 1 ? ('1px dashed ' + themeColor) : ''}">
                         <a @click.prevent="addEarlier" href="#">+ 2025</a>
                     </li>
@@ -80,6 +126,9 @@ import earlierSongList from '../data/musicPlaylist_2025.json';
                     <li>
                         <a @click.prevent="filterMegagongTracks(true)" href="#">- Filter Megagong</a>
                     </li>
+                    <li>
+                        <a @click.prevent="showBgMulti" href="#">- Drop the back</a>
+                    </li>
                 </ul>
             </div>
             
@@ -89,15 +138,18 @@ import earlierSongList from '../data/musicPlaylist_2025.json';
 </template>
 
 <script>
-
+const STASH_ANIM_TIMER = 3750; // half of 7500
 export default {
     mixins: [
-        SongList
+        SongList,
+        BgShift,
+        DisplaySound
     ],
     data() {
         return {
             imgUrls: [],
             themeColor: '#F02020',
+            baseBgImg: '/assets/art/combined_art_wide.jpg',
             currentSongIndex: 0,
             currentSongTitle: '',
             currentSongArtist: '',
@@ -113,36 +165,47 @@ export default {
             loopOne: false,
             muted: false,
             animTimer: -1,
+            animPaused: false,
             currSrc: '',
             currSrc2: '',
             srcIdx: 0,
             bgPlus: 0,
             bgMinus: 0,
-            bgStat: false
+            bgStat: false,
+            uiStat: true,
+            audioFreqData: null,
+            audioTimeData: null
         }
     },
     mounted() {
+        
+
         this.unshuffleTracks('stash');
         this.loadImgs();
         
         let o1 = document.getElementsByClassName('overlay-z1')[0];
         let o2 = document.getElementsByClassName('overlay-z2')[0];
         let o3 = document.getElementsByClassName('overlay-z2')[0];
-        o1.classList.remove('bg-base')
-        o2.classList.remove('bg-base')
-        o3.classList.remove('bg-base')
-        if (!o1.classList.contains('bg-base-stash')) o1.classList.add('bg-base-stash');
-        if (!o2.classList.contains('bg-base-stash')) {
-            o2.classList.add('bg-base-stash');
-            o2.classList.add('bg-transp-stash');
-        }
-        if (!o3.classList.contains('bg-base-stash')) {
-            o3.classList.add('bg-base-stash');
-            o3.classList.add('bg-transp-stash');
-        }
-        o1.style.display = 'none';
+        this.removeBgClasses(o1);
+        this.removeBgClasses(o2);
+        this.removeBgClasses(o3);
+        // o1.classList.remove('bg-base')
+        // o2.classList.remove('bg-base')
+        // o3.classList.remove('bg-base')
+        // if (!o1.classList.contains('bg-base-stash')) o1.classList.add('bg-base-stash');
+        // if (!o2.classList.contains('bg-base-stash')) {
+        //     o2.classList.add('bg-base-stash');
+        //     o2.classList.add('bg-transp-stash');
+        // }
+        // if (!o3.classList.contains('bg-base-stash')) {
+        //     o3.classList.add('bg-base-stash');
+        //     o3.classList.add('bg-transp-stash');
+        // }
+        // o1.style.display = 'none';
         o2.style.display = 'none';
         o3.style.display = 'none';
+        o1.style.backgroundImage = 'url(' + this.baseBgImg + ')';
+        o1.classList.add('bg-base-stash-0');
         
     },
     unmounted() {
@@ -151,55 +214,69 @@ export default {
         }
     },
     methods: {
-        showBg() {
-            let vm = this;
-            if (this.animTimer != -1) {
-                clearInterval(this.animTimer);
-                this.animTimer = -1;
-            }
-            this.animTimer = setInterval(function() {
-                vm.anim();
-            }, 7500);
-            this.$nextTick(function() {
-                this.anim();
-            });
-
+        
+        showBgSetupLayers() {
             let o1 = document.getElementsByClassName('overlay-z1')[0];
             let o2 = document.getElementsByClassName('overlay-z2')[0];
             let o3 = document.getElementsByClassName('overlay-z3')[0];
             o1.style.display = '';
             o2.style.display = '';
             o3.style.display = '';
+            o1.classList.remove('bg-base-stash-0')
+            o1.style.backgroundImage = '';
             o1.classList.add('bg-base-stash')
             o1.classList.add('bg-transp-stash')
             o2.classList.add('bg-base-stash')
             o2.classList.add('bg-transp-stash')
             o3.classList.add('bg-base-stash')
             o3.classList.add('bg-transp-stash')
-            this.bgStat = true;
         },
-        hideBg() {
-            if (this.animTimer != -1) {
-                clearInterval(this.animTimer);
-                this.animTimer = -1;
-            }
+        hideBgSetupLayers() {
             let o1 = document.getElementsByClassName('overlay-z1')[0];
             let o2 = document.getElementsByClassName('overlay-z2')[0];
             let o3 = document.getElementsByClassName('overlay-z3')[0];
-            o1.style.display = 'none';
+            //o1.style.display = 'none';
             o2.style.display = 'none';
             o3.style.display = 'none';
             o1.classList.remove('bg-base-stash')
             o1.classList.remove('bg-transp-stash')
             o1.classList.remove('high')
+            o1.classList.remove('extra')
+            o1.classList.add('bg-base-stash-0')
+            o1.style.backgroundImage = 'url(' + this.baseBgImg + ')';
             o2.classList.remove('bg-base-stash')
             o2.classList.remove('bg-transp-stash')
             o2.classList.remove('high')
+            o2.classList.remove('extra')
             o3.classList.remove('bg-base-stash')
             o3.classList.remove('bg-transp-stash')
             o3.classList.remove('high')
-            this.bgStat = false;
+            o3.classList.remove('extra')
         },
+        // showBg() {
+        //     let vm = this;
+        //     if (this.animTimer != -1) {
+        //         clearInterval(this.animTimer);
+        //         this.animTimer = -1;
+        //     }
+        //     this.animTimer = setInterval(function() {
+        //         vm.anim();
+        //     }, STASH_ANIM_TIMER);
+        //     this.$nextTick(function() {
+        //         this.anim();
+        //     });
+
+        //     this.showBgSetupLayers();
+        //     this.bgStat = true;
+        // },
+        // hideBg() {
+        //     if (this.animTimer != -1) {
+        //         clearInterval(this.animTimer);
+        //         this.animTimer = -1;
+        //     }
+        //     this.hideBgSetupLayers();
+        //     this.bgStat = false;
+        // },
         anim() {
             try {
                 this.srcIdx += 1;
@@ -213,81 +290,102 @@ export default {
                     src = src.substring(prefix.length);                    
                 }
                 
-                this.incrementBgAnim(src);
+                this.incrementBgAnimMulti(src);
             }
             catch (e) {
                 console.error(e);
             }
             
         },
-        incrementBgAnim(src) {
-            let overlay = null;
-            let o1 = document.getElementsByClassName('overlay-z1')[0];
-            let o2 = document.getElementsByClassName('overlay-z2')[0];
-            let o3 = document.getElementsByClassName('overlay-z3')[0];
-            
-            // bg overlay to set - null of none this frame
-            var i = this.srcIdx;
-            if (i == 0)
-                overlay = o1;
-            else if (i == 2)
-                overlay = o2;
-            else if (i == 4)
-                overlay = o3;
 
-            if (i == 0) {
-                
-                o1.classList.remove('bg-transp-stash');
-                o2.classList.add('bg-transp-stash');
-                
-            }
-            else if (i == 1) {
-                o1.classList.add('high');
-                
-                
-                o3.classList.remove('high');
-                
-            }
-            else if (i == 2) {
-                o3.classList.add('bg-transp-stash');
-                
-                o2.classList.remove('bg-transp-stash');
+        audioFreqSnapshot(freqData) {
+            const freqLen = freqData.length;
+            //console.log(`Received ${freqLen} in audio frequency analysis data`, freqData);
+            this.audioFreqData = freqData.slice(); // store snapshot copy in view component
+        },
 
-                
-            }
-            else if (i == 3) {
-                
-                o2.classList.add('high');
-                o1.classList.remove('high');
-                
-            }
-            else if (i == 4) {
-                o1.classList.add('bg-transp-stash');
-                o3.classList.remove('bg-transp-stash');
-                
-            }
-            else if (i == 5) {
-                
-                
-                o3.classList.add('high');
-                o2.classList.remove('high');
-                
-            }
+        audioTimeSnapshot(timeData) {
+            const timeLen = timeData.length;
+            //console.log(`Received ${timeLen} in audio time analysis data`, timeData);
+            this.audioTimeData = timeData.slice(); // store snapshot copy in view component
+        },
+
+        // incrementBgAnim(src) {
+        //     let overlay = null;
+        //     let o1 = document.getElementsByClassName('overlay-z1')[0];
+        //     let o2 = document.getElementsByClassName('overlay-z2')[0];
+        //     let o3 = document.getElementsByClassName('overlay-z3')[0];
             
-            if (overlay) {
-                overlay.style.backgroundImage = 'url(' + src + ')';
-            }
-        },
-        loadImgs() {
-            let imgAssets = import.meta.glob('../../../docs/assets/art/extra2/*.{png,jpg,jpeg}');
-            for (const path in imgAssets) {
-                this.imgUrls.push(path);
-            }
-            let imgAssets2 = import.meta.glob('../../../docs/assets/art/extra/*.{png,jpg,jpeg}');
-            for (const path in imgAssets2) {
-                this.imgUrls.push(path);
-            }
-        },
+        //     // bg overlay to set - null of none this frame
+        //     var i = this.srcIdx;
+        //     if (i == 0)
+        //         overlay = o1;
+        //     else if (i == 2)
+        //         overlay = o2;
+        //     else if (i == 4)
+        //         overlay = o3;
+
+        //     if (i == 0) {
+                
+        //         o1.classList.remove('bg-transp-stash');
+        //         o2.classList.add('bg-transp-stash');
+
+        //         o3.classList.remove('xtra');
+        //         o3.classList.add('high');
+                
+                
+        //     }
+        //     else if (i == 1) {
+        //         o1.classList.add('xtra');
+                
+                
+        //         o3.classList.remove('high');
+                
+        //     }
+        //     else if (i == 2) {
+        //         o3.classList.add('bg-transp-stash');
+                
+        //         o2.classList.remove('bg-transp-stash');
+
+        //         o1.classList.add('high');
+        //         o1.classList.remove('xtra');
+        //     }
+        //     else if (i == 3) {
+                
+        //         o2.classList.add('xtra');
+        //         o1.classList.remove('high');
+                
+        //     }
+        //     else if (i == 4) {
+        //         o1.classList.add('bg-transp-stash');
+        //         o3.classList.remove('bg-transp-stash');
+        //         o2.classList.add('high');
+        //         o2.classList.remove('xtra');
+                
+        //     }
+        //     else if (i == 5) {
+                
+                
+        //         o3.classList.add('xtra');
+        //         o2.classList.remove('high');
+                
+                
+        //     }
+            
+        //     if (overlay) {
+        //         overlay.style.backgroundImage = 'url(' + src + ')';
+        //     }
+        // },
+        // loadImgs() {
+        //     let imgAssets = import.meta.glob('../../../docs/assets/art/extra2/*.{png,jpg,jpeg}');
+        //     for (const path in imgAssets) {
+        //         this.imgUrls.push(path);
+        //     }
+        //     let imgAssets2 = import.meta.glob('../../../docs/assets/art/extra/*.{png,jpg,jpeg}');
+        //     for (const path in imgAssets2) {
+        //         this.imgUrls.push(path);
+        //     }
+        // },
         decoFn(title, repl, enc) {
             enc = enc || 's'
             const replLen = repl.length;
@@ -340,59 +438,12 @@ export default {
             }
             catch {}
         },
-        
-        // shuffleTracks() {
-        //     let songs = this.songList;
-        //     for (let i = songs.length - 1; i > 0; i--) {
-        //         const j = Math.floor(Math.random() * (i + 1));
-        //         [songs[i], songs[j]] = [songs[j], songs[i]];
-        //     }
-        //     this.songList = songs;
-        // },
-        // unshuffleTracks() {
-        //     let songs = [];
-        //     //console.log(this.stashSongList);
-        //     for (let i = 0; i < this.stashSongList.length; i++) {
-        //         songs.push(this.stashSongList[i]);
-        //     }
-        //     this.songList = songs;
-        // },
-        // getExisting() {
-        //     let existing = {};
-        //     for (let e = 0; e < this.songList.length; e++) {
-        //         if (this.songList[e]) {
-        //             existing[this.songList[e].src] = this.songList[e];
-        //         }
-        //     }
-        //     return existing;
-        // },
-        // addStocast() {
-        //     let existing = this.getExisting();
-        //     for (let i = 0; i < stochastSongList.length; i++) {
-        //         if (stochastSongList[i].src && !(stochastSongList[i].src in existing))
-        //             this.songList.push(stochastSongList[i]);
-        //     }
-
-        // },
-        // addEarlier() {
-        //     let existing = this.getExisting();
-        //     for (let i = 0; i < earlierSongList.length; i++) {
-        //         if (earlierSongList[i].src && !(earlierSongList[i].src in existing))
-        //             this.songList.push(earlierSongList[i]);
-        //     }
-        // },
-        // addStash() {
-        //     let existing = this.getExisting();
-        //     for (let i = 0; i < this.stashSongList.length; i++) {
-        //         if (this.stashSongList[i].src && !(this.stashSongList[i].src in existing))
-        //             this.songList.push(this.stashSongList[i]);
-        //     }
-        // },
-        // clearPlaylist() {
-        //     this.songList = [];
-
-            
-        // },  
+        toggUiStat() {
+            this.uiStat = !this.uiStat;
+        },
+        toggleAnimPaused() {
+            this.animPaused = !this.animPaused;
+        },
         bg_() {
             this.bgMinus = this.bgPlus = 0;
         },
@@ -401,7 +452,7 @@ export default {
             this.bgPlus += 1;
             if (this.bgPlus >= 5) {
                 this.bgPlus = 0;
-                this.showBg();
+                this.showBgMulti();
             }
         },
         bgm(s) {
@@ -409,7 +460,7 @@ export default {
             this.bgMinus += s || 1;
             if (this.bgMinus >= 3) {
                 this.bgMinus = 0;
-                this.hideBg();
+                this.hideBgMulti();
             }
         },
         setSongIndex(songIndex) {
@@ -480,50 +531,119 @@ export default {
 
 <style>
     .overlay-z1.bg-base-stash {
-        opacity: 70%;
+        opacity: 30%;
+    
+        background-size: cover;
     }
     .overlay-z2.bg-base-stash {
-        opacity: 45%;
+        opacity: 25%;
+
+        /*mask-image: radial-gradient(35% 35% ellipse at 35% 35%, black, 70%, transparent 100%);
+        -webkit-mask-image: radial-gradient(35% 35% ellipse at 35% 35%, black, 70%, transparent 100%);
+        background-color: radial-gradient(30% 30% ellipse at 45% 45%, black, 90%, transparent 100%);*/
     }
     .overlay-z3.bg-base-stash {
-        opacity: 30%;
+        opacity: 20%;
+
+        /*mask-image: radial-gradient(35% 35% ellipse at 35% 35%, black, 70%, transparent 100%);
+        -webkit-mask-image: radial-gradient(35% 35% ellipse at 35% 35%, black, 70%, transparent 100%);
+        background-color: radial-gradient(30% 30% ellipse at 45% 45%, black, 90%, transparent 100%);*/
     }
     .overlay-z1.bg-base-stash.high {
-        opacity: 90%;
+        opacity: 42%;
     }
     .overlay-z2.bg-base-stash.high {
-        opacity: 80%;
+        opacity: 38%;
     }
     .overlay-z3.bg-base-stash.high {
-        opacity: 50%;
+        opacity: 32%;
+    }
+    .overlay-z1.bg-base-stash.xtra {
+        opacity: 80% !important;
+    }
+    .overlay-z2.bg-base-stash.xtra {
+        opacity: 77% !important;
+    }
+    .overlay-z3.bg-base-stash.xtra {
+        opacity: 70% !important;
     }
     .bg-base-stash {
         background-repeat: no-repeat;
         background-attachment: fixed;
-        background-size: cover;
-        background-position-x: center;
-        background-position-y: bottom;
-        background-attachment: fixed; 
+        background-size: contain;
+        background-position-x: left;
+        background-position-y: top;
         
-        transition: opacity 15s ease; /* 25  30s; */
+        
+        transition: opacity 3.75s ease-out, background-position-x .5s cubic-bezier(0,0,.6,1), background-position-y .5s cubic-bezier(0,0,.6,1), /* 25  30s; */
+            mask-image 3.75s cubic-bezier(0,0,.6,1), -webkit-mask-image 3.75s cubic-bezier(0,0,.6,1), background-color 3.75s cubic-bezier(0,0,.6,1);
+
     }
     .bg-base-stash.high {
-        transition: opacity 15s ease;
+        transition: opacity 3.75s linear, background-position-x 3.75s cubic-bezier(0, 0, .5, 1), background-position-y 3.75s cubic-bezier(0, 0, .5, 1), /* 7s */
+            mask-image 3.75s cubic-bezier(0,0,.5,1), -webkit-mask-image 3.75s cubic-bezier(0,0,.5,1), background-color 3.75s cubic-bezier(0,0,.5,1);
+        background-position-x: right;
+        background-position-y: bottom;
+
+    }
+    /*
+    .overlay-z2.bg-base-stash.high,
+    .overlay-z3.bg-base-stash.high {
+        mask-image: radial-gradient(42% 42% ellipse at 56% 56%, black, 80%, transparent 100%);
+        -webkit-mask-image: radial-gradient(42% 42% ellipse at 56% 56%, black, 80%, transparent 100%);
+    }*/
+    .bg-base-stash.xtra,
+    .bg-base-stash.high.xtra {
+        transition: opacity 2.75s ease-in, background-position-x 3.75s cubic-bezier(.5,0,1,1), background-position-y 3.75s cubic-bezier(.5,0,1,1), /* 3s */
+            mask-image 3.75s cubic-bezier(.5,0,1,1), -webkit-mask-image 3.75s cubic-bezier(.5,0,1,1), background-color 3.75s cubic-bezier(.5,0,1,1);
+        background-position-x: center;
+        background-position-y: center;
+
+    }
+    /*
+    .overlay-z2.bg-base-stash.xtra,
+    .overlay-z2.bg-base-stash.high.xtra,
+    .overlay-z3.bg-base-stash.xtra,
+    .overlay-z3.bg-base-stash.high.xtra {
+        mask-image: radial-gradient(42% 42% ellipse at 44% 44%, black, 80%, transparent 100%);
+        -webkit-mask-image: radial-gradient(42% 42% ellipse at 44% 44%, black, 80%, transparent 100%);
+    }*/
+
+    .bg-base-stash-0 {
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        background-position-x: center;
+        background-position-y: center;
     }
 
     .overlay-z1.bg-base-stash.bg-transp-stash,
+    .overlay-z1.bg-base-stash.bg-transp-stash.high,
+    .overlay-z2.bg-base-stash.bg-transp-stash,
+    .overlay-z2.bg-base-stash.bg-transp-stash.high,
+    .overlay-z3.bg-base-stash.bg-transp-stash,
+    .overlay-z3.bg-base-stash.bg-transp-stash.high {
+        opacity: 0.0;
+        transition: opacity 3.75s ease-in, background-position-x 3.75s cubic-bezier(0, 0, .6, 1), background-position-y 3.75s cubic-bezier(0, 0, .6, 1), /* 7.5s */
+            mask-image 3.75s cubic-bezier(0,0,.6,1), -webkit-mask-image 3.75s cubic-bezier(0,0,.6,1), background-color 3.75s cubic-bezier(0,0,.6,1);
+        background-position-x: right;
+        background-position-y: bottom;
+    }
+    /*
     .overlay-z2.bg-base-stash.bg-transp-stash,
     .overlay-z3.bg-base-stash.bg-transp-stash {
-        opacity: 0.0;
-        transition: opacity 15s ease;
-    }
+        mask-image: radial-gradient(35% 35% ellipse at 65% 65%, black, 70%, transparent 100%);
+        -webkit-mask-image: radial-gradient(35% 35% ellipse at 65% 65%, black, 70%, transparent 100%);
+    }*/
 </style>
 
 <style scoped>
     .root-div {
         text-align: center;
-        padding: 1em;
+        margin: 1.5rem 0;
         color: #F02020;
+
+        font-size: 12pt;
     }
     .player-section {
         border-radius: 1em;
@@ -546,20 +666,24 @@ export default {
     }
     .playlist-section {
         text-align:left;
-        padding: 1em;
-        font-size: 12pt;
     }
     .root-div.hid .playlist-section {
         opacity: 55%;
     }
     .song-list {
+        overflow-x: visible;
         overflow-y: auto; 
-        height: 600px;
-        max-height: 600px;
+        height: 300px;
+        max-height: 300px;
         transition: height 2s ease;
     }
+    .playlist-section ul.song-list {
+        padding-inline-start: 1em;
+        margin-inline-start: -.5em;
+        margin-inline-end: -.5em;
+    }
     .root-div.hid .song-list {
-        opacity: 55%;
+        opacity: 75%;
     }
     .song-list.empty {
         height: 10px;
@@ -583,10 +707,26 @@ export default {
         background: rgba(148, 0, 0, 0.5);
     }
 
+    .player-section h1 {
+        margin: 0 .25em;
+        padding: 0;
+        line-height: 1.2;
+    }
+
     .playlist-section h1 {
         text-align: left;
-        margin: 0 1em;
-        padding: 0 0;
+        margin: 0 .25em;
+        padding: 0;
+        line-height: 1.2;
+    }
+    
+    h1 sub {
+        font-size: 50%;
+        line-height: 0.5;
+    }
+
+    .playlist-section ul.para-song {
+        padding-inline-start: 0.5em;
     }
 
     .player-section h1 sub {
@@ -613,8 +753,57 @@ export default {
         z-index: 100;
     }
 
+    .corner-ui.corner-ui-left-slot {
+        right: 3em;
+    }
+
+    .corner-ui.corner-ui-bottom-slot {
+        top: 3em;
+    }
+
     .root-div.hid .corner-ui {
         opacity: 60%;
+    }
+    
+    .ui-hidden {
+        display:none;
+    }
+    
+    .audio-freq-data-cont {
+        font-size: 7pt; margin: 0 calc(max(25%,5rem)); display:flex; flex-direction: row;  
+        justify-content: space-evently; position: relative; top: -9.5em; opacity: 75%;
+    }
+
+    .audio-freq-data-slice {
+        position: relative; flex-basis: .5em; flex-grow: 1; height: 6em;
+    }
+
+    .audio-freq-bar-freq {
+        /*border: .15em solid #ee0000; */
+        border-right-width: 0; 
+        border-top-width: 0; 
+        position:absolute; 
+        left: 0; top:0; 
+        width: 50%; 
+        border-bottom-right-radius: 35%;
+        border-bottom-left-radius: 35%;
+        
+        background: linear-gradient(to bottom, transparent, 25%, rgba(180,0,180,.5), 75%, rgba(225,0,0,0.85)); 
+        box-sizing: border-box;
+    }
+
+    .audio-freq-bar-time {
+        /*border: .15em solid #00bb00; */
+        border-left-width: 0; 
+        border-top-width: 0; 
+        border-top-left-radius: 35%;
+        border-top-right-radius: 35%;
+
+        position:absolute; 
+        right: 0; bottom:0; 
+        width: 50%; 
+        background: linear-gradient(to top, transparent, 25%, rgba(180, 166, 0, 0.5), 75%, rgba(0,225,0,0.85)); 
+        box-sizing: border-box;
     }
 
 </style>
