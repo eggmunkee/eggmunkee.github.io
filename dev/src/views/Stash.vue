@@ -201,7 +201,7 @@ export default {
         //     o3.classList.add('bg-base-stash');
         //     o3.classList.add('bg-transp-stash');
         // }
-        // o1.style.display = 'none';
+        o1.style.display = '';
         o2.style.display = 'none';
         o3.style.display = 'none';
         o1.style.backgroundImage = 'url(' + this.baseBgImg + ')';
