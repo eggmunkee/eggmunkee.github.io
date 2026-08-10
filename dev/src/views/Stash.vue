@@ -543,7 +543,7 @@ export default {
         background-color: radial-gradient(30% 30% ellipse at 45% 45%, black, 90%, transparent 100%);*/
     }
     .overlay-z3.bg-base-stash {
-        opacity: 20%;
+        opacity: 23%;
 
         /*mask-image: radial-gradient(35% 35% ellipse at 35% 35%, black, 70%, transparent 100%);
         -webkit-mask-image: radial-gradient(35% 35% ellipse at 35% 35%, black, 70%, transparent 100%);
@@ -553,22 +553,22 @@ export default {
         opacity: 42%;
     }
     .overlay-z2.bg-base-stash.high {
-        opacity: 38%;
+        opacity: 34%;
     }
     .overlay-z3.bg-base-stash.high {
-        opacity: 32%;
+        opacity: 28%;
     }
     .overlay-z1.bg-base-stash.xtra {
-        opacity: 80% !important;
+        opacity: 95% !important;
     }
     .overlay-z2.bg-base-stash.xtra {
-        opacity: 77% !important;
+        opacity: 75% !important;
     }
     .overlay-z3.bg-base-stash.xtra {
-        opacity: 70% !important;
+        opacity: 62% !important;
     }
     .bg-base-stash {
-        background-repeat: no-repeat;
+        background-repeat: repeat;
         background-attachment: fixed;
         background-size: contain;
         background-position-x: left;
@@ -584,7 +584,8 @@ export default {
             mask-image 3.75s cubic-bezier(0,0,.5,1), -webkit-mask-image 3.75s cubic-bezier(0,0,.5,1), background-color 3.75s cubic-bezier(0,0,.5,1);
         background-position-x: right;
         background-position-y: bottom;
-
+        background-repeat:repeat;
+        
     }
     /*
     .overlay-z2.bg-base-stash.high,
@@ -598,6 +599,7 @@ export default {
             mask-image 3.75s cubic-bezier(.5,0,1,1), -webkit-mask-image 3.75s cubic-bezier(.5,0,1,1), background-color 3.75s cubic-bezier(.5,0,1,1);
         background-position-x: center;
         background-position-y: center;
+        background-repeat:repeat;
 
     }
     /*

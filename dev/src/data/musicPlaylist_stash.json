@@ -364,5 +364,23 @@
         "artist": "eggmunkee",
         "album": "stash",
         "src": "/mp3/stash/Gravel Blog Stomping.mp3"
+    },
+    {
+        "title": "Archetypic Revival C",
+        "artist": "eggmunkee",
+        "album": "stash",
+        "src": "/mp3/stash/Archetypic Revival C.mp3"
+    },
+    {
+        "title": "Archetypic Survival Storm Eye",
+        "artist": "eggmunkee",
+        "album": "stash",
+        "src": "/mp3/stash/Archetypic Survival Storm Eye.mp3"
+    },
+    {
+        "title": "Archetypic Survival Storm Eye prime",
+        "artist": "eggmunkee",
+        "album": "stash",
+        "src": "/mp3/stash/Archetypic Survival Storm Eye prime.mp3"
     }
 ]
